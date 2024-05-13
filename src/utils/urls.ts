@@ -1,4 +1,4 @@
-export const API_URL = process.env.BASE_URL || "http://localhost:3010/api";
+export const API_URL = "http://localhost:3010/api";
 
 export const fromImageToUrl = (image: any, path: string) => {
   if (!image) {

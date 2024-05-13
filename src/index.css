@@ -1,3 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import 'antd/dist/reset.css';
+
+* {
+	font-family: 'Poppins', sans-serif;
+
+}
+
+body {
+	background-color: #ffffffc7;
+}
+
+@layer base {
+	::-webkit-scrollbar-thumb {
+		@apply bg-transparent shadow-sm
+	}
+
+	::-webkit-scrollbar {
+		@apply w-2 bg-transparent
+	}
+
+	::-webkit-scrollbar-thumb {
+		@apply rounded-none bg-slate-200/20
+		/*color trackbar*/
+	}
+}
+
+@layer utilities {
+	.scrollbar-medium::-webkit-scrollbar {
+		width: 10px;
+	}
+
+	.scrollbar-thin::-webkit-scrollbar {
+		width: 10px;
+	}
+}
+
+/* table, tr, th, td {
+	border: 1px solid black;
+} */
+
+.ant-pagination-item {
+	border-radius: 50%;
+}
+
+.ant-pagination-prev .ant-pagination-item-link, .ant-pagination-next .ant-pagination-item-link {
+	border-radius: 50%;
+}
+
+.ant-pagination-prev .ant-pagination-item-link, .ant-pagination-next .ant-pagination-item-link {
+	border-radius: 50%;
+}
