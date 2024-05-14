@@ -4,6 +4,7 @@ import NotFound from './Pages/NotFound';
 import Categories from './Pages/Categories';
 import Product from './Pages/Product';
 import Cart from './Pages/Cart';
+import AuthPage from './Pages/AuthPage';
 
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/items" element={<Categories />}/>
         <Route path="/items/:id" element={<Product />}/>
         <Route path="/cart" element={<Cart />}/>
+        <Route path="/authorize" element={<AuthPage />}/>
         <Route path="*" element={<NotFound />}/>
       </Routes>
     </BrowserRouter>

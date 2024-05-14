@@ -68,8 +68,8 @@ const Categories = () => {
       <main className="grid grid-cols-2 gap-1 p-2 md:grid-flow-col md:auto-cols-fr">
         {data?.data?.products.map((it: any, i: number) => (
           <div
-            key={it.id}
-            className="cursor-pointer bg-white odd:mr-1 border hover:scale-100 hover:shadow-md ease-in-out duration-300 p-3 grid place-items-center gap-1 justify-between flex-auto max-w-[310px]"
+            key={i}
+            className="cursor-pointer bg-white odd:mr-1 border hover:scale-100 hover:shadow-md ease-in-out duration-300 p-3 flex flex-col items-center gap-1 justify-center max-w-[310px]"
           >
             <Link to={`${location.pathname}${it.id}`}>
               <img
@@ -79,12 +79,12 @@ const Categories = () => {
                 alt={it.description}
               />
               <p className="text-sm text-blue-800 font-bold ">
-                {it.description.substring(0, 30).concat(" . . .")}
+                {it.title.substring(0, 20).concat("...")}
               </p>
               {/* <p>{it.id}</p> */}
             </Link>
 
-            <div className="self-end ">
+            <div className="">
               <Rate
                 style={{
                   fontSize: "0.8rem",

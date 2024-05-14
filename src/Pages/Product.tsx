@@ -10,10 +10,14 @@ import { Header } from "../Components/Header/Header";
 import { APIClient } from "../utils/axios";
 import { Footer } from "../Components/Footer/Footer";
 import { useState } from "react";
+import { useAppDispatch } from './../redux/hook';
+import { addToCart } from "../redux/slices/cartSlice";
 
 const Product = () => {
 	const { id } = useParams();
 	const [selectedImg, setSelectedImg] = useState('')
+  const dispatch = useAppDispatch();
+  const [quantity,setQuantity] = useState<number>(1)
 
   const getProduct = async () => {
     return APIClient.get(`https://dummyjson.com/products/${id}`);
@@ -22,6 +26,11 @@ const Product = () => {
   const { data } = useQuery("getProductOne", getProduct);
 
 //   console.log(data?.data);
+
+  const addToCartRedux = (data:any)=>{
+    console.log(data);
+    dispatch(addToCart({...data, quantity: quantity}))
+  }
 
   return (
     <div>
@@ -45,8 +54,8 @@ const Product = () => {
             {data?.data.images.map((it: string) => (
               <img
                 src={it}
-					alt="product image"
-					className="w-[15%]"
+                alt="product image"
+                className="w-[15%]"
                 onClick={() => setSelectedImg(it)}
               />
             ))}
@@ -85,29 +94,40 @@ const Product = () => {
             {/* quantity */}
             <div className="flex items-center gap-3">
               <div className="flex gap-2 items-center bg-gray-100 space-x-3 px-3 py-1 rounded-2xl">
-                <button title="decrease">
+                <button
+                  title="decrease"
+                  onClick={() => setQuantity((prev) => (prev -= 1))}
+                  disabled={quantity<=1}
+                >
                   <FiMinus size={12} className="text-amber-500" />
                 </button>
-                <p>1</p>
-                <button title="increase">
+                <p>{quantity}</p>
+                <button
+                  title="increase"
+                  onClick={() => setQuantity((prev) => (prev += 1))}
+                  disabled={quantity>= data?.data.stock }
+                >
                   <FaPlus size={12} className="text-amber-500" />
                 </button>
               </div>
               <div>
-                only <span className="text-orange-500">12</span> left in this
-                item!
+                only <span className="text-orange-500">{data?.data.stock}</span>{" "}
+                left in this item!
               </div>
             </div>
             {/* buy now and add cart button */}
             <div className="flex w-full gap-2 items-center justify-between">
-              <button className="w-[50%] h-[35px] md:h-12 flex bg-gray-100 items-center justify-center rounded-2xl md:rounded-3xl gap-1 ">
+              <button
+                className="w-[50%] h-[35px] md:h-12 flex bg-gray-100 items-center justify-center rounded-2xl md:rounded-3xl gap-1 scale-95 hover:scale-100 duration-200"
+                onClick={()=>addToCartRedux(data?.data)}
+              >
                 <BiCartDownload
                   size={25}
                   className="p-1 rounded-full bg-amber-400 text-white"
                 />{" "}
                 add to cart
               </button>
-              <button className="w-[50%] h-[35px] md:h-12 flex items-center bg-amber-400 justify-center text-white rounded-2xl md:rounded-3xl gap-1">
+              <button className="w-[50%] h-[35px] md:h-12 flex items-center bg-amber-400 justify-center text-white rounded-2xl md:rounded-3xl gap-1 scale-95 hover:scale-100 duration-200 ">
                 <PiLightningLight
                   size={25}
                   className="p-1 rounded-full bg-amber-400 text-white"

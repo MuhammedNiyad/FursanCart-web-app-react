@@ -1,8 +1,8 @@
-import { Button, Popconfirm } from "antd";
-import { useState } from "react";
+import { Button, Popconfirm, Popover, message } from "antd";
+import { useEffect, useState } from "react";
 import { BiDollar } from "react-icons/bi";
 import { BsSuitHeart } from "react-icons/bs";
-import { HiOutlineShoppingBag } from "react-icons/hi";
+import { HiOutlineLogout, HiOutlineShoppingBag } from "react-icons/hi";
 import { IoIosArrowDown } from "react-icons/io";
 import { RiSearchLine } from "react-icons/ri";
 import { TbUser } from "react-icons/tb";
@@ -12,6 +12,7 @@ import { SearchBar } from "../SearchBar/SearchBar";
 import { Menu } from "../Menu/Menu";
 import styles from "../../styles/Home.module.css"
 import { useLocation } from "react-router-dom";
+import Cookies from 'js-cookie';
 
 const cartBody = (
   <div>
@@ -54,7 +55,11 @@ const menuItems = [
 
 export const Header = () => {
   const [menu, setMenu] = useState(false);
-  // const { data: session } = useSession();
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    setUser(() => Cookies.get("user"));
+  }, []);
 
   const location = useLocation();
 
@@ -63,6 +68,16 @@ export const Header = () => {
     enter: { x: 0, y: 0, opacity: 1 },
     leave: { x: -90, y: 0, opacity: 0, delay: 200 },
   });
+
+  const signOut = () => {
+    Cookies.remove('user');
+    Cookies.remove('accessToken');
+    Cookies.remove('refreshToken');
+    setUser({});
+    message.success('You are signed out!');
+    window.location.reload()
+  }
+
   return (
     <div className="flex justify-center relative bg-white">
       <div className="w-full xl:max-w-full ">
@@ -72,21 +87,21 @@ export const Header = () => {
               <BiDollar className="text-lg" />
               Currency
             </span>
-            {/* <span className="px-3">
-              {session?.user ? (
-                <button>
+            <span className="px-3">
+              {user ? (
+                <button className="pt-2">
                   {""}
                   <HiOutlineLogout
                     className="text-xl"
-                    // onClick={() => signOut()}
+                    onClick={() => signOut()}
                   />
                 </button>
               ) : (
-                <a href="/authorize" className="flex justify-between gap-1 ">
+                <a href="/authorize" className="flex justify-between gap-1 items-center ">
                   <TbUser className="text-lg" /> Register Or Sign In
                 </a>
               )}
-            </span> */}
+            </span>
           </div>
           <hr className="w-screen absolute left-0 right-0" />
 
@@ -95,7 +110,7 @@ export const Header = () => {
               <div className=" md:max-w-[100%] lg:max-w-[100%] w-full flex justify-center sm:px-12 md:px-20 relative">
                 <div className="max-w-[600px] md:max-w-[100%] lg:max-w-[1200px] w-full flex justify-between px-2">
                   {/* Menu Section */}
-                  <div className="flex justify-between items-baseline gap-2 ">
+                  <div className="flex justify-between items-center gap-2 ">
                     <Menu />
                     <span>
                       <a href="/">
@@ -110,7 +125,7 @@ export const Header = () => {
                     </span>
                   </div>
 
-                  <div className="flex justify-evenly gap-5 text-2xl">
+                  <div className="flex justify-evenly items-center gap-5 text-2xl">
                     <span>
                       <SearchBar />
                     </span>
@@ -120,7 +135,7 @@ export const Header = () => {
                       </a>
                     </span>
                     <div className="relative">
-                      {/* <Popover content={cartBody} title="Cart" trigger="click"> */}
+                      <Popover content={cartBody} title="Cart" trigger="click">
                       <a href="/cart">
                         <span
                           // before="1"
@@ -129,7 +144,7 @@ export const Header = () => {
                           <HiOutlineShoppingBag className="" />
                         </span>
                       </a>
-                      {/* </Popover> */}
+                      </Popover>
                     </div>
                   </div>
                 </div>
@@ -179,7 +194,7 @@ export const Header = () => {
                   <BsSuitHeart />
                 </span>
                 <div className="relative">
-                  {/* <Popover content={cartBody} title="Cart" trigger="click"> */}
+                  <Popover content={cartBody} title="Cart" trigger="click">
                   <a href="/cart">
                     <span
                       // before="1"
@@ -188,7 +203,7 @@ export const Header = () => {
                       <HiOutlineShoppingBag className="" />
                     </span>
                   </a>
-                  {/* </Popover> */}
+                  </Popover>
                 </div>
                 {/* <span>
                   <BiDollar className="text-lg" /> 
@@ -301,7 +316,7 @@ export const Header = () => {
                     <a href="/cart">
                       <span
                         // before="1"
-                        className={`${styles.carticon} after:bg-amber-400 after:text-black after:font-bold`}
+                        className={`${styles.carticon} after:bg-black after:text-amber-400 after:font-bold`}
                       >
                         <HiOutlineShoppingBag className="" />
                       </span>

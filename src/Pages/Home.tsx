@@ -1,25 +1,26 @@
-import { useDispatch, useSelector } from "react-redux";
-import styles from "../styles/Home.module.css";
-import { selectCurrentValue } from "../redux/slices/counterSlice";
-import { Header } from "../Components/Header/Header";
-import { Link } from "react-router-dom";
+import Cookies from 'js-cookie';
+import { Helmet } from "react-helmet";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Link } from "react-router-dom";
 import "swiper/css";
-import "swiper/css/pagination";
 import "swiper/css/navigation";
-
-import { Footer } from "../Components/Footer/Footer";
-import { BackToTop } from "../Components/Common-Comp/BackToTop";
-import { SalesCatTabs } from "../Components/SaleCartTabs/SalesCartTabs";
-import { CategoriesList } from "../Components/CategoriesList/CategoriesList";
-import { Banner } from "../Components/Common-Comp/Banner";
-import { Helmet } from "react-helmet"; 
+import "swiper/css/pagination";
 import { Autoplay, Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { CategoriesList } from "../Components/CategoriesList/CategoriesList";
+import { BackToTop } from "../Components/Common-Comp/BackToTop";
+import { Banner } from "../Components/Common-Comp/Banner";
+import { Footer } from "../Components/Footer/Footer";
+import { Header } from "../Components/Header/Header";
+import { SalesCatTabs } from "../Components/SaleCartTabs/SalesCartTabs";
+import styles from "../styles/Home.module.css";
 
 const Home = () => {
-   const count = useSelector(selectCurrentValue);
-   const dispatch = useDispatch();
+
+  
+const user = Cookies.get('user')
+  console.log(user);
+  
 
    const cats = [
      {

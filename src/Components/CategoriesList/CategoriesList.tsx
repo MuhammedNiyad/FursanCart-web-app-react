@@ -5,6 +5,8 @@ import { Button, Divider, Rate } from "antd";
 import { productData } from "../../lib/types";
 import { CartIcon } from "../icons/CartIcon";
 import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../redux/hook";
+import { addToCart } from "../../redux/slices/cartSlice";
 
 const getCategories = async () =>
   await APIClient.get("https://dummyjson.com/products/categories");
@@ -21,8 +23,14 @@ export const CategoriesList = () => {
     isLoading: prodLoad,
   }: UseQueryResult<any, Error> = useQuery("items", getProducts);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch()
 
-  console.log(prodSucc && prodData.data.products);
+  // console.log(prodSucc && prodData.data.products);
+
+  const addToCartRedux = (data: any) => {
+    console.log("add to cart: ", data);
+    dispatch(addToCart({ ...data, quantity: 1 }))
+  };
 
   return (
     <div className="w-full">
@@ -67,9 +75,9 @@ export const CategoriesList = () => {
                           alt={it.description}
                         />
                         <h3>{it.title}</h3>
-                      <p className="text-sm font-bold text-blue-800 text-wrap ">
-                        {it.description.substring(0, 30).concat(" . . .")}
-                      </p>
+                        <p className="text-sm font-bold text-blue-800 text-wrap ">
+                          {it.description.substring(0, 30).concat(" . . .")}
+                        </p>
                       </Link>
                       {/* <div className="flex gap-1 text-amber-400 place-self-start ">
                         <IoStar />
@@ -89,8 +97,9 @@ export const CategoriesList = () => {
                         />
                         <div className="flex items-center justify-around w-full gap-1 text-lg font-bold ">
                           <b>$ {it.price}</b>
-
-                          <CartIcon />
+                          <span onClick={()=>addToCartRedux(it)}>
+                            <CartIcon />
+                          </span>
                         </div>
                       </div>
                     </div>

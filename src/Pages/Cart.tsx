@@ -1,13 +1,45 @@
-import { Helmet } from "react-helmet";
-import { Header } from "../Components/Header/Header";
-import { IoStar, IoStarHalfOutline, IoStarOutline } from "react-icons/io5";
 import { Button, Divider } from "antd";
-import { RiDeleteBinLine } from "react-icons/ri";
+import { Helmet } from "react-helmet";
 import { BsLightningCharge } from "react-icons/bs";
 import { FaTags } from "react-icons/fa";
+import { IoStar, IoStarHalfOutline, IoStarOutline } from "react-icons/io5";
+import { RiDeleteBinLine } from "react-icons/ri";
+import { useDispatch } from "react-redux";
 import { Footer } from "../Components/Footer/Footer";
+import { Header } from "../Components/Header/Header";
+import { useAppSelector } from "../redux/hook";
+import { removeFrom } from "../redux/slices/cartSlice";
+
+interface CartItem {
+  brand: string;
+  category: string;
+  description: string;
+  discountPercentage: number;
+  id: number;
+  images: string[];
+  price: number;
+  quantity: number;
+  rating: number;
+  stock: string;
+  title: string;
+}
+
+interface CartData {
+  cartData: CartItem[];
+}
 
 const Cart = () => {
+
+  
+  const cartDatas = useAppSelector((state: any) => state.cartData);
+    const dispatch = useDispatch();
+
+  console.log(cartDatas);
+  
+  const removeFromCartRedux = (id:number)=>{
+    dispatch(removeFrom(id));
+  }
+
   return (
     <div className="bg-slate-50/20">
       <Helmet>
@@ -19,92 +51,55 @@ const Cart = () => {
       <h1 className="text-2xl text-center my-5">My Cart</h1>
       <br />
       <br />
-      <main className="mb-10 md:max-w-[80%] mx-auto relative grid md:grid-cols-2">
+      {
+        cartDatas.length >= 1 ? (
+          <main className="mb-10 md:max-w-[80%] mx-auto relative grid md:grid-cols-2">
+        {/* cart product showing section */}
         <section className="px-2 bg-white w-full">
-          <div className=" w-full pt-4 border my-2 shadow-sm ">
-            <section className="flex items-center">
-              <img
-                src="../../public/products/img.jpg"
-                width={100}
-                height={100}
-                alt="djs"
-              />
-              <div>
-                <p>Ultra Wireless S50 Headphones S50 with Bluetooth</p>
-                <div className="text-amber-400 flex gap-1 place-self-start my-3">
-                  <IoStar />
-                  <IoStar />
-                  <IoStar />
-                  <IoStarHalfOutline />
-                  <IoStarOutline />
+          {cartDatas?.map((it:any) => (
+            <div key={it.id} className=" w-full pt-4 border my-2 shadow-sm ">
+              <section className="flex items-center">
+                <img
+                  src={it.images[0]}
+                  width={100}
+                  height={100}
+                  alt="djs"
+                />
+                <div>
+                  <p>{it.title}</p>
+                  <div className="text-amber-400 flex gap-1 place-self-start my-3">
+                    <IoStar />
+                    <IoStar />
+                    <IoStar />
+                    <IoStarHalfOutline />
+                    <IoStarOutline />
+                  </div>
                 </div>
-              </div>
-            </section>
-            <section className="flex items-center gap-3 px-2">
-              <div className="flex  ">
-                <Button className="rounded-full">+</Button>
-                <div className="w-10 flex justify-center items-center">1</div>
-                <Button className="rounded-full">-</Button>
-              </div>
-              <div className="my-3">
-                <p className="flex gap-2">
-                  <span className="text-slate-400 line-through ">$4,699</span>
-                  <b>$3,328</b>
-                  <em className="text-green-600 font-bold">29% off</em>
-                </p>
-              </div>
-            </section>
-            <section className="border-t flex justify-around items-center ">
-              <div className="hover:bg-slate-100 active:bg-slate-100 border-r w-full text-center flex justify-center items-center p-3 gap-1">
-                <RiDeleteBinLine /> Remove
-              </div>
-              <div className="hover:bg-slate-100 active:bg-slate-100 w-full text-center flex justify-center items-center p-3 gap-1">
-                <BsLightningCharge /> Buy this now
-              </div>
-            </section>
-          </div>
-          <div className=" w-full pt-4 border my-2 shadow-sm">
-            <section className="flex items-center">
-              <img
-                src="../../public/products/img.jpg"
-                width={100}
-                height={100}
-                alt="djs"
-              />
-              <div>
-                <p>Ultra Wireless S50 Headphones S50 with Bluetooth</p>
-                <div className="text-amber-400 flex gap-1 place-self-start my-3">
-                  <IoStar />
-                  <IoStar />
-                  <IoStar />
-                  <IoStarHalfOutline />
-                  <IoStarOutline />
+              </section>
+              <section className="flex items-center gap-3 px-2">
+                <div className="flex  ">
+                  <Button className="rounded-full">+</Button>
+                  <div className="w-10 flex justify-center items-center">{it.quantity}</div>
+                  <Button className="rounded-full">-</Button>
                 </div>
-              </div>
-            </section>
-            <section className="flex items-center gap-3 px-2">
-              <div className="flex  ">
-                <Button className="rounded-full">+</Button>
-                <div className="w-10 flex justify-center items-center">1</div>
-                <Button className="rounded-full">-</Button>
-              </div>
-              <div className="my-3">
-                <p className="flex gap-2">
-                  <span className="text-slate-400 line-through ">$4,699</span>
-                  <b>$3,328</b>
-                  <em className="text-green-600 font-bold">29% off</em>
-                </p>
-              </div>
-            </section>
-            <section className="border-t flex justify-around items-center ">
-              <div className="hover:bg-slate-100 active:bg-slate-100 border-r w-full text-center flex justify-center items-center p-3 gap-1">
-                <RiDeleteBinLine /> Remove
-              </div>
-              <div className="hover:bg-slate-100 active:bg-slate-100 w-full text-center flex justify-center items-center p-3 gap-1">
-                <BsLightningCharge /> Buy this now
-              </div>
-            </section>
-          </div>
+                <div className="my-3">
+                  <p className="flex gap-2">
+                    <span className="text-slate-400 line-through ">$4,699</span>
+                    <b>${it.price}</b>
+                    <em className="text-green-600 font-bold">{it.discountPercentage} off</em>
+                  </p>
+                </div>
+              </section>
+              <section className="border-t flex justify-around items-center ">
+                <div className="hover:bg-slate-100 active:bg-slate-100 border-r w-full text-center flex justify-center items-center p-3 gap-1" onClick={()=>removeFromCartRedux(it.id)}>
+                  <RiDeleteBinLine /> Remove
+                </div>
+                <div className="hover:bg-slate-100 active:bg-slate-100 w-full text-center flex justify-center items-center p-3 gap-1">
+                  <BsLightningCharge /> Buy this now
+                </div>
+              </section>
+            </div>
+          ))}
           <section className="bg-white">
             <div>
               <form action="#" className="flex flex-wrap justify-center gap-5">
@@ -167,6 +162,12 @@ const Cart = () => {
           </Button>
         </section>
       </main>
+      ) : (
+          <div className="flex items-center justify-center">
+              <h1>Your cart is empty</h1>
+            </div>
+        )
+      }
 
       <Footer />
     </div>
