@@ -4,11 +4,11 @@ import { BsLightningCharge } from "react-icons/bs";
 import { FaTags } from "react-icons/fa";
 import { IoStar, IoStarHalfOutline, IoStarOutline } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
-import { useDispatch } from "react-redux";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
-import { useAppSelector } from "../redux/hook";
-import { removeFrom } from "../redux/slices/cartSlice";
+import { useAppDispatch, useAppSelector } from "../redux/hook";
+import { qntityMinus, qntityPlus, removeFrom } from "../redux/slices/cartSlice";
+import { getUserId } from "../helpers/loggedUser";
 
 interface CartItem {
   brand: string;
@@ -31,13 +31,22 @@ interface CartData {
 const Cart = () => {
 
   
-  const cartDatas = useAppSelector((state: any) => state.cartData);
-    const dispatch = useDispatch();
+  const datas = useAppSelector((state: any) => state.cartData);
+  const cartDatas = datas.filter((it:any)=> it.userId === getUserId())
+    const dispatch = useAppDispatch();
 
-  console.log(cartDatas);
+  // console.log(cartDatas);
   
   const removeFromCartRedux = (id:number)=>{
     dispatch(removeFrom(id));
+  }
+
+  const quantityIncrease = (id:number) => {
+    dispatch(qntityPlus(id));
+  }
+
+  const quantityDecrease = (id:number) => {
+    dispatch(qntityMinus(id));
   }
 
   return (
@@ -51,123 +60,140 @@ const Cart = () => {
       <h1 className="text-2xl text-center my-5">My Cart</h1>
       <br />
       <br />
-      {
-        cartDatas.length >= 1 ? (
-          <main className="mb-10 md:max-w-[80%] mx-auto relative grid md:grid-cols-2">
-        {/* cart product showing section */}
-        <section className="px-2 bg-white w-full">
-          {cartDatas?.map((it:any) => (
-            <div key={it.id} className=" w-full pt-4 border my-2 shadow-sm ">
-              <section className="flex items-center">
-                <img
-                  src={it.images[0]}
-                  width={100}
-                  height={100}
-                  alt="djs"
-                />
-                <div>
-                  <p>{it.title}</p>
-                  <div className="text-amber-400 flex gap-1 place-self-start my-3">
-                    <IoStar />
-                    <IoStar />
-                    <IoStar />
-                    <IoStarHalfOutline />
-                    <IoStarOutline />
+      {cartDatas.length >= 1 ? (
+        <main className="mb-10 md:max-w-[80%] mx-auto relative grid md:grid-cols-2">
+          {/* cart product showing section */}
+          <section className="px-2 bg-white w-full">
+            {cartDatas?.map((it: any) => (
+              <div key={it.id} className=" w-full pt-4 border my-2 shadow-sm ">
+                <section className="flex items-center">
+                  <img src={it.images[0]} width={100} height={100} alt="djs" />
+                  <div>
+                    <p>{it.title}</p>
+                    <div className="text-amber-400 flex gap-1 place-self-start my-3">
+                      <IoStar />
+                      <IoStar />
+                      <IoStar />
+                      <IoStarHalfOutline />
+                      <IoStarOutline />
+                    </div>
                   </div>
-                </div>
-              </section>
-              <section className="flex items-center gap-3 px-2">
-                <div className="flex  ">
-                  <Button className="rounded-full">+</Button>
-                  <div className="w-10 flex justify-center items-center">{it.quantity}</div>
-                  <Button className="rounded-full">-</Button>
-                </div>
-                <div className="my-3">
-                  <p className="flex gap-2">
-                    <span className="text-slate-400 line-through ">$4,699</span>
-                    <b>${it.price}</b>
-                    <em className="text-green-600 font-bold">{it.discountPercentage} off</em>
-                  </p>
-                </div>
-              </section>
-              <section className="border-t flex justify-around items-center ">
-                <div className="hover:bg-slate-100 active:bg-slate-100 border-r w-full text-center flex justify-center items-center p-3 gap-1" onClick={()=>removeFromCartRedux(it.id)}>
-                  <RiDeleteBinLine /> Remove
-                </div>
-                <div className="hover:bg-slate-100 active:bg-slate-100 w-full text-center flex justify-center items-center p-3 gap-1">
-                  <BsLightningCharge /> Buy this now
-                </div>
-              </section>
-            </div>
-          ))}
-          <section className="bg-white">
-            <div>
-              <form action="#" className="flex flex-wrap justify-center gap-5">
-                <div className="border rounded-full  flex justify-between items-center">
-                  <input
-                    type="text"
-                    placeholder="Coupon Code "
-                    className=" rounded-l-full pl-3 w-full outline-none"
-                  />
-                  <div className="bg-black text-white rounded-r-full  h-full px-6 py-2">
-                    <FaTags />
+                </section>
+                <section className="flex items-center gap-3 px-2">
+                  <div className="flex  ">
+                    <Button
+                      disabled={it.quantity >= it.stock}
+                      className="rounded-full"
+                      onClick={() => quantityIncrease(it.id)}
+                    >
+                      +
+                    </Button>
+                    <div className="w-10 flex justify-center items-center">
+                      {it.quantity}
+                    </div>
+                    <Button
+                      disabled={it.quantity <= 1}
+                      className="rounded-full"
+                      onClick={() => quantityDecrease(it.id)}
+                    >
+                      -
+                    </Button>
                   </div>
-                </div>
-                <Button
-                  htmlType="submit"
-                  className="rounded-full px-5 bg-slate-200 hover:bg-slate-400 hover:text-white hover:border-none active:bg-slate-400 focus:bg-slate-200"
+                  <div className="my-3">
+                    <p className="flex gap-2">
+                      <span className="text-slate-400 line-through ">
+                        $4,699
+                      </span>
+                      <b>${it.price}</b>
+                      <em className="text-green-600 font-bold">
+                        {it.discountPercentage} off
+                      </em>
+                    </p>
+                  </div>
+                </section>
+                <section className="border-t flex justify-around items-center ">
+                  <div
+                    className="hover:bg-slate-100 active:bg-slate-100 border-r w-full text-center flex justify-center items-center p-3 gap-1"
+                    onClick={() => removeFromCartRedux(it.id)}
+                  >
+                    <RiDeleteBinLine /> Remove
+                  </div>
+                  <div className="hover:bg-slate-100 active:bg-slate-100 w-full text-center flex justify-center items-center p-3 gap-1">
+                    <BsLightningCharge /> Buy this now
+                  </div>
+                </section>
+              </div>
+            ))}
+            <section className="bg-white">
+              <div>
+                <form
+                  action="#"
+                  className="flex flex-wrap justify-center gap-5"
                 >
-                  Update cart
-                </Button>
-              </form>
-            </div>
+                  <div className="border rounded-full  flex justify-between items-center">
+                    <input
+                      type="text"
+                      placeholder="Coupon Code "
+                      className=" rounded-l-full pl-3 w-full outline-none"
+                    />
+                    <div className="bg-black text-white rounded-r-full  h-full px-6 py-2">
+                      <FaTags />
+                    </div>
+                  </div>
+                  <Button
+                    htmlType="submit"
+                    className="rounded-full px-5 bg-slate-200 hover:bg-slate-400 hover:text-white hover:border-none active:bg-slate-400 focus:bg-slate-200"
+                  >
+                    Update cart
+                  </Button>
+                </form>
+              </div>
+            </section>
           </section>
-        </section>
-        <Divider className="md:hidden" />
+          <Divider className="md:hidden" />
 
-        <section className="w-full  pt-4 border my-5 shadow-sm px-2 ml-auto h-[19em] bg-white">
-          <h3 className="font-bold">Price Details</h3>
+          <section className="w-full  pt-4 border my-5 shadow-sm px-2 ml-auto h-[19em] bg-white">
+            <h3 className="font-bold">Price Details</h3>
 
-          <table className="border-b border-dashed table-auto w-full leading-10">
-            <tbody>
-              <tr>
-                <td>Price</td>
-                <td className="text-right">$9,398</td>
-              </tr>
-              <tr>
-                <td>Discount</td>
-                <td className="text-right text-green-600 font-semibold">
-                  -$2,742
-                </td>
-              </tr>
-              <tr>
-                <td>Delivery Charges</td>
-                <td className="text-right text-green-600 font-semibold">
-                  FREE Delivery
-                </td>
-              </tr>
-              <tr className="border-t border-dashed">
-                <td>Total Amount</td>
-                <td className="text-right font-bold">$6,656</td>
-              </tr>
-            </tbody>
-          </table>
-          <p className="text-xs text-green-600 font-semibold my-5">
-            You will save $2,742 on this order
-          </p>
-        </section>
-        <section className="sticky bottom-0 shadow-sm py-2 px-5 flex justify-end w-full md:col-span-2">
-          <Button className="h-10 bg-amber-400 font-bold rounded-md hover:bg-amber-500 active:bg-amber-500 focus:bg-amber-500 focus:border-none">
-            Place Order
-          </Button>
-        </section>
-      </main>
+            <table className="border-b border-dashed table-auto w-full leading-10">
+              <tbody>
+                <tr>
+                  <td>Price</td>
+                  <td className="text-right">$9,398</td>
+                </tr>
+                <tr>
+                  <td>Discount</td>
+                  <td className="text-right text-green-600 font-semibold">
+                    -$2,742
+                  </td>
+                </tr>
+                <tr>
+                  <td>Delivery Charges</td>
+                  <td className="text-right text-green-600 font-semibold">
+                    FREE Delivery
+                  </td>
+                </tr>
+                <tr className="border-t border-dashed">
+                  <td>Total Amount</td>
+                  <td className="text-right font-bold">$6,656</td>
+                </tr>
+              </tbody>
+            </table>
+            <p className="text-xs text-green-600 font-semibold my-5">
+              You will save $2,742 on this order
+            </p>
+          </section>
+          <section className="sticky bottom-0 shadow-sm py-2 px-5 flex justify-end w-full md:col-span-2">
+            <Button className="h-10 bg-amber-400 font-bold rounded-md hover:bg-amber-500 active:bg-amber-500 focus:bg-amber-500 focus:border-none">
+              Place Order
+            </Button>
+          </section>
+        </main>
       ) : (
-          <div className="flex items-center justify-center">
-              <h1>Your cart is empty</h1>
-            </div>
-        )
-      }
+        <div className="flex items-center justify-center">
+          <h1>Your cart is empty</h1>
+        </div>
+      )}
 
       <Footer />
     </div>

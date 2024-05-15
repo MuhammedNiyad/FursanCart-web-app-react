@@ -1,12 +1,13 @@
+import { Button, Divider, Rate, message } from "antd";
 import { UseQueryResult, useQuery } from "react-query";
-import { APIClient } from "../../utils/axios";
-import { getProducts } from "../SaleCartTabs/SalesCartTabs";
-import { Button, Divider, Rate } from "antd";
-import { productData } from "../../lib/types";
-import { CartIcon } from "../icons/CartIcon";
 import { Link, useNavigate } from "react-router-dom";
+import { getUserId, getUserToken } from "../../helpers/loggedUser";
+import { productData } from "../../lib/types";
 import { useAppDispatch } from "../../redux/hook";
 import { addToCart } from "../../redux/slices/cartSlice";
+import { APIClient } from "../../utils/axios";
+import { getProducts } from "../SaleCartTabs/SalesCartTabs";
+import { CartIcon } from "../icons/CartIcon";
 
 const getCategories = async () =>
   await APIClient.get("https://dummyjson.com/products/categories");
@@ -14,22 +15,28 @@ const getCategories = async () =>
 export const CategoriesList = () => {
   const {
     data: categories,
-    isSuccess: catSucc,
-    isLoading: catloading,
+    // isSuccess: catSucc,
+    // isLoading: catloading,
   }: UseQueryResult<any, Error> = useQuery("categories", getCategories);
   const {
     data: prodData,
-    isSuccess: prodSucc,
-    isLoading: prodLoad,
+    // isSuccess: prodSucc,
+    // isLoading: prodLoad,
   }: UseQueryResult<any, Error> = useQuery("items", getProducts);
   const navigate = useNavigate();
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   // console.log(prodSucc && prodData.data.products);
 
   const addToCartRedux = (data: any) => {
-    console.log("add to cart: ", data);
-    dispatch(addToCart({ ...data, quantity: 1 }))
+    if (getUserId() && getUserToken()) {
+      console.log("add to cart: ", data);
+      dispatch(addToCart({ ...data, quantity: 1, userId: getUserId() }));
+      message.success("Item added to cart");
+    } else {
+      message.error("Please login to add item to cart");
+      navigate("/authorize");
+    }
   };
 
   return (
@@ -66,7 +73,7 @@ export const CategoriesList = () => {
                       key={it.id}
                       className="bg-white odd:mr-1 border hover:scale-110 hover:shadow-md ease-in-out duration-300  grid place-items-center  max-w-[300px] relative"
                     >
-                      <Link to={`/items/${it.id}`} className="w-full space-y-3">
+                      <Link to={`/items/${it.id}/?prod=${it.title}`} className="w-full space-y-3">
                         <img
                           className="object-fill w-full max-h-[180px]"
                           src={it.thumbnail}
@@ -97,7 +104,7 @@ export const CategoriesList = () => {
                         />
                         <div className="flex items-center justify-around w-full gap-1 text-lg font-bold ">
                           <b>$ {it.price}</b>
-                          <span onClick={()=>addToCartRedux(it)}>
+                          <span onClick={() => addToCartRedux(it)}>
                             <CartIcon />
                           </span>
                         </div>

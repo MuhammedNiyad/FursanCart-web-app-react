@@ -13,6 +13,8 @@ import { Menu } from "../Menu/Menu";
 import styles from "../../styles/Home.module.css"
 import { useLocation } from "react-router-dom";
 import Cookies from 'js-cookie';
+import { useAppSelector } from "../../redux/hook";
+import { getUserId } from "../../helpers/loggedUser";
 
 const cartBody = (
   <div>
@@ -56,6 +58,8 @@ const menuItems = [
 export const Header = () => {
   const [menu, setMenu] = useState(false);
   const [user, setUser] = useState({});
+    const datas = useAppSelector((state: any) => state.cartData);
+    const cartDatas = datas.filter((it: any) => it.userId === getUserId());
 
   useEffect(() => {
     setUser(() => Cookies.get("user"));
@@ -97,7 +101,10 @@ export const Header = () => {
                   />
                 </button>
               ) : (
-                <a href="/authorize" className="flex justify-between gap-1 items-center ">
+                <a
+                  href="/authorize"
+                  className="flex justify-between gap-1 items-center "
+                >
                   <TbUser className="text-lg" /> Register Or Sign In
                 </a>
               )}
@@ -136,14 +143,14 @@ export const Header = () => {
                     </span>
                     <div className="relative">
                       <Popover content={cartBody} title="Cart" trigger="click">
-                      <a href="/cart">
-                        <span
-                          // before="1"
-                          className={styles.carticon}
-                        >
-                          <HiOutlineShoppingBag className="" />
-                        </span>
-                      </a>
+                        <a href="/cart">
+                          <span
+                            after={cartDatas.length > 0 ? cartDatas.length : ""}
+                            className={styles.carticon}
+                          >
+                            <HiOutlineShoppingBag className="" />
+                          </span>
+                        </a>
                       </Popover>
                     </div>
                   </div>
@@ -195,14 +202,14 @@ export const Header = () => {
                 </span>
                 <div className="relative">
                   <Popover content={cartBody} title="Cart" trigger="click">
-                  <a href="/cart">
-                    <span
-                      // before="1"
-                      className={`${styles.carticon} after:bg-amber-400 after:text-black after:font-bold`}
-                    >
-                      <HiOutlineShoppingBag className="" />
-                    </span>
-                  </a>
+                    <a href="/cart">
+                      <span
+                        after={cartDatas.length > 0 ? cartDatas.length : ""}
+                        className={`${styles.carticon} relative`}
+                      >
+                        <HiOutlineShoppingBag className="" />
+                      </span>
+                    </a>
                   </Popover>
                 </div>
                 {/* <span>
@@ -315,8 +322,8 @@ export const Header = () => {
                   <div className="relative">
                     <a href="/cart">
                       <span
-                        // before="1"
-                        className={`${styles.carticon} after:bg-black after:text-amber-400 after:font-bold`}
+                        after={cartDatas.length > 0 ? cartDatas.length : ""}
+                        className={`${styles.carticon} relative `}
                       >
                         <HiOutlineShoppingBag className="" />
                       </span>

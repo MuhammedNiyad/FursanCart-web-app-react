@@ -41,11 +41,17 @@ export const cartSlice = createSlice({
 			}	
 		},
 		qntityPlus: (state, action) => {
-			console.log(action.payload);
+			const existInd = state.cartData.findIndex((prod) => prod.id === action.payload);
+			if (existInd !== -1) {
+				state.cartData[existInd].quantity += 1;
+			}
 			
 		},
 		qntityMinus: (state, action) => {
-			console.log(action.payload);
+			const existInd = state.cartData.findIndex((prod) => prod.id === action.payload);
+			if (existInd !== -1) {
+				state.cartData[existInd].quantity -= 1;
+			}
 			
 		},
 		removeFrom: (state, action) => {

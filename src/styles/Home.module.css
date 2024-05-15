@@ -139,7 +139,7 @@
 
 .carticon::after {
   /* font-size: 2rem; */
-  content: attr(before);
+  content: attr(after);
   height: 1.3rem;
   width: 1.3rem;
   color: white;

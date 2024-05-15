@@ -27,8 +27,8 @@ const Categories = () => {
 
   const {
     data,
-    isSuccess: catSucc,
-    isLoading: catloading,
+    // isSuccess: catSucc,
+    // isLoading: catloading,
   } = useQuery("getCategoryProducts", getCategoryProducts);
 
   // console.log("cat data: ", data);
@@ -71,7 +71,7 @@ const Categories = () => {
             key={i}
             className="cursor-pointer bg-white odd:mr-1 border hover:scale-100 hover:shadow-md ease-in-out duration-300 p-3 flex flex-col items-center gap-1 justify-center max-w-[310px]"
           >
-            <Link to={`${location.pathname}${it.id}`}>
+            <Link to={`/items/${it.id}/?prod=${it.title}`}>
               <img
                 src={it.thumbnail}
                 width={140}

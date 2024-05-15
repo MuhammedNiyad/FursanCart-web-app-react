@@ -1,23 +1,25 @@
-import { Divider, Rate } from "antd";
+import { Divider, Rate, message } from "antd";
+import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { BiCartDownload } from "react-icons/bi";
 import { FaPlus } from "react-icons/fa";
 import { FiMinus } from "react-icons/fi";
 import { PiLightningLight } from "react-icons/pi";
 import { useQuery } from "react-query";
-import { useParams } from "react-router-dom";
-import { Header } from "../Components/Header/Header";
-import { APIClient } from "../utils/axios";
+import { useNavigate, useParams } from "react-router-dom";
 import { Footer } from "../Components/Footer/Footer";
-import { useState } from "react";
-import { useAppDispatch } from './../redux/hook';
+import { Header } from "../Components/Header/Header";
+import { getUserId, getUserToken } from "../helpers/loggedUser";
 import { addToCart } from "../redux/slices/cartSlice";
+import { APIClient } from "../utils/axios";
+import { useAppDispatch } from "./../redux/hook";
 
 const Product = () => {
-	const { id } = useParams();
-	const [selectedImg, setSelectedImg] = useState('')
+  const { id } = useParams();
+  const [selectedImg, setSelectedImg] = useState("");
   const dispatch = useAppDispatch();
-  const [quantity,setQuantity] = useState<number>(1)
+  const [quantity, setQuantity] = useState<number>(1);
+  const navigate = useNavigate();
 
   const getProduct = async () => {
     return APIClient.get(`https://dummyjson.com/products/${id}`);
@@ -25,12 +27,20 @@ const Product = () => {
 
   const { data } = useQuery("getProductOne", getProduct);
 
-//   console.log(data?.data);
+  //   console.log(data?.data);
+  
 
-  const addToCartRedux = (data:any)=>{
-    console.log(data);
-    dispatch(addToCart({...data, quantity: quantity}))
-  }
+  const addToCartRedux = (data: any) => {
+    if (getUserId() && getUserToken()) {
+      console.log("added to redux");
+      dispatch(addToCart({ ...data, quantity: quantity, userId: getUserId() }));
+      message.success("Item added to cart");
+    } else {
+      message.error("Please login to add item to cart");
+      navigate('/authorize')
+    }
+
+  };
 
   return (
     <div>
@@ -51,8 +61,9 @@ const Product = () => {
             />
           </div>
           <div className=" h-[20%] flex gap-5 w-full overflow-x-scroll justify-center items-center ">
-            {data?.data.images.map((it: string) => (
+            {data?.data.images.map((it: string, ind: number) => (
               <img
+                key={ind}
                 src={it}
                 alt="product image"
                 className="w-[15%]"
@@ -97,7 +108,7 @@ const Product = () => {
                 <button
                   title="decrease"
                   onClick={() => setQuantity((prev) => (prev -= 1))}
-                  disabled={quantity<=1}
+                  disabled={quantity <= 1}
                 >
                   <FiMinus size={12} className="text-amber-500" />
                 </button>
@@ -105,7 +116,7 @@ const Product = () => {
                 <button
                   title="increase"
                   onClick={() => setQuantity((prev) => (prev += 1))}
-                  disabled={quantity>= data?.data.stock }
+                  disabled={quantity >= data?.data.stock}
                 >
                   <FaPlus size={12} className="text-amber-500" />
                 </button>
@@ -119,7 +130,7 @@ const Product = () => {
             <div className="flex w-full gap-2 items-center justify-between">
               <button
                 className="w-[50%] h-[35px] md:h-12 flex bg-gray-100 items-center justify-center rounded-2xl md:rounded-3xl gap-1 scale-95 hover:scale-100 duration-200"
-                onClick={()=>addToCartRedux(data?.data)}
+                onClick={() => addToCartRedux(data?.data)}
               >
                 <BiCartDownload
                   size={25}

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { APIClient } from "../../utils/axios";
-import { productData } from "../../lib/types";
 import { Rate } from "antd";
+import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import { Link } from "react-router-dom";
+import { productData } from "../../lib/types";
+import { APIClient } from "../../utils/axios";
 import { CartIcon } from "../icons/CartIcon";
-import { QueryClient, useQuery } from "react-query";
 
 const ProductTypes = ["best_sales", "trending", "featured", "top_rated"];
 
@@ -111,18 +112,22 @@ export const SalesCatTabs = () => {
             key={i}
             className="bg-white odd:mr-1  hover:scale-110 hover:shadow-md ease-in-out duration-300  grid place-items-center gap-1 max-w-[300px] "
           >
-            <div className="w-full h-full">
+            <Link
+              to={`/items/${it.id}/?prod=${it.title}`}
+              className="w-full space-y-3"
+            >
               <img
+                className="object-fill w-full max-h-[180px]"
                 src={it.thumbnail}
                 width={140}
                 height={100}
                 alt={it.description}
-                className="object-fill w-full max-h-[180px]"
               />
-            </div>
-            <p className="text-sm font-bold text-blue-800 ">
-              {it.description.substring(0, 30).concat(" . . .")}
-            </p>
+              <h3>{it.title}</h3>
+              <p className="text-sm font-bold text-blue-800 text-wrap ">
+                {it.description.substring(0, 30).concat(" . . .")}
+              </p>
+            </Link>
 
             <div className="self-end ">
               <Rate
