@@ -2,27 +2,22 @@ import { Rate } from "antd";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
-import { productData } from "../../lib/types";
-import { APIClient } from "../../utils/axios";
+import { getProducts } from "../../utils/apis";
 import { CartIcon } from "../icons/CartIcon";
 
 const ProductTypes = ["best_sales", "trending", "featured", "top_rated"];
 
-// export const getProducts = async (): productData =>
-export const getProducts = async (): Promise<productData[]> => {
-  return await APIClient.get("https://dummyjson.com/products");
-};
+// export const getProducts = async (): Promise<productData[]> => {
+//   return await APIClient.get("https://dummyjson.com/products");
+// };
 
 export const SalesCatTabs = () => {
   const [activeTab, setActiveTab] = useState(ProductTypes[0]);
-  const [datas, setData] = useState<productData[]>([]);
-  const { data, isLoading, isFetching, isSuccess } = useQuery<
-    productData[],
-    Error
-  >("items", getProducts);
+  const [datas, setData] = useState([]);
+  const { data, isLoading, isFetching, isSuccess } = useQuery("items", getProducts);
 
   // isSuccess && console.log(data.data.products);
-  let items: productData[] = data || [];
+  let items = data || [];
 
   if (isSuccess) {
     //@ts-ignore

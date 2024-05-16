@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { CartItems } from '../../lib/types';
 
 interface CartItem{
 	brand: string;
@@ -15,7 +16,7 @@ interface CartItem{
 }
 
 interface CartState{
-	cartData: CartItem[];
+	cartData: CartItems[];
 }
 
 const initialState: CartState = {
@@ -29,7 +30,7 @@ export const cartSlice = createSlice({
 		addToCart: (state, action) => {
 			console.log("in-redux: ", action.payload);
 			const prodId = action.payload.id;
-			const existProd = state.cartData.findIndex((product) => product.id === prodId);
+			const existProd = state.cartData.findIndex((product) => product.productId === prodId);
 			if (existProd!== -1) {
 				console.log('exist', existProd);
 				
@@ -41,21 +42,21 @@ export const cartSlice = createSlice({
 			}	
 		},
 		qntityPlus: (state, action) => {
-			const existInd = state.cartData.findIndex((prod) => prod.id === action.payload);
+			const existInd = state.cartData.findIndex((prod) => prod.productId === action.payload);
 			if (existInd !== -1) {
 				state.cartData[existInd].quantity += 1;
 			}
 			
 		},
 		qntityMinus: (state, action) => {
-			const existInd = state.cartData.findIndex((prod) => prod.id === action.payload);
+			const existInd = state.cartData.findIndex((prod) => prod.productId === action.payload);
 			if (existInd !== -1) {
 				state.cartData[existInd].quantity -= 1;
 			}
 			
 		},
 		removeFrom: (state, action) => {
-			const existProd = state.cartData.findIndex((product) => product.id === action.payload);
+			const existProd = state.cartData.findIndex((product) => product.productId === action.payload);
 			if (existProd !== -1) {
 				state.cartData.splice(existProd, 1);
 			}

@@ -2,15 +2,18 @@
 import { notification } from "antd";
 import axios from "axios"
 import Cookies from 'js-cookie';
+import APIClientPrivate from "./axios";
+import { getUserId, getUserToken } from "../helpers/loggedUser";
+import { useMutation } from "react-query";
 
-const BASE_URL = 'http://fursancart.rootsys.in/api';
+// const BASE_URL = 'http://fursancart.rootsys.in/api';
 const LOCAL_URL = 'http://localhost:3010/api';
 
 export const loginApi = async (props: any) => {
 	try {
 		console.log(props);
 		const data = props;
-		const response = await axios.post(`${BASE_URL}/auth/local/user/login`, data);
+		const response = await axios.post(`${LOCAL_URL}/auth/local/user/login`, data);
 		if (response?.data.tokens) {
 			const tokens = response?.data.tokens
 
@@ -34,7 +37,7 @@ export const registerApi = async (props: any) => {
 	try {
 		console.log(props);
 		const data = props;
-		const response = await axios.post(`${BASE_URL}/auth/local/user/sign-up`, data)
+		const response = await axios.post(`${LOCAL_URL}/auth/local/user/sign-up`, data)
 		if (response?.data.tokens) {
 			const tokens = response?.data.tokens
 
@@ -45,24 +48,68 @@ export const registerApi = async (props: any) => {
 			// console.log('Cookie set successfully');
 		}
 		return response?.data
-	} catch (error:any) {
+	} catch (error: any) {
 		console.log(error);
 		notification.error({
 			message: error?.response?.data.message,
 			placement: 'top'
 		});
 	}
+};
+
+
+// Product related apis start
+
+export const getProducts = () => {
+	return APIClientPrivate.get('/product/all', {
+		headers: {
+			Authorization: `Bearer ${getUserToken()}`
+		}
+	})
+};
+
+export const getOneProduct = (id:string | undefined) => {
+	return APIClientPrivate.get(`/product/${id}`, {
+		headers: {
+			Authorization: `Bearer ${getUserToken()}`
+		}
+	})
 }
 
-export const getProducts = async () => {
-	try {
-		const response = await axios.get(`${LOCAL_URL}/product/all`);
-		return response?.data;
-	} catch (error:any) {
-		console.log(error);
-		notification.error({
-			message: error?.response?.data.message,
-			placement: 'top'
-		});
-	}
+// Product related apis end
+
+export const getCategories = () => {
+	return APIClientPrivate.get('/category/all',
+		{
+		headers: {
+			Authorization: `Bearer ${getUserToken()}`
+		}
+	})
+};
+
+// add to cart
+
+export const addToCart = (data:any) => {
+	return APIClientPrivate.post('/product/add-to-cart', data,
+		{
+			headers: {
+				Authorization: `Bearer ${getUserToken()}`
+			}
+		}
+	)
 }
+
+export const useAddToCart = () => {
+	return useMutation((data:any)=>addToCart(data))
+}
+
+export const getCartData = () => {
+	return APIClientPrivate.get(`/product/cart/${getUserId()}`,
+		{
+			headers: {
+				Authorization: `Bearer ${getUserToken()}`
+			}
+		})
+}
+
+
