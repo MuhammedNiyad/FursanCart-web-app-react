@@ -1,31 +1,30 @@
-import { Button, Divider } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Divider, Rate, message } from "antd";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { BsLightningCharge } from "react-icons/bs";
 import { FaTags } from "react-icons/fa";
-import { IoStar, IoStarHalfOutline, IoStarOutline } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useQuery } from "react-query";
 import LoadingComp from "../Components/Common-Comp/LoadingComp";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
-import { CartProduct, CartType } from "../lib/types";
 import { useAppDispatch } from "../redux/hook";
 import { qntityMinus, qntityPlus, removeFrom } from "../redux/slices/cartSlice";
-import { getCartData } from "../utils/apis";
+import { getCartData, useDeleteFromCart } from "../utils/apis";
 
 const Cart = () => {
 
-  
-  // const datas = useAppSelector((state: any) => state.cartData);
-  // const cartDatas = datas.filter((it:any)=> it.userId === getUserId())
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [discount, setDiscount] = useState(0);
+
   const dispatch = useAppDispatch();
   
   const [cartData, setCartData] = useState<any>();
 
   // console.log("cartData: ", cartDatas);
   
-  const { data:userCartData, isLoading } = useQuery("getCartData", getCartData);
+  const { data: userCartData, isLoading } = useQuery("getCartData", getCartData);
+  const { mutate: deleteformcart } = useDeleteFromCart();
 
   
   useEffect(() => {
@@ -33,8 +32,16 @@ const Cart = () => {
   },[userCartData])
   
   
-  const removeFromCartRedux = (id:number)=>{
+  const removeFromCartRedux = (id:string)=>{
     dispatch(removeFrom(id));
+    deleteformcart(id, {
+      onSuccess() {
+        message.success('Item removed from your cart')
+      },
+      onError() {
+        message.error('could not remove item')
+      }
+    })
   }
 
   const quantityIncrease = (id:number) => {
@@ -44,6 +51,16 @@ const Cart = () => {
   const quantityDecrease = (id:number) => {
     dispatch(qntityMinus(id));
   }
+
+  useMemo(() => {
+    cartData?.CartProducts.forEach((item:any) => {
+       setTotalPrice((prev)=>prev+=parseFloat(item.price))
+     })
+  }, [cartData])
+  
+  useMemo(() => {
+    setDiscount(() => cartData?.totalPrice - totalPrice);
+  },[totalPrice])
 
   return (
     <div className="bg-slate-50/20">
@@ -76,11 +93,7 @@ const Cart = () => {
                     <div>
                       <p>{it.productVarient.product.name}</p>
                       <div className="text-amber-400 flex gap-1 place-self-start my-3">
-                        <IoStar />
-                        <IoStar />
-                        <IoStar />
-                        <IoStarHalfOutline />
-                        <IoStarOutline />
+                        <Rate allowHalf defaultValue={2.5} />
                       </div>
                     </div>
                   </section>
@@ -164,12 +177,12 @@ const Cart = () => {
                 <tbody>
                   <tr>
                     <td>Your total Price would be </td>
-                    <td className="text-right">${"534543"}</td>
+                    <td className="text-right">${totalPrice}</td>
                   </tr>
-                  <tr>
+                  <tr className={`${discount <= 0? "hidden" : "block"}`}>
                     <td>Discount</td>
                     <td className="text-right text-green-600 font-semibold">
-                      -$2,742
+                      {discount}
                     </td>
                   </tr>
                   <tr>
@@ -180,12 +193,12 @@ const Cart = () => {
                   </tr>
                   <tr className="border-t border-dashed">
                     <td>Total Amount</td>
-                    <td className="text-right font-bold">$6,656</td>
+                    <td className="text-right font-bold">{cartData?.totalPrice}</td>
                   </tr>
                 </tbody>
               </table>
-              <p className="text-xs text-green-600 font-semibold my-5">
-                You will save $2,742 on this order
+              <p className={`text-xs text-green-600 font-semibold my-5 ${discount <= 0 ? 'hidden' : 'block'}`}>
+                You will save ${discount} on this order
               </p>
             </section>
             <section className="sticky bottom-0 shadow-sm py-2 px-5 flex justify-end w-full md:col-span-2">

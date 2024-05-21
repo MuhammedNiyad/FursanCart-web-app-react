@@ -2,42 +2,46 @@ import { Button, Divider, Rate, message } from "antd";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
-import { getUserId, getUserToken } from "../../helpers/loggedUser";
-import { CategoryArray, CategoryItems, ProductType } from "../../lib/types";
-import { useAppDispatch } from "../../redux/hook";
-import { addToCart } from "../../redux/slices/cartSlice";
-import { getCategories, getProducts } from "../../utils/apis";
+import { getUserId } from "../../helpers/loggedUser";
+import { CategoryItems, ProductType } from "../../lib/types";
+import { getCategories, getProducts, useAddToCart } from "../../utils/apis";
 import { CartIcon } from "../icons/CartIcon";
 
 // const getCategories = async () =>
 //   await APIClient.get("https://dummyjson.com/products/categories");
 
 export const CategoriesList = () => {
-  const [categories, setCategories] = useState<CategoryArray>([]);
+  const [categories, setCategories] = useState<any>([]);
   const [products, setProducts] = useState<ProductType[]>([]);
 
   const { data: catResponseData } = useQuery("categories", getCategories);
   const { data: prodResponseData } = useQuery("items", getProducts);
+  const {mutate:Addtocart} = useAddToCart()
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setCategories(catResponseData?.data);
     setProducts(prodResponseData?.data);
   }, [catResponseData, prodResponseData]);
 
-  console.log("category :", categories);
-  console.log("prodData :", products);
+  // console.log("category :", categories);
+  // console.log("prodData :", products);
 
-  const addToCartRedux = (data: any) => {
-    if (getUserId() && getUserToken()) {
-      console.log("add to cart: ", data);
-      dispatch(addToCart({ ...data, quantity: 1, userId: getUserId() }));
-      message.success("Item added to cart");
-    } else {
-      message.error("Please login to add item to cart");
-      navigate("/authorize");
-    }
+  const addToCart = (data: any) => {
+    const compainData = {
+      varientId: data,
+      quantity: 1,
+      userId: getUserId(),
+    };
+
+    Addtocart(compainData, {
+      onSuccess() {
+        message.success("Item added to cart");
+      },
+      onError() {
+        message.error("could not add item to cart");
+      },
+    });
   };
 
   return (
@@ -45,7 +49,7 @@ export const CategoriesList = () => {
       <main className="p-1 ">
         {categories
           ?.filter((o: CategoryItems) =>
-            products.map((k: Product) => k.category.name).includes(o.name)
+            products?.map((k: ProductType) => k.category.name).includes(o.name)
           )
           .map((cat: CategoryItems, i: number) => (
             <section
@@ -66,7 +70,7 @@ export const CategoriesList = () => {
               <Divider />
               <section className="grid justify-center grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                 {products
-                  .filter((prod) =>
+                  ?.filter((prod) =>
                     prod.category.name === cat.name ? prod : ""
                   )
                   .map((it) => (
@@ -80,7 +84,7 @@ export const CategoriesList = () => {
                       >
                         <img
                           className="object-fill w-full max-h-[180px]"
-                          src={it?.images[0].url}
+                          src={it?.images[0]?.url}
                           width={140}
                           height={100}
                           alt={it.description}
@@ -108,7 +112,7 @@ export const CategoriesList = () => {
                         />
                         <div className="flex items-center justify-around w-full gap-1 text-lg font-bold ">
                           <b>$ {it.price}</b>
-                          <span onClick={() => addToCartRedux(it)}>
+                          <span onClick={() => addToCart(it.variants[0]?.id)}>
                             <CartIcon />
                           </span>
                         </div>

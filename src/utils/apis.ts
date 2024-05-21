@@ -112,4 +112,10 @@ export const getCartData = () => {
 		})
 }
 
-
+// delete product from cart
+export const deleteProductFromCart = (id: string) => {
+	return APIClientPrivate.delete(`/product/remove-from-cart/${id}`)
+}
+export const useDeleteFromCart = () => {
+	return useMutation((id:string)=>deleteProductFromCart(id))
+}

@@ -36,25 +36,17 @@ const Product = () => {
   },[prodData])
   
 
-  const addToCartRedux = (data: any) => {
+  const addToCart = (data: any) => {
     const compainData = {varientId:data, quantity:quantity, userId:getUserId()}
 
     Addtocart(compainData, {
       onSuccess() {
         message.success("Item added to cart");
+      },
+      onError() {
+        message.error("could not add item to cart")
       }
     });
-
-    return
-    if (getUserId() && getUserToken()) {
-      console.log("added to redux");
-      dispatch(addToCart({ productId:data, quantity: quantity, userId: getUserId() }));
-      message.success("Item added to cart");
-    } else {
-      message.error("Please login to add item to cart");
-      navigate('/authorize')
-    }
-
   };
 
 
@@ -70,11 +62,11 @@ const Product = () => {
       <div className="mt-10 px-5 w-full flex flex-col sm:flex-row gap-5 ">
         {/* image */}
         <div className="flex flex-col items-center gap-5 w-full h-full sm:w-1/2">
-          <div className="w-full lg:w-[80%] h-[80%] ">
+          <div className="w-full lg:w-[80%] h-[80%] flex justify-center items-center ">
             <img
               src={selectedImg ? selectedImg : product?.images[0].url}
               alt="product-img"
-              className="w-full"
+              className="w-[500px]"
             />
           </div>
           <div className=" h-[20%] flex gap-5 w-full overflow-x-scroll justify-center items-center ">
@@ -83,7 +75,7 @@ const Product = () => {
                 key={ind}
                 src={it.url}
                 alt="product image"
-                className="w-[15%]"
+                className="w-[80px]"
                 onClick={() => setSelectedImg(it.url)}
               />
             ))}
@@ -148,7 +140,7 @@ const Product = () => {
             <div className="flex w-full gap-2 items-center justify-between">
               <button
                 className="w-[50%] h-[35px] md:h-12 flex bg-gray-100 items-center justify-center rounded-2xl md:rounded-3xl gap-1 scale-95 hover:scale-100 duration-200"
-                onClick={() => addToCartRedux(product?.variants[0].id)}
+                onClick={() => addToCart(product?.variants[0].id)}
               >
                 <BiCartDownload
                   size={25}

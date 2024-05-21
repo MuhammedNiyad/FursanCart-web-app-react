@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Rate } from "antd";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -14,7 +15,7 @@ const ProductTypes = ["best_sales", "trending", "featured", "top_rated"];
 export const SalesCatTabs = () => {
   const [activeTab, setActiveTab] = useState(ProductTypes[0]);
   const [datas, setData] = useState([]);
-  const { data, isLoading, isFetching, isSuccess } = useQuery("items", getProducts);
+  const { data, isSuccess } = useQuery("items", getProducts);
 
   // isSuccess && console.log(data.data.products);
   let items = data || [];
@@ -26,7 +27,7 @@ export const SalesCatTabs = () => {
 
   useEffect(() => {
     // console.log({ activeTab });
-    items = items.filter((it) =>
+    items = items?.filter((it:any) =>
       activeTab === "best_sales"
         ? it.category == "smartphones"
         : activeTab === "trending"
@@ -81,7 +82,7 @@ export const SalesCatTabs = () => {
   return (
     <div className="my-5">
       <section className=" cursor-pointer flex justify-center items-center gap-5  my-3 border-b text-[0.769rem] sm:text-lg">
-        {ProductTypes.map((it, i) => (
+        {ProductTypes?.map((it, i) => (
           <div
             key={i}
             onClick={() => setActiveTab(it)}
