@@ -5,6 +5,7 @@ import Categories from './Pages/Categories';
 import Product from './Pages/Product';
 import Cart from './Pages/Cart';
 import AuthPage from './Pages/AuthPage';
+import PaymentConfm from './Pages/PaymentConfm';
 
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/" element={<Home />}/>
         <Route path="/items" element={<Categories />}/>
         <Route path="/items/:id" element={<Product />}/>
+        <Route path="/user/payment" element={<PaymentConfm />}/>
         <Route path="/cart" element={<Cart />}/>
         <Route path="/authorize" element={<AuthPage />}/>
         <Route path="*" element={<NotFound />}/>

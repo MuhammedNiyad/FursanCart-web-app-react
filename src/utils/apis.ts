@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import APIClientPrivate from "./axios";
 import { getUserId, getUserToken } from "../helpers/loggedUser";
 import { useMutation } from "react-query";
+import { useAddToCart } from './apis';
 
 // const BASE_URL = 'http://fursancart.rootsys.in/api';
 const LOCAL_URL = 'http://localhost:3010/api';
@@ -68,7 +69,7 @@ export const getProducts = () => {
 	})
 };
 
-export const getOneProduct = (id:string | undefined) => {
+export const getOneProduct = (id:string | undefined | null) => {
 	return APIClientPrivate.get(`/product/${id}`, {
 		headers: {
 			Authorization: `Bearer ${getUserToken()}`
@@ -98,7 +99,6 @@ export const addToCart = (data:any) => {
 		}
 	)
 }
-
 export const useAddToCart = () => {
 	return useMutation((data:any)=>addToCart(data))
 }
@@ -118,4 +118,23 @@ export const deleteProductFromCart = (id: string) => {
 }
 export const useDeleteFromCart = () => {
 	return useMutation((id:string)=>deleteProductFromCart(id))
+}
+
+
+// user delivery address 
+export const AddDeliveryAddress = (data: any) => {
+	return APIClientPrivate.post('/user/add-delivery-address', data, {
+		headers: {
+			Authorization: `Bearer ${getUserToken()}`
+		}
+	})
+};
+
+export const useAddDeliveryAddress = () => {
+	return useMutation((data:any)=> AddDeliveryAddress(data))
+}
+
+// get user delivery address
+export const getUserAddress = () => {
+	return APIClientPrivate.get(`user/delivery-address/all?userId=${getUserId()}`)
 }

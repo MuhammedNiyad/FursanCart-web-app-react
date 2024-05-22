@@ -11,11 +11,13 @@ import { Header } from "../Components/Header/Header";
 import { useAppDispatch } from "../redux/hook";
 import { qntityMinus, qntityPlus, removeFrom } from "../redux/slices/cartSlice";
 import { getCartData, useDeleteFromCart } from "../utils/apis";
+import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
 
   const [totalPrice, setTotalPrice] = useState(0);
   const [discount, setDiscount] = useState(0);
+  const navigate = useNavigate()
 
   const dispatch = useAppDispatch();
   
@@ -61,6 +63,10 @@ const Cart = () => {
   useMemo(() => {
     setDiscount(() => cartData?.totalPrice - totalPrice);
   },[totalPrice])
+
+  const handleGoToPayment = ()=>{
+    navigate('/user/payment')
+  }
 
   return (
     <div className="bg-slate-50/20">
@@ -136,7 +142,10 @@ const Cart = () => {
                     >
                       <RiDeleteBinLine /> Remove
                     </div>
-                    <div className="hover:bg-slate-100 active:bg-slate-100 w-full text-center flex justify-center items-center p-3 gap-1">
+                    <div
+                      className="hover:bg-slate-100 active:bg-slate-100 w-full text-center flex justify-center items-center p-3 gap-1"
+                      onClick={handleGoToPayment}
+                    >
                       <BsLightningCharge /> Buy this now
                     </div>
                   </section>
@@ -179,7 +188,7 @@ const Cart = () => {
                     <td>Your total Price would be </td>
                     <td className="text-right">${totalPrice}</td>
                   </tr>
-                  <tr className={`${discount <= 0? "hidden" : "block"}`}>
+                  <tr className={`${discount <= 0 ? "hidden" : "block"}`}>
                     <td>Discount</td>
                     <td className="text-right text-green-600 font-semibold">
                       {discount}
@@ -193,11 +202,17 @@ const Cart = () => {
                   </tr>
                   <tr className="border-t border-dashed">
                     <td>Total Amount</td>
-                    <td className="text-right font-bold">{cartData?.totalPrice}</td>
+                    <td className="text-right font-bold">
+                      {cartData?.totalPrice}
+                    </td>
                   </tr>
                 </tbody>
               </table>
-              <p className={`text-xs text-green-600 font-semibold my-5 ${discount <= 0 ? 'hidden' : 'block'}`}>
+              <p
+                className={`text-xs text-green-600 font-semibold my-5 ${
+                  discount <= 0 ? "hidden" : "block"
+                }`}
+              >
                 You will save ${discount} on this order
               </p>
             </section>

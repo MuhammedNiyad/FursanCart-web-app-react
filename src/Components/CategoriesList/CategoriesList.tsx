@@ -16,7 +16,7 @@ export const CategoriesList = () => {
 
   const { data: catResponseData } = useQuery("categories", getCategories);
   const { data: prodResponseData } = useQuery("items", getProducts);
-  const {mutate:Addtocart} = useAddToCart()
+  const {mutate:AddToCart} = useAddToCart()
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export const CategoriesList = () => {
       userId: getUserId(),
     };
 
-    Addtocart(compainData, {
+    AddToCart(compainData, {
       onSuccess() {
         message.success("Item added to cart");
       },

@@ -9,30 +9,28 @@ import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
-import { getUserId, getUserToken } from "../helpers/loggedUser";
-import { addToCart } from "../redux/slices/cartSlice";
-import { useAppDispatch } from "./../redux/hook";
-import { getOneProduct, useAddToCart } from "../utils/apis";
+import { getUserId } from "../helpers/loggedUser";
 import { ProductType } from "../lib/types";
+import { getOneProduct, useAddToCart } from "../utils/apis";
 
 const Product = () => {
   const { id } = useParams();
   const [selectedImg, setSelectedImg] = useState("");
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
   const [quantity, setQuantity] = useState<number>(1);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [product, setProduct] = useState<ProductType>()
-  const [relatedProd, setRelatedProd] = useState();
-
+  // const [relatedProd, setRelatedProd] = useState();
+  const navigate = useNavigate();
 
 
   const { data:prodData } = useQuery("getOneProduct", () => getOneProduct(id));
   const { mutate: Addtocart } = useAddToCart();
-  console.log("single Prod: ",product);
+  // console.log("single Prod: ",product);
   
   useEffect(() => {
     setProduct(prodData?.data.product);
-    setRelatedProd(prodData?.data.relatedProducts);
+    // setRelatedProd(prodData?.data.relatedProducts);
   },[prodData])
   
 
@@ -148,7 +146,8 @@ const Product = () => {
                 />{" "}
                 add to cart
               </button>
-              <button className="w-[50%] h-[35px] md:h-12 flex items-center bg-amber-400 justify-center text-white rounded-2xl md:rounded-3xl gap-1 scale-95 hover:scale-100 duration-200 ">
+              <button className="w-[50%] h-[35px] md:h-12 flex items-center bg-amber-400 justify-center text-white rounded-2xl md:rounded-3xl gap-1 scale-95 hover:scale-100 duration-200 "
+              onClick={()=>navigate(`/user/payment/?prod=${id}&qnt=${quantity}`)}>
                 <PiLightningLight
                   size={25}
                   className="p-1 rounded-full bg-amber-400 text-white"
