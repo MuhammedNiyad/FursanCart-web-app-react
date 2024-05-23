@@ -5,7 +5,6 @@ import Cookies from 'js-cookie';
 import APIClientPrivate from "./axios";
 import { getUserId, getUserToken } from "../helpers/loggedUser";
 import { useMutation } from "react-query";
-import { useAddToCart } from './apis';
 
 // const BASE_URL = 'http://fursancart.rootsys.in/api';
 const LOCAL_URL = 'http://localhost:3010/api';
@@ -15,15 +14,27 @@ export const loginApi = async (props: any) => {
 		console.log(props);
 		const data = props;
 		const response = await axios.post(`${LOCAL_URL}/auth/local/user/login`, data);
-		if (response?.data.tokens) {
-			const tokens = response?.data.tokens
+		// if (response?.data.tokens) {
+		// 	const tokens = response?.data.tokens
 
-			Cookies.set('accessToken', tokens.access_token);
-			Cookies.set('refreshToken', tokens.refresh_token);
+		// 	Cookies.set('accessToken', tokens.access_token);
+		// 	Cookies.set('refreshToken', tokens.refresh_token);
+		// 	const resData = JSON.stringify(response.data.res);
+		// 	Cookies.set('user', resData);
+		// 	// console.log('Cookie set successfully');
+		// }
+
+		if (response?.data) {
+			const tokens = response?.data?.tokens;
+
+			localStorage.setItem('accessToken', tokens.access_token);
+			localStorage.setItem('refreshToken', tokens.refresh_token);
 			const resData = JSON.stringify(response.data.res);
-			Cookies.set('user', resData);
-			// console.log('Cookie set successfully');
+			localStorage.setItem('user', resData);
+
 		}
+
+		
 		return response?.data
 	} catch (error: any) {
 		console.log(error);
@@ -39,14 +50,14 @@ export const registerApi = async (props: any) => {
 		console.log(props);
 		const data = props;
 		const response = await axios.post(`${LOCAL_URL}/auth/local/user/sign-up`, data)
-		if (response?.data.tokens) {
-			const tokens = response?.data.tokens
+		if (response?.data) {
+			const tokens = response?.data?.tokens;
 
-			Cookies.set('accessToken', tokens.access_token);
-			Cookies.set('refreshToken', tokens.refresh_token);
+			localStorage.setItem('accessToken', tokens.access_token);
+			localStorage.setItem('refreshToken', tokens.refresh_token);
 			const resData = JSON.stringify(response.data.res);
-			Cookies.set('user', resData);
-			// console.log('Cookie set successfully');
+			localStorage.setItem('user', resData);
+
 		}
 		return response?.data
 	} catch (error: any) {

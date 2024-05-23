@@ -6,7 +6,7 @@ interface UserData {
 	email: string;
 }
 
-function parseUserData(cookieValue: string): UserData | null {
+function parseUserData(cookieValue:any): UserData | null {
 	try {
 		const parsedUser = JSON.parse(cookieValue);
 		if (
@@ -24,13 +24,18 @@ function parseUserData(cookieValue: string): UserData | null {
 	return null;
 }
 
-const userCookie = Cookies.get("user")?? '{}';
+const userCookie = localStorage.getItem("user");
 const userData = parseUserData(userCookie);
-const userToken = Cookies.get("accessToken");
+const userToken = localStorage.getItem("accessToken");
 
 export const getUserId = () => {
+	
 	return userData?.id;
 };
+
+export const getUser = () => {
+	return localStorage.getItem('user')
+}
 
 export const getUserToken = () => {
 	return userToken;

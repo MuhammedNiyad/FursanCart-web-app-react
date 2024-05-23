@@ -16,10 +16,6 @@ import { SalesCatTabs } from "../Components/SaleCartTabs/SalesCartTabs";
 import styles from "../styles/Home.module.css";
 
 const Home = () => {
-
-  
-const user = Cookies.get('user')
-  console.log(user);
   
 
    const cats = [

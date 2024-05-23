@@ -6,15 +6,16 @@ import { CiCreditCard2 } from "react-icons/ci";
 import { FaGooglePay } from "react-icons/fa";
 import { IoWalletOutline } from "react-icons/io5";
 import { useQuery } from "react-query";
+import { useLocation } from "react-router-dom";
 import AddAddressModal from "../Components/AddAddressModal/AddAddressModal";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
-import { getOneProduct, getProducts, getUserAddress } from "../utils/apis";
-import { useLocation } from "react-router-dom";
+import { getCartData, getOneProduct, getUserAddress } from "../utils/apis";
 
 const PaymentConfm = () => {
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [address, setAddress] = useState<any>();
+  const [cartData, setCartData] = useState<any>();
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -23,8 +24,10 @@ const PaymentConfm = () => {
   // console.log({prod, qnt});
 
   const { data: prodData, isLoading } = useQuery("getprodData", () =>
-    getOneProduct(prod)
+    getOneProduct(prod), {enabled:!!prod}
   );
+
+    const { data: cartForPayment } = useQuery('getCartForPayment', getCartData, {enabled: !prod})
 
   const { data: addressData } = useQuery("getuserdelivery", getUserAddress);
 
@@ -98,9 +101,11 @@ const PaymentConfm = () => {
               </div>
             </div>
             {/* product */}
+            
             <div className="border my-1">
               <div className="p-2 font-bold bg-amber-400">ORDER SUMMARY</div>
-              <div className="flex justify-evenly items-center p-5">
+              {prodData?.data ? (
+                <div className="flex justify-evenly items-center p-5">
                 <img
                   src={prodData?.data?.product?.images[0]?.url}
                   alt="img"
@@ -121,10 +126,7 @@ const PaymentConfm = () => {
                       {prodData?.data.product.price}
                     </p>
                     <h4 className="font-semibold">
-                      {findDescPerc(
-                        prodData?.data.product.price,
-                        prodData?.data.product.discount_percent
-                      )}
+                      {prodData?.data?.discountedAmount}
                     </h4>
                     <p className="text-xs text-green-500 align-bottom ">
                       {prodData?.data.product.discount_percent}% off with
@@ -133,6 +135,9 @@ const PaymentConfm = () => {
                   </div>
                 </div>
               </div>
+              ) : (
+                 <div></div> 
+              )}
             </div>
           </div>
           {/* right side */}

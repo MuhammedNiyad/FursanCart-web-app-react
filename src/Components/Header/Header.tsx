@@ -14,7 +14,7 @@ import styles from "../../styles/Home.module.css"
 import { useLocation } from "react-router-dom";
 import Cookies from 'js-cookie';
 import { useAppSelector } from "../../redux/hook";
-import { getUserId } from "../../helpers/loggedUser";
+import { getUser, getUserId } from "../../helpers/loggedUser";
 
 const cartBody = (
   <div>
@@ -62,7 +62,7 @@ export const Header = () => {
     const cartDatas = datas.filter((it: any) => it.userId === getUserId());
 
   useEffect(() => {
-    setUser(() => Cookies.get("user"));
+    setUser(() => getUser());
   }, []);
 
   const location = useLocation();

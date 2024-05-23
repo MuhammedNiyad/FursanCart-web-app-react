@@ -147,7 +147,7 @@ const Product = () => {
                 add to cart
               </button>
               <button className="w-[50%] h-[35px] md:h-12 flex items-center bg-amber-400 justify-center text-white rounded-2xl md:rounded-3xl gap-1 scale-95 hover:scale-100 duration-200 "
-              onClick={()=>navigate(`/user/payment/?prod=${id}&qnt=${quantity}`)}>
+              onClick={()=>navigate(`/cart/?prod=${id}&qnt=${quantity}`)}>
                 <PiLightningLight
                   size={25}
                   className="p-1 rounded-full bg-amber-400 text-white"

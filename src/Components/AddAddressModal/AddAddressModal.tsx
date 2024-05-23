@@ -77,7 +77,7 @@ const AddAddressModal = ({ setOpen, setAddress }: any) => {
           <Input type="tel" maxLength={6} />
         </Form.Item>
         <Form.Item
-          label="Flat/Build No"
+          label="House/Build No"
           name="houseNoOrBuildingName"
           rules={[
             {
@@ -95,7 +95,7 @@ const AddAddressModal = ({ setOpen, setAddress }: any) => {
         >
           <Select
             showSearch
-            placeholder="Select category"
+            placeholder="select options"
             optionFilterProp="children"
             options={[
               { value: "Home", label: "Home" },

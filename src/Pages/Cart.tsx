@@ -1,8 +1,8 @@
-import { Button, Divider, Rate, message } from "antd";
+import { Button, Divider, Modal, Radio, Rate, Space, message } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
-import { BsLightningCharge } from "react-icons/bs";
-import { FaTags } from "react-icons/fa";
+import { BsBank2, BsCashStack, BsLightningCharge } from "react-icons/bs";
+import { FaGooglePay, FaTags } from "react-icons/fa";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useQuery } from "react-query";
 import LoadingComp from "../Components/Common-Comp/LoadingComp";
@@ -10,62 +10,92 @@ import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
 import { useAppDispatch } from "../redux/hook";
 import { qntityMinus, qntityPlus, removeFrom } from "../redux/slices/cartSlice";
-import { getCartData, useDeleteFromCart } from "../utils/apis";
-import { useNavigate } from 'react-router-dom';
+import {
+  getCartData,
+  getOneProduct,
+  getUserAddress,
+  useDeleteFromCart,
+} from "../utils/apis";
+import { useLocation, useNavigate } from "react-router-dom";
+import AddAddressModal from "../Components/AddAddressModal/AddAddressModal";
+import { IoWalletOutline } from "react-icons/io5";
+import { CiCreditCard2 } from "react-icons/ci";
 
 const Cart = () => {
-
   const [totalPrice, setTotalPrice] = useState(0);
   const [discount, setDiscount] = useState(0);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [address, setAddress] = useState<any>();
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [placeOrder, setPlaceOrder] = useState(false)
 
   const dispatch = useAppDispatch();
-  
+
   const [cartData, setCartData] = useState<any>();
 
-  // console.log("cartData: ", cartDatas);
-  
-  const { data: userCartData, isLoading } = useQuery("getCartData", getCartData);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const prod = queryParams.get("prod");
+  const qnt = queryParams.get("qnt");
+
+  const { data: prodData } = useQuery(
+    "getprodData",
+    () => getOneProduct(prod),
+    { enabled: !!prod }
+  );
+
+  const {
+    data: userCartData,
+    isLoading,
+    refetch,
+  } = useQuery("getCartData", getCartData, { enabled: !prod });
+
+  const { data: addressData } = useQuery("getuserdelivery", getUserAddress);
+
   const { mutate: deleteformcart } = useDeleteFromCart();
 
-  
   useEffect(() => {
-    setCartData(userCartData?.data)
-  },[userCartData])
-  
-  
-  const removeFromCartRedux = (id:string)=>{
+    setCartData(userCartData?.data);
+  }, [userCartData]);
+
+  useMemo(() => {
+    setAddress(addressData?.data[addressData?.data.length-1]);
+  }, [addressData]);
+
+  const removeFromCartRedux = (id: string) => {
     dispatch(removeFrom(id));
     deleteformcart(id, {
       onSuccess() {
-        message.success('Item removed from your cart')
+        message.success("Item removed from your cart");
+        refetch();
       },
       onError() {
-        message.error('could not remove item')
-      }
-    })
-  }
+        message.error("could not remove item");
+      },
+    });
+  };
 
-  const quantityIncrease = (id:number) => {
+  const quantityIncrease = (id: number) => {
     dispatch(qntityPlus(id));
-  }
+  };
 
-  const quantityDecrease = (id:number) => {
+  const quantityDecrease = (id: number) => {
     dispatch(qntityMinus(id));
-  }
+  };
 
   useMemo(() => {
-    cartData?.CartProducts.forEach((item:any) => {
-       setTotalPrice((prev)=>prev+=parseFloat(item.price))
-     })
-  }, [cartData])
-  
+    cartData?.CartProducts.forEach((item: any) => {
+      setTotalPrice((prev) => (prev += parseFloat(item.price)));
+    });
+  }, [cartData]);
+
   useMemo(() => {
     setDiscount(() => cartData?.totalPrice - totalPrice);
-  },[totalPrice])
+  }, [totalPrice]);
 
-  const handleGoToPayment = ()=>{
-    navigate('/user/payment')
+  const goToPaymentPage = (id:string, qnty:number) => {
+    navigate(`/cart/?prod=${id}&qnt=${qnty}`);
+    window.location.reload();
   }
 
   return (
@@ -76,14 +106,53 @@ const Cart = () => {
         <link rel="icon" href="/fursanFavIcon.svg" />
       </Helmet>
       <Header />
-      <h1 className="text-2xl text-center my-5">My Cart</h1>
+      <h1 className="text-2xl text-center my-5">
+        {!prod ? "My Cart" : "Payment"}
+      </h1>
       <br />
       <br />
       {!isLoading ? (
-        cartData?.CartProducts.length >= 1 ? (
+        cartData?.CartProducts.length >= 1 || prod ? (
           <main className="mb-10 md:max-w-[80%] mx-auto relative grid md:grid-cols-2">
             {/* cart product showing section */}
             <section className="px-2 bg-white w-full">
+              {prod && (
+                <div className="border my-1 block">
+                  <div className="p-2 font-bold bg-amber-400">
+                    ORDER SUMMARY
+                  </div>
+                  <div className="flex justify-evenly items-center p-5">
+                    <img
+                      src={prodData?.data?.product?.images[0]?.url}
+                      alt="img"
+                      className="w-28 h-28"
+                    />
+                    <div className="text-left">
+                      <h2 className="font-semibold">
+                        {prodData?.data.product.name}
+                      </h2>
+                      <p className="py-2   ">
+                        {prodData?.data?.product?.description}
+                      </p>
+                      <p className="py-2">
+                        quantity <span className="font-semibold ">{qnt}</span>
+                      </p>
+                      <div className="flex gap-1 flex-wrap">
+                        <p className="text-slate-400 line-through">
+                          {prodData?.data.product.price}
+                        </p>
+                        <h4 className="font-semibold">
+                          {prodData?.data?.discountedAmount}
+                        </h4>
+                        <p className="text-xs text-green-500 align-bottom ">
+                          {prodData?.data.product.discount_percent}% off with
+                          special offer
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               {cartData?.CartProducts.map((it: any) => (
                 <div
                   key={it.id}
@@ -128,9 +197,8 @@ const Cart = () => {
                         <span className="text-slate-400 line-through ">
                           ${it.productVarient.product.price}
                         </span>
-                        <b>${it.pr}</b>
                         <em className="text-green-600 font-bold">
-                          {it.productVarient.product.discountedAmount} off
+                          ${it.productVarient.product.discountedAmount} off
                         </em>
                       </p>
                     </div>
@@ -144,7 +212,12 @@ const Cart = () => {
                     </div>
                     <div
                       className="hover:bg-slate-100 active:bg-slate-100 w-full text-center flex justify-center items-center p-3 gap-1"
-                      onClick={handleGoToPayment}
+                      onClick={() =>
+                        goToPaymentPage(
+                          it.productVarient.product.id,
+                          it.quantity
+                        )
+                      }
                     >
                       <BsLightningCharge /> Buy this now
                     </div>
@@ -217,9 +290,117 @@ const Cart = () => {
               </p>
             </section>
             <section className="sticky bottom-0 shadow-sm py-2 px-5 flex justify-end w-full md:col-span-2">
-              <Button className="h-10 bg-amber-400 font-bold rounded-md hover:bg-amber-500 active:bg-amber-500 focus:bg-amber-500 focus:border-none">
+              <Button
+                className="h-10 bg-amber-400 font-bold rounded-md hover:bg-amber-500 active:bg-amber-500 focus:bg-amber-500 focus:border-none"
+                onClick={() => setPlaceOrder(true)}
+              >
                 Place Order
               </Button>
+            </section>
+
+            {/* payment section */}
+            <section
+              className={`w-full md:col-span-2 md:mt-10 ${
+                placeOrder ? "block" : "hidden"
+              }`}
+            >
+              <div className="flex justify-between gap-2 flex-col md:flex-row ">
+                <div className=" flex justify-between p-5 border my-1 w-full">
+                  <div>
+                    <h3 className="font-bold pb-3">Address</h3>
+                    {address ? (
+                      <div>
+                        <p>
+                          Full name : <span>{address.fullName}</span>
+                        </p>
+                        <p>
+                          Phone no : <span>{address.phone}</span>
+                        </p>
+                        <p>
+                          State : <span>{address.state}</span>
+                        </p>
+                        <p>
+                          city : <span>{address.city}</span>
+                        </p>
+                        <p>
+                          Pincode : <span>{address.pincode}</span>
+                        </p>
+                        <p>
+                          House/Build no :{" "}
+                          <span>{address.houseNoOrBuildingName}</span>
+                        </p>
+                        <p>
+                          Building Type : <span>{address.type}</span>
+                        </p>
+                        <p>
+                          Landmark : <span>{address.landmart}</span>
+                        </p>
+                        <p>
+                          Address : <span>{address.address}</span>
+                        </p>
+                      </div>
+                    ) : (
+                      <p>Please add you delivery address</p>
+                    )}
+                  </div>
+                  <div>
+                    <Button onClick={() => setAddressModalOpen(true)}>
+                      Change
+                    </Button>
+                  </div>
+                </div>
+                <div className="border my-1 w-full">
+                  <div className="p-2 font-bold bg-amber-400">
+                    PAYMENT OPTIONS
+                  </div>
+                  <div className="p-5">
+                    <Radio.Group defaultValue={"cashOnDelivery"}>
+                      <Space direction="vertical">
+                        <Radio value={"upi"} disabled>
+                          <div className="flex gap-3 items-center">
+                            <FaGooglePay size={25} />
+                            <p className="font-semibold">UPI Transaction</p>
+                          </div>
+                        </Radio>
+                        <hr />
+                        <Radio value={"wallets"} disabled>
+                          <div className="flex gap-2 items-center">
+                            <IoWalletOutline size={20} />
+                            <p className="font-semibold">Wallets</p>
+                          </div>
+                        </Radio>
+                        <hr />
+                        <Radio value={"cards"} disabled>
+                          <div className="flex gap-2 items-center">
+                            <CiCreditCard2 size={20} />
+                            <p className="font-semibold">
+                              Credit / Debit / ATM card
+                            </p>
+                          </div>
+                        </Radio>
+                        <hr />
+                        <Radio value={"netBanking"} disabled>
+                          <div className="flex gap-2 items-center">
+                            <BsBank2 />
+                            <p className="font-semibold">Net Banking</p>
+                          </div>
+                        </Radio>
+                        <hr />
+                        <Radio value={"cashOnDelivery"}>
+                          <div className="flex gap-2 items-center">
+                            <BsCashStack />
+                            <p className="font-semibold">Cash on delivery</p>
+                          </div>
+                        </Radio>
+                      </Space>
+                    </Radio.Group>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-amber-400 py-2 px-2 flex justify-between items-center">
+                <p>For conform the Order</p>
+                <Button className="h-12">Conform order</Button>
+              </div>
             </section>
           </main>
         ) : (
@@ -234,6 +415,17 @@ const Cart = () => {
       )}
 
       <Footer />
+      <Modal
+        title="Address"
+        open={addressModalOpen}
+        footer={false}
+        onCancel={() => setAddressModalOpen(false)}
+      >
+        <AddAddressModal
+          setOpen={setAddressModalOpen}
+          setAddress={setAddress}
+        />
+      </Modal>
     </div>
   );
 };
