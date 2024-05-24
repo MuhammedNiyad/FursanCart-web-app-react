@@ -2,34 +2,33 @@ import { Button, Divider, Modal, Radio, Rate, Space, message } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { BsBank2, BsCashStack, BsLightningCharge } from "react-icons/bs";
+import { CiCreditCard2 } from "react-icons/ci";
 import { FaGooglePay, FaTags } from "react-icons/fa";
+import { IoWalletOutline } from "react-icons/io5";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useQuery } from "react-query";
+import { useLocation, useNavigate } from "react-router-dom";
+import AddAddressModal from "../Components/AddAddressModal/AddAddressModal";
 import LoadingComp from "../Components/Common-Comp/LoadingComp";
+import SuccessOrder from "../Components/Common-Comp/SuccessOrder";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
-import { useAppDispatch } from "../redux/hook";
-import { qntityMinus, qntityPlus, removeFrom } from "../redux/slices/cartSlice";
 import {
   getCartData,
   getOneProduct,
   getUserAddress,
+  useCreateOrder,
   useDeleteFromCart,
 } from "../utils/apis";
-import { useLocation, useNavigate } from "react-router-dom";
-import AddAddressModal from "../Components/AddAddressModal/AddAddressModal";
-import { IoWalletOutline } from "react-icons/io5";
-import { CiCreditCard2 } from "react-icons/ci";
+import { getUserId } from "../helpers/loggedUser";
 
 const Cart = () => {
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [discount, setDiscount] = useState(0);
   const navigate = useNavigate();
   const [address, setAddress] = useState<any>();
   const [addressModalOpen, setAddressModalOpen] = useState(false);
-  const [placeOrder, setPlaceOrder] = useState(false)
+  const [placeOrder, setPlaceOrder] = useState(false);
+  const [successOrder, setSuccessOrder] = useState(false);
 
-  const dispatch = useAppDispatch();
 
   const [cartData, setCartData] = useState<any>();
 
@@ -53,17 +52,17 @@ const Cart = () => {
   const { data: addressData } = useQuery("getuserdelivery", getUserAddress);
 
   const { mutate: deleteformcart } = useDeleteFromCart();
+  const { mutate: createorder } = useCreateOrder();
 
   useEffect(() => {
     setCartData(userCartData?.data);
   }, [userCartData]);
 
   useMemo(() => {
-    setAddress(addressData?.data[addressData?.data.length-1]);
+    setAddress(addressData?.data[addressData?.data.length - 1]);
   }, [addressData]);
 
   const removeFromCartRedux = (id: string) => {
-    dispatch(removeFrom(id));
     deleteformcart(id, {
       onSuccess() {
         message.success("Item removed from your cart");
@@ -76,27 +75,60 @@ const Cart = () => {
   };
 
   const quantityIncrease = (id: number) => {
-    dispatch(qntityPlus(id));
+    // dispatch(qntityPlus(id));
   };
 
   const quantityDecrease = (id: number) => {
-    dispatch(qntityMinus(id));
+    // dispatch(qntityMinus(id));
   };
 
-  useMemo(() => {
-    cartData?.CartProducts.forEach((item: any) => {
-      setTotalPrice((prev) => (prev += parseFloat(item.price)));
-    });
-  }, [cartData]);
-
-  useMemo(() => {
-    setDiscount(() => cartData?.totalPrice - totalPrice);
-  }, [totalPrice]);
-
-  const goToPaymentPage = (id:string, qnty:number) => {
+  const goToPaymentPage = (id: string, qnty: number) => {
     navigate(`/cart/?prod=${id}&qnt=${qnty}`);
     window.location.reload();
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setSuccessOrder(false);
+    }, 2000);
+  }, [successOrder === true]);
+
+  const prodDiscount = (product: any, quanty: any) => {
+    console.log(product);
+
+    const originPrice = product?.price * quanty;
+    const discAmount = product?.discountedAmount * quanty;
+    const total = originPrice - discAmount;
+    return total.toFixed(2);
+  };
+
+  const cartDiscount = (cartItems: any, cartPrice: any) => {
+    let originPrice = 0;
+    cartItems.forEach((items: any) => {
+      const productPrc = +items?.productVarient?.product?.price;
+      originPrice = originPrice += productPrc*items.quantity
+    });
+
+    const total = originPrice - cartPrice;
+
+    return total.toFixed(2);
+  };
+
+
+  const createOrder = (productData:any, dataInCart:any) => {
+    console.log({productData}, {dataInCart} );
+    const { product } = productData;
+    const quantity = productData?.qnt;
+    if (product) {
+      const orderData = {
+        custId: getUserId,
+        fromCart: false,
+        
+      };
+    }
   }
+
+
 
   return (
     <div className="bg-slate-50/20">
@@ -142,9 +174,9 @@ const Cart = () => {
                           {prodData?.data.product.price}
                         </p>
                         <h4 className="font-semibold">
-                          {prodData?.data?.discountedAmount}
+                          {prodData?.data?.product.discountedAmount}
                         </h4>
-                        <p className="text-xs text-green-500 align-bottom ">
+                        <p className="text-xs text-green-500 align-text-bottom">
                           {prodData?.data.product.discount_percent}% off with
                           special offer
                         </p>
@@ -197,8 +229,11 @@ const Cart = () => {
                         <span className="text-slate-400 line-through ">
                           ${it.productVarient.product.price}
                         </span>
-                        <em className="text-green-600 font-bold">
-                          ${it.productVarient.product.discountedAmount} off
+                        <em className="text-black font-bold">
+                          ${it.price}{" "}
+                          <span className="text-green-500 text-xs inline-block align-bottom">
+                            {it.productVarient.product.discount_percent}% off
+                          </span>
                         </em>
                       </p>
                     </div>
@@ -227,7 +262,7 @@ const Cart = () => {
               <section className="bg-white">
                 <div>
                   <form
-                    action="#"
+                    // action="#"
                     className="flex flex-wrap justify-center gap-5"
                   >
                     <div className="border rounded-full  flex justify-between items-center">
@@ -259,12 +294,19 @@ const Cart = () => {
                 <tbody>
                   <tr>
                     <td>Your total Price would be </td>
-                    <td className="text-right">${totalPrice}</td>
+                    <td className="text-right">
+                      ${cartData?.totalPrice || prodData?.data?.product.price}
+                    </td>
                   </tr>
-                  <tr className={`${discount <= 0 ? "hidden" : "block"}`}>
+                  <tr className="">
                     <td>Discount</td>
                     <td className="text-right text-green-600 font-semibold">
-                      {discount}
+                      {cartData
+                        ? cartDiscount(
+                            cartData?.CartProducts,
+                            cartData?.totalPrice
+                          )
+                        : prodDiscount(prodData?.data.product, qnt)}
                     </td>
                   </tr>
                   <tr>
@@ -276,17 +318,17 @@ const Cart = () => {
                   <tr className="border-t border-dashed">
                     <td>Total Amount</td>
                     <td className="text-right font-bold">
-                      {cartData?.totalPrice}
+                      ${cartData?.totalPrice || prodData?.data?.product.price}
                     </td>
                   </tr>
                 </tbody>
               </table>
-              <p
-                className={`text-xs text-green-600 font-semibold my-5 ${
-                  discount <= 0 ? "hidden" : "block"
-                }`}
-              >
-                You will save ${discount} on this order
+              <p className={`text-xs text-green-600 font-semibold my-5 `}>
+                You will save $
+                {cartData
+                  ? cartDiscount(cartData?.CartProducts, cartData?.totalPrice)
+                  : prodDiscount(prodData?.data.product, qnt)}{" "}
+                on this order
               </p>
             </section>
             <section className="sticky bottom-0 shadow-sm py-2 px-5 flex justify-end w-full md:col-span-2">
@@ -399,7 +441,17 @@ const Cart = () => {
               </div>
               <div className="bg-amber-400 py-2 px-2 flex justify-between items-center">
                 <p>For conform the Order</p>
-                <Button className="h-12">Conform order</Button>
+                <Button
+                  className="h-12"
+                  onClick={() =>
+                    createOrder(
+                      { product: prodData?.data?.product, qnt },
+                      cartData
+                    )
+                  }
+                >
+                  Conform order
+                </Button>
               </div>
             </section>
           </main>
@@ -413,6 +465,15 @@ const Cart = () => {
           <LoadingComp />
         </div>
       )}
+      <div
+        className={
+          successOrder
+            ? "fixed inset-0 flex items-center justify-center"
+            : "hidden"
+        }
+      >
+        <SuccessOrder />
+      </div>
 
       <Footer />
       <Modal

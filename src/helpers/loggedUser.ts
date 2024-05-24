@@ -1,5 +1,3 @@
-import Cookies from "js-cookie"
-
 interface UserData {
 	id: string;
 	username: string;
@@ -24,7 +22,7 @@ function parseUserData(cookieValue:any): UserData | null {
 	return null;
 }
 
-const userCookie = localStorage.getItem("user");
+const userCookie = localStorage.getItem("userData");
 const userData = parseUserData(userCookie);
 const userToken = localStorage.getItem("accessToken");
 
@@ -34,7 +32,7 @@ export const getUserId = () => {
 };
 
 export const getUser = () => {
-	return localStorage.getItem('user')
+	return localStorage.getItem('userData')
 }
 
 export const getUserToken = () => {

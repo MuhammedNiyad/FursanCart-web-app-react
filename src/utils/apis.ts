@@ -30,7 +30,7 @@ export const loginApi = async (props: any) => {
 			localStorage.setItem('accessToken', tokens.access_token);
 			localStorage.setItem('refreshToken', tokens.refresh_token);
 			const resData = JSON.stringify(response.data.res);
-			localStorage.setItem('user', resData);
+			localStorage.setItem('userData', resData);
 
 		}
 
@@ -56,7 +56,7 @@ export const registerApi = async (props: any) => {
 			localStorage.setItem('accessToken', tokens.access_token);
 			localStorage.setItem('refreshToken', tokens.refresh_token);
 			const resData = JSON.stringify(response.data.res);
-			localStorage.setItem('user', resData);
+			localStorage.setItem('userData', resData);
 
 		}
 		return response?.data
@@ -148,4 +148,20 @@ export const useAddDeliveryAddress = () => {
 // get user delivery address
 export const getUserAddress = () => {
 	return APIClientPrivate.get(`user/delivery-address/all?userId=${getUserId()}`)
-}
+};
+
+
+// create order
+export const createOrder = (data: any) => {
+	return APIClientPrivate.post('/product/place-order', data,
+		{
+			headers: {
+				Authorization: `Bearer ${getUserToken()}`
+			}
+		}
+	)
+};
+
+export const useCreateOrder = () => {
+	return useMutation((data: any) => createOrder(data))
+};
