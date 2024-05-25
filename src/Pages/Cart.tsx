@@ -28,8 +28,6 @@ const Cart = () => {
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [placeOrder, setPlaceOrder] = useState(false);
   const [successOrder, setSuccessOrder] = useState(false);
-
-
   const [cartData, setCartData] = useState<any>();
 
   const location = useLocation();
@@ -49,7 +47,10 @@ const Cart = () => {
     refetch,
   } = useQuery("getCartData", getCartData, { enabled: !prod });
 
-  const { data: addressData } = useQuery("getuserdelivery", getUserAddress);
+  const { data: addressData, refetch: addressRefetch } = useQuery(
+    "getuserdelivery",
+    getUserAddress
+  );
 
   const { mutate: deleteformcart } = useDeleteFromCart();
   const { mutate: createorder } = useCreateOrder();
@@ -57,6 +58,10 @@ const Cart = () => {
   useEffect(() => {
     setCartData(userCartData?.data);
   }, [userCartData]);
+
+  useMemo(() => {
+    addressRefetch();
+  }, [addressModalOpen]);
 
   useMemo(() => {
     setAddress(addressData?.data[addressData?.data.length - 1]);
@@ -87,11 +92,12 @@ const Cart = () => {
     window.location.reload();
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      setSuccessOrder(false);
-    }, 2000);
-  }, [successOrder === true]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setSuccessOrder(false);
+  //     navigate('/')
+  //   }, 2000);
+  // }, [successOrder === true]);
 
   const prodDiscount = (product: any, quanty: any) => {
     console.log(product);
@@ -106,7 +112,7 @@ const Cart = () => {
     let originPrice = 0;
     cartItems.forEach((items: any) => {
       const productPrc = +items?.productVarient?.product?.price;
-      originPrice = originPrice += productPrc*items.quantity
+      originPrice = originPrice += productPrc * items.quantity;
     });
 
     const total = originPrice - cartPrice;
@@ -114,21 +120,64 @@ const Cart = () => {
     return total.toFixed(2);
   };
 
+  const orderFinishAndNavigate = () => {
+    setTimeout(() => {
+      setSuccessOrder(false);
+      navigate("/");
+    }, 2000);
+  };
 
-  const createOrder = (productData:any, dataInCart:any) => {
-    console.log({productData}, {dataInCart} );
+  const createOrder = (productData: any, dataInCart: any, delvryId: any) => {
+    console.log({ productData }, { dataInCart });
     const { product } = productData;
     const quantity = productData?.qnt;
     if (product) {
       const orderData = {
-        custId: getUserId,
+        custId: getUserId(),
         fromCart: false,
-        
+        dlvryId: delvryId,
+        paymentType: "CashOnDelivery",
+        paymentProvider: "onCash",
+        items: [
+          {
+            productId: product?.variants[0]?.id,
+            quantity: +quantity,
+          },
+        ],
       };
+
+      createorder(orderData, {
+        onSuccess() {
+          setSuccessOrder(true);
+          orderFinishAndNavigate();
+        },
+        onError() {
+          message.error("could not conform your order");
+        },
+      });
+    } else {
+      const orderData = {
+        custId: getUserId(),
+        fromCart: true,
+        dlvryId: delvryId,
+        paymentType: "CashOnDelivery",
+        paymentProvider: "onCash",
+        items: dataInCart?.CartProducts.map((product: any) => ({
+          cartItemId: product.id,
+        })),
+      };
+
+      createorder(orderData, {
+        onSuccess() {
+          setSuccessOrder(true);
+          orderFinishAndNavigate();
+        },
+        onError() {
+          message.error("could not conform your order");
+        },
+      });
     }
-  }
-
-
+  };
 
   return (
     <div className="bg-slate-50/20">
@@ -446,7 +495,8 @@ const Cart = () => {
                   onClick={() =>
                     createOrder(
                       { product: prodData?.data?.product, qnt },
-                      cartData
+                      cartData,
+                      address.id
                     )
                   }
                 >
@@ -485,6 +535,7 @@ const Cart = () => {
         <AddAddressModal
           setOpen={setAddressModalOpen}
           setAddress={setAddress}
+          address={address}
         />
       </Modal>
     </div>

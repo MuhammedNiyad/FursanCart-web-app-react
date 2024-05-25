@@ -1,35 +1,59 @@
 import { Button, Form, Input, Select, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import React from "react";
-import { useAddDeliveryAddress } from "../../utils/apis";
 import { getUserId } from "../../helpers/loggedUser";
+import { useAddDeliveryAddress, useEditAddress } from "../../utils/apis";
 
-const AddAddressModal = ({ setOpen, setAddress }: any) => {
+const AddAddressModal = ({ setOpen, setAddress, address }: any) => {
   const { mutate: addAddress } = useAddDeliveryAddress();
+  const { mutate: editaddress } = useEditAddress();
+  
 
   const handleOnFinish = (values: any) => {
-    console.log(values);
+    // console.log(values);
     const data = {
       ...values,
       pincode: parseInt(values.pincode),
       userId: getUserId(),
     };
-
-    addAddress(data, {
-      onSuccess() {
-        setAddress(data);
-        setOpen(false);
-        message.success("delivery address added");
-      },
-      onError() {
-        message.error("Please fill the all fields");
-      },
-    });
+    if (address) {
+      editaddress({ id: address.id, data }, {
+        onSuccess() {
+          setAddress(data);
+          setOpen(false);
+          message.success("Edited delivery address");
+        },
+        onError() {
+          message.error('conform to fill all the fields')
+        }
+      })
+    }else{
+      addAddress(data, {
+        onSuccess() {
+          setAddress(data);
+          setOpen(false);
+          message.success("delivery address added");
+        },
+        onError() {
+          message.error("Please fill the all fields");
+        },
+      });
+    }
   };
 
   return (
     <div>
-      <Form onFinish={handleOnFinish}>
+      <Form onFinish={handleOnFinish}
+        initialValues={{
+          fullName: address?.fullName,
+          phone: address?.phone,
+          state: address?.state,
+          city: address?.city,
+          pincode: address?.pincode,
+          houseNoOrBuildingName: address?.houseNoOrBuildingName,
+          type: address?.type,
+          landmark:address?.landmark,
+          address: address?.address,
+      }}>
         <Form.Item
           label="Full Name"
           name="fullName"

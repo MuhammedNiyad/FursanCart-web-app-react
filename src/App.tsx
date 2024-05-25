@@ -1,27 +1,71 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Home from './Pages/Home';
-import NotFound from './Pages/NotFound';
-import Categories from './Pages/Categories';
-import Product from './Pages/Product';
-import Cart from './Pages/Cart';
-import AuthPage from './Pages/AuthPage';
-import PaymentConfm from './Pages/PaymentConfm';
+import { BrowserRouter, Route, RouterProvider, Routes, createBrowserRouter } from "react-router-dom";
+import AuthPage from "./Pages/AuthPage";
+import Cart from "./Pages/Cart";
+import Categories from "./Pages/Categories";
+import Home from "./Pages/Home";
+import NotFound from "./Pages/NotFound";
+import Product from "./Pages/Product";
+import { LoginProtector, RouterProtector } from "./RouteProtect";
+import Order from "./Pages/Order";
 
+const router = createBrowserRouter([
+  {
+    path: "/authorize",
+    element: (
+      <LoginProtector>
+        <AuthPage />
+      </LoginProtector>
+    ),
+  },
+  {
+    path: "/",
+    element: (
+      <RouterProtector>
+        <Home />
+      </RouterProtector>
+    ),
+  },
+  {
+    path: "/items",
+    element: (
+      <RouterProtector>
+        <Categories />
+      </RouterProtector>
+    ),
+  },
+  {
+    path: "/items/:id",
+    element: (
+      <RouterProtector>
+        <Product />
+      </RouterProtector>
+    ),
+  },
+  {
+    path: "/cart",
+    element: (
+      <RouterProtector>
+        <Cart />
+      </RouterProtector>
+    ),
+  },
+  {
+    path: "/user/orders",
+    element: (
+      <RouterProtector>
+        <Order />
+      </RouterProtector>
+    ),
+  },
+  {
+    path: "/*",
+    element: <NotFound />,
+  },
+]);
 
 const App = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />}/>
-        <Route path="/items" element={<Categories />}/>
-        <Route path="/items/:id" element={<Product />}/>
-        <Route path="/user/payment" element={<PaymentConfm />}/>
-        <Route path="/cart" element={<Cart />}/>
-        <Route path="/authorize" element={<AuthPage />}/>
-        <Route path="*" element={<NotFound />}/>
-      </Routes>
-    </BrowserRouter>
-  );
+
+  return <RouterProvider router={router} />;
 };
 
 export default App;

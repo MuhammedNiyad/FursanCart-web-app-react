@@ -150,6 +150,14 @@ export const getUserAddress = () => {
 	return APIClientPrivate.get(`user/delivery-address/all?userId=${getUserId()}`)
 };
 
+// edit address
+export const editDlvryAddress = ({id, data}:any) => {
+	return APIClientPrivate.patch(`/user/update-delivery-address/${id}`, data)
+}
+export const useEditAddress = () => {
+	return useMutation(({id, data}:any)=>editDlvryAddress({id, data}))
+}
+
 
 // create order
 export const createOrder = (data: any) => {
@@ -161,7 +169,12 @@ export const createOrder = (data: any) => {
 		}
 	)
 };
-
 export const useCreateOrder = () => {
 	return useMutation((data: any) => createOrder(data))
 };
+
+
+export const getAllOrders = () => {
+	return APIClientPrivate.get('/product/orders/all')
+};
+

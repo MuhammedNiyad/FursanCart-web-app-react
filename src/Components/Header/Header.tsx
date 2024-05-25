@@ -1,20 +1,21 @@
 import { Button, Popconfirm, Popover, message } from "antd";
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { BiDollar } from "react-icons/bi";
 import { BsSuitHeart } from "react-icons/bs";
 import { HiOutlineLogout, HiOutlineShoppingBag } from "react-icons/hi";
 import { IoIosArrowDown } from "react-icons/io";
 import { RiSearchLine } from "react-icons/ri";
+import { SlSocialDropbox } from "react-icons/sl";
 import { TbUser } from "react-icons/tb";
-import { useTransition } from "react-spring";
-import { Departments } from "../Departments/Departments";
-import { SearchBar } from "../SearchBar/SearchBar";
-import { Menu } from "../Menu/Menu";
-import styles from "../../styles/Home.module.css"
+import { useQuery } from "react-query";
 import { useLocation } from "react-router-dom";
-import Cookies from 'js-cookie';
-import { useAppSelector } from "../../redux/hook";
-import { getUser, getUserId } from "../../helpers/loggedUser";
+import { getUser } from "../../helpers/loggedUser";
+import styles from "../../styles/Home.module.css";
+import { getCartData } from "../../utils/apis";
+import { Departments } from "../Departments/Departments";
+import { Menu } from "../Menu/Menu";
+import { SearchBar } from "../SearchBar/SearchBar";
 
 const cartBody = (
   <div>
@@ -32,34 +33,41 @@ const cartBody = (
   </div>
 );
 
-const menuItems = [
-  {
-    title: "Home",
-    link: "#",
-  },
-  {
-    title: "Blog",
-    link: "#",
-  },
-  {
-    title: "About Us",
-    link: "#",
-  },
-  {
-    title: "FAQs",
-    link: "#",
-  },
-  {
-    title: "Contact Us",
-    link: "#",
-  },
-];
+// const menuItems = [
+//   {
+//     title: "Home",
+//     link: "#",
+//   },
+//   {
+//     title: "Blog",
+//     link: "#",
+//   },
+//   {
+//     title: "About Us",
+//     link: "#",
+//   },
+//   {
+//     title: "FAQs",
+//     link: "#",
+//   },
+//   {
+//     title: "Contact Us",
+//     link: "#",
+//   },
+// ];
 
 export const Header = () => {
-  const [menu, setMenu] = useState(false);
+  // const [menu, setMenu] = useState(false);
   const [user, setUser] = useState({});
-    const datas = useAppSelector((state: any) => state.cartData);
-    const cartDatas = datas.filter((it: any) => it.userId === getUserId());
+  const [cartLength, setCartLength] = useState(0);
+  
+  const { data: cartData } = useQuery('getcartdataforlengthshow', getCartData)
+  
+  useEffect(() => {
+    if (cartData?.data) {
+      setCartLength(cartData?.data?.CartProducts.length)
+    }
+  },[cartData?.data])
 
   useEffect(() => {
     setUser(() => getUser());
@@ -67,20 +75,20 @@ export const Header = () => {
 
   const location = useLocation();
 
-  const transition = useTransition(menu, {
-    from: { x: -100, y: 0, opacity: 0, delay: 200 },
-    enter: { x: 0, y: 0, opacity: 1 },
-    leave: { x: -90, y: 0, opacity: 0, delay: 200 },
-  });
+  // const transition = useTransition(menu, {
+  //   from: { x: -100, y: 0, opacity: 0, delay: 200 },
+  //   enter: { x: 0, y: 0, opacity: 1 },
+  //   leave: { x: -90, y: 0, opacity: 0, delay: 200 },
+  // });
 
   const signOut = () => {
-    Cookies.remove('user');
-    Cookies.remove('accessToken');
-    Cookies.remove('refreshToken');
+    localStorage.removeItem("userData");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     setUser({});
-    message.success('You are signed out!');
-    window.location.reload()
-  }
+    message.success("You are signed out!");
+    window.location.reload();
+  };
 
   return (
     <div className="flex justify-center relative bg-white">
@@ -145,7 +153,7 @@ export const Header = () => {
                       <Popover content={cartBody} title="Cart" trigger="click">
                         <a href="/cart">
                           <span
-                            after={cartDatas.length > 0 ? cartDatas.length : ""}
+                            after={cartLength > 0 ? cartLength : 0}
                             className={styles.carticon}
                           >
                             <HiOutlineShoppingBag className="" />
@@ -153,6 +161,11 @@ export const Header = () => {
                         </a>
                       </Popover>
                     </div>
+                    <span>
+                      <a href="/user/orders">
+                        <SlSocialDropbox size={25} />
+                      </a>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -204,7 +217,7 @@ export const Header = () => {
                   <Popover content={cartBody} title="Cart" trigger="click">
                     <a href="/cart">
                       <span
-                        after={cartDatas.length > 0 ? cartDatas.length : ""}
+                        after={cartLength > 0 ? cartLength : 0}
                         className={`${styles.carticon} relative`}
                       >
                         <HiOutlineShoppingBag className="" />
@@ -212,6 +225,11 @@ export const Header = () => {
                     </a>
                   </Popover>
                 </div>
+                <span>
+                  <a href="/user/orders">
+                    <SlSocialDropbox size={25} />
+                  </a>
+                </span>
                 {/* <span>
                   <BiDollar className="text-lg" /> 
                 </span> */}
@@ -322,7 +340,7 @@ export const Header = () => {
                   <div className="relative">
                     <a href="/cart">
                       <span
-                        after={cartDatas.length > 0 ? cartDatas.length : ""}
+                        after={cartLength > 0 ? cartLength : 0}
                         className={`${styles.carticon} relative `}
                       >
                         <HiOutlineShoppingBag className="" />
@@ -330,7 +348,9 @@ export const Header = () => {
                     </a>
                   </div>
                   <span>
-                    <BiDollar className="text-lg" />
+                    <a href="/user/orders">
+                      <SlSocialDropbox size={25} />
+                    </a>
                   </span>
                 </div>
               </div>
