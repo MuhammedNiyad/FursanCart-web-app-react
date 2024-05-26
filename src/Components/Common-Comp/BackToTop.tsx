@@ -4,7 +4,7 @@ import { AiOutlineArrowUp } from "react-icons/ai";
 export const BackToTop= () => {
   const [goUp, setGoUp] = useState(false);
   useEffect(() => {
-    window.addEventListener("scroll", (e: Event) => {
+    window.addEventListener("scroll", () => {
       if (window.scrollY > 100) {
         setGoUp(true);
       } else {

@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import { Helmet } from "react-helmet";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { Link } from "react-router-dom";
@@ -101,7 +100,7 @@ const Home = () => {
                >
                  <div>
                    <img
-                     src="/comp.png"
+                     src={it.img}
                      width={200}
                      height={100}
                      alt="banner"

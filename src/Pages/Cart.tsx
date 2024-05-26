@@ -17,7 +17,9 @@ import {
   getCartData,
   getOneProduct,
   getUserAddress,
+  useAddToCart,
   useCreateOrder,
+  useDecreaseQnty,
   useDeleteFromCart,
 } from "../utils/apis";
 import { getUserId } from "../helpers/loggedUser";
@@ -54,6 +56,8 @@ const Cart = () => {
 
   const { mutate: deleteformcart } = useDeleteFromCart();
   const { mutate: createorder } = useCreateOrder();
+  const {mutate: addQnt} = useAddToCart();
+  const {mutate:decreaseqnt} = useDecreaseQnty();
 
   useEffect(() => {
     setCartData(userCartData?.data);
@@ -81,10 +85,28 @@ const Cart = () => {
 
   const quantityIncrease = (id: number) => {
     // dispatch(qntityPlus(id));
+    const data = {
+      userId: getUserId(),
+      varientId:id,
+      quantity:1,
+    }
+    addQnt(data, {
+      onSuccess(){
+        refetch()
+      }
+    })
   };
 
-  const quantityDecrease = (id: number) => {
-    // dispatch(qntityMinus(id));
+  const quantityDecrease = (id:any) => {
+    const data = {
+      cartItemId:id,
+      quantity:1
+    }
+    decreaseqnt(data,{
+      onSuccess(){
+        refetch()
+      }
+    })
   };
 
   const goToPaymentPage = (id: string, qnty: number) => {
@@ -129,6 +151,12 @@ const Cart = () => {
 
   const createOrder = (productData: any, dataInCart: any, delvryId: any) => {
     console.log({ productData }, { dataInCart });
+
+    if (!delvryId) {
+      message.error("please add your delivery address");
+      return;
+    }
+
     const { product } = productData;
     const quantity = productData?.qnt;
     if (product) {
@@ -258,7 +286,7 @@ const Cart = () => {
                       <Button
                         disabled={it.quantity >= it.stockQuantity}
                         className="rounded-full"
-                        onClick={() => quantityIncrease(it.id)}
+                        onClick={() => quantityIncrease(it.productVarientId)}
                       >
                         +
                       </Button>
@@ -367,7 +395,9 @@ const Cart = () => {
                   <tr className="border-t border-dashed">
                     <td>Total Amount</td>
                     <td className="text-right font-bold">
-                      ${cartData?.totalPrice || prodData?.data?.product.price}
+                      $
+                      {cartData?.totalPrice ||
+                        +prodData?.data?.product.price - +prodDiscount(prodData?.data.product, qnt)}
                     </td>
                   </tr>
                 </tbody>
@@ -424,7 +454,7 @@ const Cart = () => {
                           Building Type : <span>{address.type}</span>
                         </p>
                         <p>
-                          Landmark : <span>{address.landmart}</span>
+                          Landmark : <span>{address.landmark}</span>
                         </p>
                         <p>
                           Address : <span>{address.address}</span>
@@ -496,7 +526,7 @@ const Cart = () => {
                     createOrder(
                       { product: prodData?.data?.product, qnt },
                       cartData,
-                      address.id
+                      address?.id
                     )
                   }
                 >

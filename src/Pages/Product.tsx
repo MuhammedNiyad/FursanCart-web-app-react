@@ -64,16 +64,16 @@ const Product = () => {
             <img
               src={selectedImg ? selectedImg : product?.images[0].url}
               alt="product-img"
-              className="w-[500px]"
+              className="md:w-[300px] md:h-[400px] "
             />
           </div>
-          <div className=" h-[20%] flex gap-5 w-full overflow-x-scroll justify-center items-center ">
+          <div className={`${product?.images? "block" : "hidden"} h-[20%] flex gap-5 w-full overflow-x-scroll justify-center items-center`}>
             {product?.images.map((it, ind: number) => (
               <img
                 key={ind}
                 src={it.url}
                 alt="product image"
-                className="w-[80px]"
+                className="md:w-[80px] w-[50px]"
                 onClick={() => setSelectedImg(it.url)}
               />
             ))}

@@ -14,11 +14,11 @@ const ProductTypes = ["best_sales", "trending", "featured", "top_rated"];
 
 export const SalesCatTabs = () => {
   const [activeTab, setActiveTab] = useState(ProductTypes[0]);
-  const [datas, setData] = useState([]);
+  const [datas, setData] = useState<any[]>([]);
   const { data, isSuccess } = useQuery("items", getProducts);
 
   // isSuccess && console.log(data.data.products);
-  let items = data || [];
+  let items:any = data || [];
 
   if (isSuccess) {
     //@ts-ignore

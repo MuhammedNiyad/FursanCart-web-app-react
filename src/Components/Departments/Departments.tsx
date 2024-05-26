@@ -2,8 +2,7 @@ import { useRef, useState } from "react";
 import { BsCaretDown } from "react-icons/bs";
 import { IoIosArrowForward } from "react-icons/io";
 import { TfiMenuAlt } from "react-icons/tfi";
-import { useSpring, animated, useTransition } from "react-spring";
-import useMeasure from "react-use-measure";
+import { animated, useTransition } from "react-spring";
 
 export const Departments: React.FC<{
   title: string;
@@ -11,8 +10,8 @@ export const Departments: React.FC<{
 }> = ({ title, icon }) => {
   const [isVisible, setisVisible] = useState(false);
   const [hovering, setHovering] = useState<any | null>(null);
-  const [ref, { height }] = useMeasure();
-  const props = useSpring({ heigth: isVisible ? height : 0 });
+  // const [ref, { height }] = useMeasure();
+  // const props = useSpring({ heigth: isVisible ? height : 0 });
   const transition = useTransition(isVisible, {
     from: { x: 0, y: -100, opacity: 0, delay: 200 },
     enter: { x: 0, y: 0, opacity: 1 },

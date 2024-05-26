@@ -1,5 +1,4 @@
 import { Button, Popconfirm, Popover, message } from "antd";
-import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { BiDollar } from "react-icons/bi";
 import { BsSuitHeart } from "react-icons/bs";
@@ -60,14 +59,14 @@ export const Header = () => {
   // const [menu, setMenu] = useState(false);
   const [user, setUser] = useState({});
   const [cartLength, setCartLength] = useState(0);
-  
-  const { data: cartData } = useQuery('getcartdataforlengthshow', getCartData)
-  
+
+  const { data: cartData } = useQuery("getcartdataforlengthshow", getCartData);
+
   useEffect(() => {
     if (cartData?.data) {
-      setCartLength(cartData?.data?.CartProducts.length)
+      setCartLength(cartData?.data?.CartProducts?.length);
     }
-  },[cartData?.data])
+  }, [cartData?.data]);
 
   useEffect(() => {
     setUser(() => getUser());
@@ -152,11 +151,13 @@ export const Header = () => {
                     <div className="relative">
                       <Popover content={cartBody} title="Cart" trigger="click">
                         <a href="/cart">
-                          <span
-                            after={cartLength > 0 ? cartLength : 0}
-                            className={styles.carticon}
-                          >
+                          <span className={styles.carticon}>
                             <HiOutlineShoppingBag className="" />
+                            {cartLength > 0 && (
+                              <span className={styles.cartBadge}>
+                                {cartLength}
+                              </span>
+                            )}
                           </span>
                         </a>
                       </Popover>
@@ -215,14 +216,16 @@ export const Header = () => {
                 </span>
                 <div className="relative">
                   <Popover content={cartBody} title="Cart" trigger="click">
-                    <a href="/cart">
-                      <span
-                        after={cartLength > 0 ? cartLength : 0}
-                        className={`${styles.carticon} relative`}
-                      >
-                        <HiOutlineShoppingBag className="" />
-                      </span>
-                    </a>
+                  <a href="/cart">
+                          <span className={styles.carticon}>
+                            <HiOutlineShoppingBag className="" />
+                            {cartLength > 0 && (
+                              <span className={styles.cartBadge}>
+                                {cartLength}
+                              </span>
+                            )}
+                          </span>
+                        </a>
                   </Popover>
                 </div>
                 <span>
@@ -337,15 +340,17 @@ export const Header = () => {
                   <span>
                     <BsSuitHeart />
                   </span>
-                  <div className="relative">
-                    <a href="/cart">
-                      <span
-                        after={cartLength > 0 ? cartLength : 0}
-                        className={`${styles.carticon} relative `}
-                      >
-                        <HiOutlineShoppingBag className="" />
-                      </span>
-                    </a>
+                  <div>
+                  <a href="/cart">
+                          <span className={styles.carticon}>
+                            <HiOutlineShoppingBag className="" />
+                            {cartLength > 0 && (
+                              <span className={styles.cartBadge}>
+                                {cartLength}
+                              </span>
+                            )}
+                          </span>
+                        </a>
                   </div>
                   <span>
                     <a href="/user/orders">

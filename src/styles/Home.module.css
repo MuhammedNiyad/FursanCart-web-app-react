@@ -137,9 +137,34 @@
 }
 
 
-.carticon::after {
+.carticon {
+  position: relative;
+}
+
+.cartBadge {
+  content: '';
+  height: 1.3rem;
+  width: 1.3rem;
+  color: white;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 5px 0;
+  background-color: #000000;
+  position: absolute;
+  bottom: -8px;
+  right: -7px;
+  border-radius: 50%;
+  z-index: 1000;
+}
+
+
+
+/* .carticon::after { */
   /* font-size: 2rem; */
-  content: attr(after);
+  /* content: attr(after);
   height: 1.3rem;
   width: 1.3rem;
   color: white;
@@ -150,14 +175,14 @@
   text-align: center;
   padding: 5px 0;
 
-  background-color: #000000;
+  background-color: #000000; */
   /* transform: translateY(20); */
-  position: absolute;
+  /* position: absolute;
   bottom: -8px;
   right: -7px;
   border-radius: 40px;
   z-index: 1000;
-}
+} */
 
 .departments::after {
   content: attr(after);

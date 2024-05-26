@@ -1,22 +1,72 @@
-import React, { useEffect, useState } from "react";
+import { Button, message } from "antd";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
-import { Header } from "../Components/Header/Header";
 import { useQuery } from "react-query";
-import { getAllOrders } from "../utils/apis";
 import LoadingComp from "../Components/Common-Comp/LoadingComp";
+import { Footer } from "../Components/Footer/Footer";
+import { Header } from "../Components/Header/Header";
 import { getUserId } from "../helpers/loggedUser";
+import { getAllOrders, getProducts, useCancelOrder } from "../utils/apis";
 
 const Order = () => {
-	const { data: orders, isLoading } = useQuery("getallorders", getAllOrders);
-	const userId = getUserId();
-	const [ordersData, setOrdersData] = useState();
+  const { data: orders, isLoading , refetch:orderRefetch } = useQuery("getallorders", getAllOrders);
+  const { data: prodts, refetch:prodtRefetch } = useQuery("getproductsforshoworder", getProducts);
+  const {mutate: cancelorder} = useCancelOrder();
 
-	useEffect(() => {
-		if (orders?.data) {
-			setOrdersData(()=>orders?.data)
-		}
-	}, orders?.data)
-	
+  const userId = getUserId();
+// const [cancelConfOpen, setCancelConfOpen] = useState(false)
+  const [filteredDatas, setFilteredDatas] = useState<any[]>([]);
+  // const [reasonField, setReasonField] = useState();
+
+  useEffect(() => {
+    if (prodts?.data && orders?.data) {
+      filterProductFromOrder(prodts?.data, orders?.data);
+    }
+  }, [orders?.data, prodts?.data]);
+
+  const filterProductFromOrder = (products: any, orders: any) => {
+    let filterd: any = [];
+    orders?.forEach((order: any) => {
+      if (order?.custId == userId) {
+        order?.products?.forEach((orderProd: any) => {
+          products?.forEach((product: any) => {
+            product?.variants?.forEach((varient: any) => {
+              if (varient?.id === orderProd?.varId) {
+                filterd?.push({
+                  id:order?.id,
+                  prodName: product?.name,
+                  images: product?.images[0]?.url,
+                  status: orderProd?.orderStatuss[0]?.status,
+                  orderedDate: order?.createdAt,
+                });
+              }
+            });
+          });
+        });
+      }
+    });
+    setFilteredDatas(filterd);
+  };
+
+  const cancelOrder = (id:any) => {
+    cancelorder(id, {
+      onSuccess(){
+        message.success('order cancelled');
+        prodtRefetch();
+        orderRefetch();
+      },
+      onError(){
+        message.error('could not cancel order');
+      }
+    })
+  };
+
+  const deliveryDataCalc = (delvDate: any) => {
+    const date = new Date(delvDate);
+    date.setDate(date.getDate() + 7);
+    return date.toDateString();
+  };
+
   return (
     <div>
       <Helmet>
@@ -25,15 +75,63 @@ const Order = () => {
         <link rel="icon" href="/fursanFavIcon.svg" />
       </Helmet>
       <Header />
-      <div>
-        {isLoading ? (
-          <div></div>
+      <div className="">
+        <h1 className="text-2xl text-center my-5">Orders</h1>
+      </div>
+      <div className="my-10">
+        {!isLoading ? (
+          <div className="px-10 sm:px-16 md:px-28 lg:px-40">
+            {filteredDatas?.length>0 ? (
+              <div>
+                {filteredDatas?.map((item) => (
+                  <div className="flex items-center justify-between my-3 p-5 bg-slate-100">
+                    <img src={item.images} alt="img" className="w-20 h-20" />
+                    <h2 className="font-semibold  ">{item.prodName}</h2>
+                    <p className="text-xs">
+                      Delivery expected in{" "}
+                      <span className="text-sm">
+                        {deliveryDataCalc(item.orderedDate)}
+                      </span>
+                    </p>
+                    <div>
+                      <p>status: {item.status}</p>
+                      <div className="flex justify-end items-end">
+                        <Button
+                        disabled
+                          className="bg-red-500 text-white"
+                          onClick={() => cancelOrder(item.id)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center">
+                <h1>did not order anything yet</h1>
+              </div>
+            )}
+          </div>
         ) : (
           <div>
             <LoadingComp />
           </div>
         )}
       </div>
+      <Footer/>
+      {/* <Modal open={cancelConfOpen}
+      onCancel={()=>setCancelConfOpen(false)}
+      onOk={cancelOrder}
+      title={'Conform order cancel'}>
+        <div className="flex gap-4 p-5">
+        <label className="text-nowrap">Reason for</label>
+        <Input onChange={(e:any)=>{
+          setReasonField(e.target.value)
+        }}/>
+        </div>
+      </Modal> */}
     </div>
   );
 };
