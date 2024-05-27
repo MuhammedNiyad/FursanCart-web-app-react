@@ -25,7 +25,7 @@ const Order = () => {
   }, [orders?.data, prodts?.data]);
 
   const filterProductFromOrder = (products: any, orders: any) => {
-    let filterd: any = [];
+    const filterd: any = [];
     orders?.forEach((order: any) => {
       if (order?.custId == userId) {
         order?.products?.forEach((orderProd: any) => {

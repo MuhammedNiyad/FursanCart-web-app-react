@@ -9,7 +9,7 @@ import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
-import { getUserId } from "../helpers/loggedUser";
+import { getUser, getUserId } from "../helpers/loggedUser";
 import { ProductType } from "../lib/types";
 import { getOneProduct, useAddToCart } from "../utils/apis";
 
@@ -22,6 +22,7 @@ const Product = () => {
   const [product, setProduct] = useState<ProductType>()
   // const [relatedProd, setRelatedProd] = useState();
   const navigate = useNavigate();
+  const userData = getUser();
 
 
   const { data:prodData } = useQuery("getOneProduct", () => getOneProduct(id));
@@ -35,6 +36,11 @@ const Product = () => {
   
 
   const addToCart = (data: any) => {
+
+    if (!userData) {
+      navigate('/authorize')
+    }
+
     const compainData = {varientId:data, quantity:quantity, userId:getUserId()}
 
     Addtocart(compainData, {
@@ -64,7 +70,7 @@ const Product = () => {
             <img
               src={selectedImg ? selectedImg : product?.images[0].url}
               alt="product-img"
-              className="md:w-[300px] md:h-[400px] "
+              className=""
             />
           </div>
           <div className={`${product?.images? "block" : "hidden"} h-[20%] flex gap-5 w-full overflow-x-scroll justify-center items-center`}>

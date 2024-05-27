@@ -2,7 +2,7 @@ import { Button, Divider, Rate, message } from "antd";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
-import { getUserId } from "../../helpers/loggedUser";
+import { getUser, getUserId } from "../../helpers/loggedUser";
 import { CategoryItems, ProductType } from "../../lib/types";
 import { getCategories, getProducts, useAddToCart } from "../../utils/apis";
 import { CartIcon } from "../icons/CartIcon";
@@ -13,6 +13,7 @@ import { CartIcon } from "../icons/CartIcon";
 export const CategoriesList = () => {
   const [categories, setCategories] = useState<any>([]);
   const [products, setProducts] = useState<ProductType[]>([]);
+  const userData = getUser();
 
   const { data: catResponseData } = useQuery("categories", getCategories);
   const { data: prodResponseData } = useQuery("items", getProducts);
@@ -28,6 +29,11 @@ export const CategoriesList = () => {
   // console.log("prodData :", products);
 
   const addToCart = (data: any) => {
+
+    if (!userData) {
+      navigate('/authorize')
+    }
+
     const compainData = {
       varientId: data,
       quantity: 1,

@@ -20,25 +20,19 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <RouterProtector>
         <Home />
-      </RouterProtector>
     ),
   },
   {
     path: "/items",
     element: (
-      <RouterProtector>
         <Categories />
-      </RouterProtector>
     ),
   },
   {
     path: "/items/:id",
     element: (
-      <RouterProtector>
         <Product />
-      </RouterProtector>
     ),
   },
   {

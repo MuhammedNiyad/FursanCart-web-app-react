@@ -60,7 +60,9 @@ export const Header = () => {
   const [user, setUser] = useState({});
   const [cartLength, setCartLength] = useState(0);
 
-  const { data: cartData } = useQuery("getcartdataforlengthshow", getCartData);
+  let isUserData = false;
+
+  const { data: cartData } = useQuery("getcartdataforlengthshow", getCartData,{enabled:isUserData});
 
   useEffect(() => {
     if (cartData?.data) {
@@ -70,6 +72,7 @@ export const Header = () => {
 
   useEffect(() => {
     setUser(() => getUser());
+    isUserData = !!getUser()
   }, []);
 
   const location = useLocation();
@@ -86,7 +89,9 @@ export const Header = () => {
     localStorage.removeItem("refreshToken");
     setUser({});
     message.success("You are signed out!");
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    },2000)
   };
 
   return (
