@@ -60,7 +60,8 @@ export const Header = () => {
   const [user, setUser] = useState({});
   const [cartLength, setCartLength] = useState(0);
 
-  let isUserData = false;
+  const isUserData = !!user;
+  
 
   const { data: cartData } = useQuery("getcartdataforlengthshow", getCartData,{enabled:isUserData});
 
@@ -72,7 +73,6 @@ export const Header = () => {
 
   useEffect(() => {
     setUser(() => getUser());
-    isUserData = !!getUser()
   }, []);
 
   const location = useLocation();
@@ -91,7 +91,7 @@ export const Header = () => {
     message.success("You are signed out!");
     setTimeout(() => {
       window.location.reload();
-    },2000)
+    },1000)
   };
 
   return (

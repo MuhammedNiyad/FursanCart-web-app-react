@@ -41,7 +41,11 @@ const Product = () => {
       navigate('/authorize')
     }
 
-    const compainData = {varientId:data, quantity:quantity, userId:getUserId()}
+    const compainData = {
+      varientId: data,
+      quantity: quantity,
+      userId: getUserId(),
+    };
 
     Addtocart(compainData, {
       onSuccess() {

@@ -81,12 +81,13 @@ const Order = () => {
       <div className="my-10">
         {!isLoading ? (
           <div className="px-10 sm:px-16 md:px-28 lg:px-40">
-            {filteredDatas?.length>0 ? (
+            {filteredDatas?.length > 0 ? (
               <div>
                 {filteredDatas?.map((item) => (
                   <div className="flex items-center justify-between my-3 p-5 bg-slate-100">
                     <img src={item.images} alt="img" className="w-20 h-20" />
                     <h2 className="font-semibold  ">{item.prodName}</h2>
+                    <h4>{''}</h4>
                     <p className="text-xs">
                       Delivery expected in{" "}
                       <span className="text-sm">
@@ -97,7 +98,7 @@ const Order = () => {
                       <p>status: {item.status}</p>
                       <div className="flex justify-end items-end">
                         <Button
-                        disabled
+                          disabled
                           className="bg-red-500 text-white"
                           onClick={() => cancelOrder(item.id)}
                         >
@@ -120,7 +121,7 @@ const Order = () => {
           </div>
         )}
       </div>
-      <Footer/>
+      <Footer />
       {/* <Modal open={cancelConfOpen}
       onCancel={()=>setCancelConfOpen(false)}
       onOk={cancelOrder}

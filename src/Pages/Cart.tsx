@@ -221,7 +221,7 @@ const Cart = () => {
       <br />
       <br />
       {!isLoading ? (
-        cartData?.CartProducts.length >= 1 || prod ? (
+        cartData?.CartProducts?.length >= 1 || prod ? (
           <main className="mb-10 md:max-w-[80%] mx-auto relative grid md:grid-cols-2">
             {/* cart product showing section */}
             <section className="px-2 bg-white w-full">
