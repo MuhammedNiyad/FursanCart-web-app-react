@@ -74,7 +74,7 @@ export const registerApi = async (props: any) => {
 // Product related apis start
 
 export const getProducts = () => {
-  return APIClientPrivate.get("/product/all", {
+  return APIClientPrivate.get("/product/all?status=active", {
     headers: {
       Authorization: `Bearer ${getUserToken()}`,
     },
@@ -88,6 +88,10 @@ export const getOneProduct = (id: string | undefined | null) => {
     },
   });
 };
+
+export const getProductByTags = (tag:any) => {
+  return APIClientPrivate.get(`/product/all?tag=${tag}&status=active`)
+}
 
 // Product related apis end
 
@@ -200,3 +204,5 @@ export const cancelOrder = (id: any) => {
 export const useCancelOrder = () => {
   return useMutation((id: any) => cancelOrder(id));
 };
+
+

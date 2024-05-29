@@ -11,7 +11,7 @@ import { CartIcon } from "../icons/CartIcon";
 //   await APIClient.get("https://dummyjson.com/products/categories");
 
 export const CategoriesList = () => {
-  const [categories, setCategories] = useState<any>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<ProductType[]>([]);
   const userData = getUser();
 
