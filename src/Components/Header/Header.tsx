@@ -55,10 +55,11 @@ const cartBody = (
 //   },
 // ];
 
-export const Header = () => {
+export const Header = ({setSearchData}:any) => {
   // const [menu, setMenu] = useState(false);
   const [user, setUser] = useState({});
   const [cartLength, setCartLength] = useState(0);
+  const [searchInput, setSearchInput] = useState('');
 
   const isUserData = !!user;
   
@@ -93,6 +94,12 @@ export const Header = () => {
       window.location.reload();
     },1000)
   };
+
+  const handleSearch = () => {
+    console.log(searchInput);
+    setSearchData(searchInput)
+  }
+  
 
   return (
     <div className="flex justify-center relative bg-white">
@@ -202,6 +209,7 @@ export const Header = () => {
                 <form className="text-slate-500 text-lg h-full w-[90%]">
                   <input
                     type="text"
+                    onChange={(e)=>setSearchInput(e.target.value)}
                     className="rounded-full h-full w-[full] border-amber-400 px-3 outline-none"
                     placeholder="Search for Products"
                   />
@@ -212,7 +220,7 @@ export const Header = () => {
                   <IoIosArrowDown />
                 </span>
                 <span className=" h-full bg-amber-400 text-black w-24 rounded-r-full flex justify-center items-center text-3xl">
-                  <RiSearchLine />
+                  <RiSearchLine onClick={handleSearch} />
                 </span>
               </div>
               <div className="flex justify-around gap-3 text-2xl">

@@ -4,16 +4,17 @@ import { notification } from "antd";
 import axios from "axios";
 import { getUserId, getUserToken } from "../helpers/loggedUser";
 import APIClientPrivate from "./axios";
+import { API_URL } from "./urls";
 
 // const BASE_URL = 'http://fursancart.rootsys.in/api';
-const LOCAL_URL = "http://localhost:3010/api";
+// const LOCAL_URL = "http://localhost:3010/api";
 
 export const loginApi = async (props: any) => {
   try {
     console.log(props);
     const data = props;
     const response = await axios.post(
-      `${LOCAL_URL}/auth/local/user/login`,
+      `${API_URL}/auth/local/user/login`,
       data
     );
     // if (response?.data.tokens) {
@@ -50,7 +51,7 @@ export const registerApi = async (props: any) => {
     console.log(props);
     const data = props;
     const response = await axios.post(
-      `${LOCAL_URL}/auth/local/user/sign-up`,
+      `${API_URL}/auth/local/user/sign-up`,
       data
     );
     if (response?.data) {
@@ -91,6 +92,11 @@ export const getOneProduct = (id: string | undefined | null) => {
 
 export const getProductByTags = (tag:any) => {
   return APIClientPrivate.get(`/product/all?tag=${tag}&status=active`)
+}
+
+// searchProduct
+export const searchProduct = (search:any) => {
+  return APIClientPrivate.get(`/product/search?s=${search}`)
 }
 
 // Product related apis end
@@ -204,5 +210,11 @@ export const cancelOrder = (id: any) => {
 export const useCancelOrder = () => {
   return useMutation((id: any) => cancelOrder(id));
 };
+
+
+// get brands
+export const getBrands = () => {
+  return APIClientPrivate.get('/brand/all')
+}
 
 
