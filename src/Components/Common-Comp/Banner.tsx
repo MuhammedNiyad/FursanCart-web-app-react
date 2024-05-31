@@ -66,12 +66,12 @@ export const Banner = () => {
         }}
         // navigation={true}
         modules={[Autoplay, Pagination, Navigation]}
-        className="h-full w-full text-center flex justify-center items-center bg-cover"
+        className="h-full w-full text-center "
       >
         {sliderBanner.map((it, i) => (
           <SwiperSlide
             key={i}
-            className="flex justify-between items-center h-full w-full"
+            className=""
           >
             {/* <div className="text-left">
               <h1 className="text-3xl xl:text-6xl  xl:w-[300px]  ">
@@ -86,7 +86,7 @@ export const Banner = () => {
                 <span className="text-4xl font-extrabold">${it.rate}</span>
               </p>
             </div> */}
-            <div className="w-screen">
+            <div className=" w-full h-full flex justify-center items-center">
               <img src={it.banner[0]?.url} alt={"banner"} className="" />
             </div>
           </SwiperSlide>
