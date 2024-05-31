@@ -110,7 +110,7 @@ const Product = () => {
             {/* price */}
             <div className="px-5">
               <h3 className="text-xl md:text-2xl lg:text-4xl font-medium flex gap-2 items-center md:items-start">
-                ₹ {product?.price}
+                SAR {product?.price}
                 <span className="bg-gray-100 p-1 text-xs">
                   {product?.discount_percent}% off
                 </span>

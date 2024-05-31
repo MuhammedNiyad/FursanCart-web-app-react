@@ -304,10 +304,10 @@ const Cart = () => {
                     <div className="my-3">
                       <p className="flex gap-2">
                         <span className="text-slate-400 line-through ">
-                          ${it.productVarient.product.price}
+                          SAR{" "}{it.productVarient.product.price}
                         </span>
                         <em className="text-black font-bold">
-                          ${it.price}{" "}
+                          SAR{" "}{it.price}{" "}
                           <span className="text-green-500 text-xs inline-block align-bottom">
                             {it.productVarient.product.discount_percent}% off
                           </span>
@@ -372,13 +372,13 @@ const Cart = () => {
                   <tr>
                     <td>Your total Price would be </td>
                     <td className="text-right">
-                      ${cartData?.totalPrice || prodData?.data?.product.price}
+                      SAR{" "}{cartData?.totalPrice || prodData?.data?.product.price}
                     </td>
                   </tr>
                   <tr className="">
                     <td>Discount</td>
                     <td className="text-right text-green-600 font-semibold">
-                      {cartData
+                      SAR{" "}{cartData
                         ? cartDiscount(
                             cartData?.CartProducts,
                             cartData?.totalPrice
@@ -395,7 +395,7 @@ const Cart = () => {
                   <tr className="border-t border-dashed">
                     <td>Total Amount</td>
                     <td className="text-right font-bold">
-                      $
+                      SAR{" "}
                       {cartData?.totalPrice ||
                         +prodData?.data?.product.price - +prodDiscount(prodData?.data.product, qnt)}
                     </td>
@@ -403,7 +403,7 @@ const Cart = () => {
                 </tbody>
               </table>
               <p className={`text-xs text-green-600 font-semibold my-5 `}>
-                You will save $
+                You will save SAR{" "}
                 {cartData
                   ? cartDiscount(cartData?.CartProducts, cartData?.totalPrice)
                   : prodDiscount(prodData?.data.product, qnt)}{" "}

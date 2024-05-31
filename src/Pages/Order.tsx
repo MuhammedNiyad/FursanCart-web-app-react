@@ -9,12 +9,19 @@ import { getUserId } from "../helpers/loggedUser";
 import { getAllOrders, getProducts, useCancelOrder } from "../utils/apis";
 
 const Order = () => {
-  const { data: orders, isLoading , refetch:orderRefetch } = useQuery("getallorders", getAllOrders);
-  const { data: prodts, refetch:prodtRefetch } = useQuery("getproductsforshoworder", getProducts);
-  const {mutate: cancelorder} = useCancelOrder();
+  const {
+    data: orders,
+    isLoading,
+    refetch: orderRefetch,
+  } = useQuery("getallorders", getAllOrders);
+  const { data: prodts, refetch: prodtRefetch } = useQuery(
+    "getproductsforshoworder",
+    getProducts
+  );
+  const { mutate: cancelorder } = useCancelOrder();
 
   const userId = getUserId();
-// const [cancelConfOpen, setCancelConfOpen] = useState(false)
+  // const [cancelConfOpen, setCancelConfOpen] = useState(false)
   const [filteredDatas, setFilteredDatas] = useState<any[]>([]);
   // const [reasonField, setReasonField] = useState();
 
@@ -33,10 +40,12 @@ const Order = () => {
             product?.variants?.forEach((varient: any) => {
               if (varient?.id === orderProd?.varId) {
                 filterd?.push({
-                  id:order?.id,
+                  id: order?.id,
                   prodName: product?.name,
                   images: product?.images[0]?.url,
-                  status: orderProd?.orderStatuss[0]?.status,
+                  status:
+                    orderProd?.orderStatuss[orderProd?.orderStatuss.length - 1]
+                      ?.status,
                   orderedDate: order?.createdAt,
                 });
               }
@@ -48,17 +57,17 @@ const Order = () => {
     setFilteredDatas(filterd);
   };
 
-  const cancelOrder = (id:any) => {
+  const cancelOrder = (id: any) => {
     cancelorder(id, {
-      onSuccess(){
-        message.success('order cancelled');
+      onSuccess() {
+        message.success("order cancelled");
         prodtRefetch();
         orderRefetch();
       },
-      onError(){
-        message.error('could not cancel order');
-      }
-    })
+      onError() {
+        message.error("could not cancel order");
+      },
+    });
   };
 
   const deliveryDataCalc = (delvDate: any) => {
@@ -87,7 +96,7 @@ const Order = () => {
                   <div className="flex items-center justify-between my-3 p-5 bg-slate-100">
                     <img src={item.images} alt="img" className="w-20 h-20" />
                     <h2 className="font-semibold  ">{item.prodName}</h2>
-                    <h4>{''}</h4>
+                    <h4>{""}</h4>
                     <p className="text-xs">
                       Delivery expected in{" "}
                       <span className="text-sm">

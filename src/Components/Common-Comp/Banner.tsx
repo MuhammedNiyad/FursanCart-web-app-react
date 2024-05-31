@@ -3,42 +3,56 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { useQuery } from "react-query";
+import { getAllBanner } from "../../utils/apis";
+import { useEffect, useState } from "react";
 
-
-const banners = [
-  {
-    title: " The New Standard",
-    sub: "uunder favourable smartwatches",
-    rate: "1253.00",
-    image: "/comp.png",
-    link: "#",
-  },
-  {
-    title: " The New Standard",
-    sub: "uunder favourable smartwatches",
-    rate: "1253.00",
-    image: "/comp.png",
-    link: "#",
-  },
-  {
-    title: " The New Standard",
-    sub: "uunder favourable smartwatches",
-    rate: "1253.00",
-    image: "/comp.png",
-    link: "#",
-  },
-  {
-    title: " The New Standard",
-    sub: "uunder favourable smartwatches",
-    rate: "1253.00",
-    image: "/comp.png",
-    link: "#",
-  },
-];
+// const banners = [
+//   {
+//     title: " The New Standard",
+//     sub: "uunder favourable smartwatches",
+//     rate: "1253.00",
+//     image: "/comp.png",
+//     link: "#",
+//   },
+//   {
+//     title: " The New Standard",
+//     sub: "uunder favourable smartwatches",
+//     rate: "1253.00",
+//     image: "/comp.png",
+//     link: "#",
+//   },
+//   {
+//     title: " The New Standard",
+//     sub: "uunder favourable smartwatches",
+//     rate: "1253.00",
+//     image: "/comp.png",
+//     link: "#",
+//   },
+//   {
+//     title: " The New Standard",
+//     sub: "uunder favourable smartwatches",
+//     rate: "1253.00",
+//     image: "/comp.png",
+//     link: "#",
+//   },
+// ];
 
 export const Banner = () => {
+  const { data: banner } = useQuery("getallbanner", getAllBanner);
+
+  const [sliderBanner, setSliderBanner] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (banner?.data) {
+      setSliderBanner(
+        banner?.data?.filter((item: any) => item.type === "SLIDER")
+      );
+    }
+  }, [banner?.data]);
+
   return (
-    <div className="bg-[url('/banner.jpg')] max-h-[425px] h-[423px] bg-cover flex justify-cente items-center relative -z-50 w-screen ">
+    <>
       <Swiper
         spaceBetween={30}
         centeredSlides={true}
@@ -52,31 +66,32 @@ export const Banner = () => {
         }}
         // navigation={true}
         modules={[Autoplay, Pagination, Navigation]}
-        className="h-full w-full text-center flex justify-center items-center  lg:w-[65%] xl:w-[40%]"
+        className="h-full w-full text-center flex justify-center items-center bg-cover"
       >
-        {banners.map((it, i) => (
+        {sliderBanner.map((it, i) => (
           <SwiperSlide
             key={i}
-            className="flex justify-between items-center md:pl-24 xl:pr-16 "
+            className="flex justify-between items-center h-full w-full"
           >
-            <div className="text-left">
+            {/* <div className="text-left">
               <h1 className="text-3xl xl:text-6xl  xl:w-[300px]  ">
-                {it.title}
+                {it.bannerTitle}
               </h1>
-              <p className="font-bold text-base">{it.sub}</p>
+              <p className="font-bold text-base">"{it.sub}"</p>
+              <p className="font-bold text-base">"{it.sub}"</p>
               <br />
               <p>
                 From
                 <br />
                 <span className="text-4xl font-extrabold">${it.rate}</span>
               </p>
-            </div>
-            <div>
-              <img src={it.image} alt={it.sub} className="min-w-[200px]" />
+            </div> */}
+            <div className="w-screen">
+              <img src={it.banner[0]?.url} alt={"banner"} className="" />
             </div>
           </SwiperSlide>
         ))}
       </Swiper>
-    </div>
+    </>
   );
 };

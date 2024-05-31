@@ -8,7 +8,7 @@ import LoadingComp from "../Common-Comp/LoadingComp";
 const SearchResult = ({ searchData }: any) => {
   // console.log(searchData);
 	const [datas, setDatas] = useState<any[]>([]);
-	console.log(searchData);
+	// console.log(searchData);
 
 	const isSearch = !!searchData
 	
@@ -23,7 +23,7 @@ const SearchResult = ({ searchData }: any) => {
     }
   }, [ProdData?.data]);
 
-    console.log(ProdData?.data);
+    // console.log(ProdData?.data);
 
   return (
     <div>

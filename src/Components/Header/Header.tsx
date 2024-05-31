@@ -1,6 +1,5 @@
 import { Button, Popconfirm, Popover, message } from "antd";
 import { useEffect, useState } from "react";
-import { BiDollar } from "react-icons/bi";
 import { BsSuitHeart } from "react-icons/bs";
 import { HiOutlineLogout, HiOutlineShoppingBag } from "react-icons/hi";
 import { IoIosArrowDown } from "react-icons/io";
@@ -8,7 +7,7 @@ import { RiSearchLine } from "react-icons/ri";
 import { SlSocialDropbox } from "react-icons/sl";
 import { TbUser } from "react-icons/tb";
 import { useQuery } from "react-query";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { getUser } from "../../helpers/loggedUser";
 import styles from "../../styles/Home.module.css";
 import { getCartData } from "../../utils/apis";
@@ -55,16 +54,17 @@ const cartBody = (
 //   },
 // ];
 
-export const Header = ({setSearchData}:any) => {
+export const Header = ({ setSearchData }: any) => {
   // const [menu, setMenu] = useState(false);
   const [user, setUser] = useState({});
   const [cartLength, setCartLength] = useState(0);
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState("");
 
   const isUserData = !!user;
-  
 
-  const { data: cartData } = useQuery("getcartdataforlengthshow", getCartData,{enabled:isUserData});
+  const { data: cartData } = useQuery("getcartdataforlengthshow", getCartData, {
+    enabled: isUserData,
+  });
 
   useEffect(() => {
     if (cartData?.data) {
@@ -92,20 +92,19 @@ export const Header = ({setSearchData}:any) => {
     message.success("You are signed out!");
     setTimeout(() => {
       window.location.reload();
-    },1000)
+    }, 1000);
   };
 
   const handleSearch = () => {
     console.log(searchInput);
-    setSearchData(searchInput)
-  }
-  
+    setSearchData(searchInput);
+  };
 
   return (
     <div className="flex justify-center relative bg-white">
       <div className="w-full xl:max-w-full ">
         <div>
-          <div className="w-full xl:max-w-[80%] leading-2 my-2 pb-2 flex justify-evenly flex-wrap items-center sm:flex sm:justify-between lg:justify-end  mx-auto">
+          {/* <div className="w-full xl:max-w-[80%] leading-2 my-2 pb-2 flex justify-evenly flex-wrap items-center sm:flex sm:justify-between lg:justify-end  mx-auto">
             <span className="flex justify-between gap-1 items-center px-2 lg:border-r mx-2">
               <BiDollar className="text-lg" />
               Currency
@@ -128,7 +127,7 @@ export const Header = ({setSearchData}:any) => {
                 </a>
               )}
             </span>
-          </div>
+          </div> */}
           <hr className="w-screen absolute left-0 right-0" />
 
           <div>
@@ -179,6 +178,26 @@ export const Header = ({setSearchData}:any) => {
                         <SlSocialDropbox size={25} />
                       </a>
                     </span>
+                    <span className="px-2">
+                      {user ? (
+                        <button className="flex text-base">
+                          {""}
+                          <HiOutlineLogout
+                            size={25}
+                            onClick={() => signOut()}
+                          />
+                          out
+                        </button>
+                      ) : (
+                        <a
+                          href="/authorize"
+                          className="flex justify-between gap-1 items-center text "
+                        >
+                          <TbUser size={20} className="text-lg" />
+                          <span className="text-base">Sign up</span>
+                        </a>
+                      )}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -209,7 +228,7 @@ export const Header = ({setSearchData}:any) => {
                 <form className="text-slate-500 text-lg h-full w-[90%]">
                   <input
                     type="text"
-                    onChange={(e)=>setSearchInput(e.target.value)}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     className="rounded-full h-full w-[full] border-amber-400 px-3 outline-none"
                     placeholder="Search for Products"
                   />
@@ -229,22 +248,37 @@ export const Header = ({setSearchData}:any) => {
                 </span>
                 <div className="relative">
                   <Popover content={cartBody} title="Cart" trigger="click">
-                  <a href="/cart">
-                          <span className={styles.carticon}>
-                            <HiOutlineShoppingBag className="" />
-                            {cartLength > 0 && (
-                              <span className={styles.cartBadge}>
-                                {cartLength}
-                              </span>
-                            )}
-                          </span>
-                        </a>
+                    <a href="/cart">
+                      <span className={styles.carticon}>
+                        <HiOutlineShoppingBag className="" />
+                        {cartLength > 0 && (
+                          <span className={styles.cartBadge}>{cartLength}</span>
+                        )}
+                      </span>
+                    </a>
                   </Popover>
                 </div>
                 <span>
                   <a href="/user/orders">
                     <SlSocialDropbox size={25} />
                   </a>
+                </span>
+                <span className="px-2">
+                  {user ? (
+                    <button className="flex text-base">
+                      {""}
+                      <HiOutlineLogout size={25} onClick={() => signOut()} />
+                      out
+                    </button>
+                  ) : (
+                    <a
+                      href="/authorize"
+                      className="flex justify-between gap-1 items-center text "
+                    >
+                      <TbUser size={20} className="text-lg" />
+                      <span className="text-base">Sign up</span>
+                    </a>
+                  )}
                 </span>
                 {/* <span>
                   <BiDollar className="text-lg" /> 
@@ -255,21 +289,21 @@ export const Header = ({setSearchData}:any) => {
               <div className="px-2 flex gap-4 items-center text-sm">
                 <Departments title={"All Departments"} icon={"menu"} />
                 <div>
-                  <p className="font-bold text-orange-500 flex items-center justify-between gap-2">
-                    Super Deals <IoIosArrowDown />
-                  </p>
+                  <Link to={'/items/?tag=bestOffer'} className="font-bold hover:text-orange-500 flex items-center justify-between gap-2">
+                    Best Offer
+                  </Link>
                 </div>
                 <div>
-                  <p className="font-bold ">Features Brands </p>
+                  <Link to={'/items/?tag=trending'} className="font-bold hover:text-orange-500 ">Trending </Link>
                 </div>
                 <div>
-                  <p className="font-bold ">Trending Styles</p>
+                  <Link to={"/items/?tag=featured"} className="font-bold hover:text-orange-500">Featured</Link>
                 </div>
                 <div>
-                  <p className="font-bold ">Gift Cards</p>
+                  <Link to={"/items/?tag=topRated"} className="font-bold hover:text-orange-500">Top Rated</Link>
                 </div>
               </div>
-              <p>Free Shiping on Order $50+</p>
+              <p>Free Shiping on Order SAR 50+</p>
             </section>
             <hr className="w-screen absolute left-0 right-0" />
           </nav>
@@ -354,21 +388,36 @@ export const Header = ({setSearchData}:any) => {
                     <BsSuitHeart />
                   </span>
                   <div>
-                  <a href="/cart">
-                          <span className={styles.carticon}>
-                            <HiOutlineShoppingBag className="" />
-                            {cartLength > 0 && (
-                              <span className={styles.cartBadge}>
-                                {cartLength}
-                              </span>
-                            )}
-                          </span>
-                        </a>
+                    <a href="/cart">
+                      <span className={styles.carticon}>
+                        <HiOutlineShoppingBag className="" />
+                        {cartLength > 0 && (
+                          <span className={styles.cartBadge}>{cartLength}</span>
+                        )}
+                      </span>
+                    </a>
                   </div>
                   <span>
                     <a href="/user/orders">
                       <SlSocialDropbox size={25} />
                     </a>
+                  </span>
+                  <span className="">
+                    {user ? (
+                      <button className="flex text-base">
+                        {""}
+                        <HiOutlineLogout size={25} onClick={() => signOut()} />
+                        
+                      </button>
+                    ) : (
+                      <a
+                        href="/authorize"
+                        className="flex justify-between gap-1 items-center text "
+                      >
+                        <TbUser size={20} className="text-lg" />
+                        <span className="text-base">Sign up</span>
+                      </a>
+                    )}
                   </span>
                 </div>
               </div>

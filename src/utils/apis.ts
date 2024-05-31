@@ -218,3 +218,7 @@ export const getBrands = () => {
 }
 
 
+// get all banner
+export const getAllBanner = () => {
+  return APIClientPrivate.get('/banner/all');
+}

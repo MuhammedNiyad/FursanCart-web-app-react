@@ -45,7 +45,7 @@ export const SalesCatTabs = () => {
             }
           >
             {it === "bestOffer"
-              ? "Best Sales"
+              ? "Best Offer"
               : it === "trending"
               ? "Trending"
               : it === "featured"

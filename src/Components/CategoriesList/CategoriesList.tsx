@@ -117,7 +117,7 @@ export const CategoriesList = () => {
                           defaultValue={it.rating}
                         />
                         <div className="flex items-center justify-around w-full gap-1 text-lg font-bold ">
-                          <b>$ {it.price}</b>
+                          <b>SAR {it.price}</b>
                           <span onClick={() => addToCart(it.variants[0]?.id)}>
                             <CartIcon />
                           </span>

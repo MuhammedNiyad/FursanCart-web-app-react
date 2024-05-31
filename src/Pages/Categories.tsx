@@ -9,22 +9,26 @@ import { BackToTop } from "../Components/Common-Comp/BackToTop";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
 import { CartIcon } from "../Components/icons/CartIcon";
-import { getProducts } from "../utils/apis";
+import { getProductByTags, getProducts } from "../utils/apis";
 
 const Categories = () => {
   const [open, setOpen] = useState(false);
   // const [placement, setPlacement] = useState<DrawerProps["placement"]>("left");
-  const {data:datas} = useQuery('getAllProductsForCategory', getProducts)
   const [product, setProduct] = useState([]);
-
+  
   
   
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const cat = queryParams.get("cat");
+  const isCat = !!cat
+  const tag = queryParams.get("tag")
+  const isTag = !!tag
+  
   
   // console.log(cat);
-
+  
+  const {data:datas} = useQuery('getAllProductsForCategory', getProducts, {enabled: isCat})
   useEffect(()=>{
     if(datas?.data){
       setProduct(datas?.data.filter((it:any)=> it?.category?.name === cat))
@@ -33,8 +37,15 @@ const Categories = () => {
 
 
   // console.log(product);
-  
 
+  const {data:tagProd} =useQuery('getTagProduct', ()=>getProductByTags(tag), {enabled:isTag})
+  
+  useEffect(() => {
+    if (tagProd?.data) {
+      setProduct(tagProd?.data)
+    }
+  
+},[tagProd?.data])
   // console.log("cat data: ", data);
 
   const showDrawer = () => {
@@ -55,7 +66,7 @@ const Categories = () => {
         <link rel="icon" href="/fursanFavIcon.svg" />
       </Helmet>
       <Header />
-      <h1 className="text-2xl font-semibold capitalize m-5"> {cat}</h1>
+      <h1 className="text-2xl font-semibold capitalize m-5"> {cat || tag}</h1>
       <section>
         <div className="flex justify-between px-4 bg-slate-50 py-3 mx-3 rounded-lg">
           <div
