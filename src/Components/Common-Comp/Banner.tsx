@@ -52,7 +52,7 @@ export const Banner = () => {
   }, [banner?.data]);
 
   return (
-    <>
+    <div className="w- h-full">
       <Swiper
         spaceBetween={30}
         centeredSlides={true}
@@ -66,12 +66,12 @@ export const Banner = () => {
         }}
         // navigation={true}
         modules={[Autoplay, Pagination, Navigation]}
-        className="h-full w-full text-center "
+        className="h-full w-full text-center  "
       >
         {sliderBanner.map((it, i) => (
           <SwiperSlide
             key={i}
-            className=""
+            className="-z-10"
           >
             {/* <div className="text-left">
               <h1 className="text-3xl xl:text-6xl  xl:w-[300px]  ">
@@ -92,6 +92,6 @@ export const Banner = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-    </>
+    </div>
   );
 };

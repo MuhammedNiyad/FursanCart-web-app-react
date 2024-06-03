@@ -1,4 +1,13 @@
-import { Button, Divider, Modal, Radio, Rate, Space, message } from "antd";
+import {
+  Button,
+  Divider,
+  Modal,
+  Radio,
+  Rate,
+  Select,
+  Space,
+  message,
+} from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { BsBank2, BsCashStack, BsLightningCharge } from "react-icons/bs";
@@ -14,6 +23,7 @@ import SuccessOrder from "../Components/Common-Comp/SuccessOrder";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
 import {
+  getAllDeliveryTypes,
   getCartData,
   getOneProduct,
   getUserAddress,
@@ -54,10 +64,15 @@ const Cart = () => {
     getUserAddress
   );
 
+  const { data: dlvryTypes } = useQuery(
+    "getalldeliverytypes",
+    getAllDeliveryTypes
+  );
+
   const { mutate: deleteformcart } = useDeleteFromCart();
   const { mutate: createorder } = useCreateOrder();
-  const {mutate: addQnt} = useAddToCart();
-  const {mutate:decreaseqnt} = useDecreaseQnty();
+  const { mutate: addQnt } = useAddToCart();
+  const { mutate: decreaseqnt } = useDecreaseQnty();
 
   useEffect(() => {
     setCartData(userCartData?.data);
@@ -87,26 +102,26 @@ const Cart = () => {
     // dispatch(qntityPlus(id));
     const data = {
       userId: getUserId(),
-      varientId:id,
-      quantity:1,
-    }
+      varientId: id,
+      quantity: 1,
+    };
     addQnt(data, {
-      onSuccess(){
-        refetch()
-      }
-    })
+      onSuccess() {
+        refetch();
+      },
+    });
   };
 
-  const quantityDecrease = (id:any) => {
+  const quantityDecrease = (id: any) => {
     const data = {
-      cartItemId:id,
-      quantity:1
-    }
-    decreaseqnt(data,{
-      onSuccess(){
-        refetch()
-      }
-    })
+      cartItemId: id,
+      quantity: 1,
+    };
+    decreaseqnt(data, {
+      onSuccess() {
+        refetch();
+      },
+    });
   };
 
   const goToPaymentPage = (id: string, qnty: number) => {
@@ -304,10 +319,10 @@ const Cart = () => {
                     <div className="my-3">
                       <p className="flex gap-2">
                         <span className="text-slate-400 line-through ">
-                          SAR{" "}{it.productVarient.product.price}
+                          SAR {it.productVarient.product.price}
                         </span>
                         <em className="text-black font-bold">
-                          SAR{" "}{it.price}{" "}
+                          SAR {it.price}{" "}
                           <span className="text-green-500 text-xs inline-block align-bottom">
                             {it.productVarient.product.discount_percent}% off
                           </span>
@@ -372,13 +387,15 @@ const Cart = () => {
                   <tr>
                     <td>Your total Price would be </td>
                     <td className="text-right">
-                      SAR{" "}{cartData?.totalPrice || prodData?.data?.product.price}
+                      SAR{" "}
+                      {cartData?.totalPrice || prodData?.data?.product.price}
                     </td>
                   </tr>
                   <tr className="">
                     <td>Discount</td>
                     <td className="text-right text-green-600 font-semibold">
-                      SAR{" "}{cartData
+                      SAR{" "}
+                      {cartData
                         ? cartDiscount(
                             cartData?.CartProducts,
                             cartData?.totalPrice
@@ -397,7 +414,8 @@ const Cart = () => {
                     <td className="text-right font-bold">
                       SAR{" "}
                       {cartData?.totalPrice ||
-                        +prodData?.data?.product.price - +prodDiscount(prodData?.data.product, qnt)}
+                        +prodData?.data?.product.price -
+                          +prodDiscount(prodData?.data.product, qnt)}
                     </td>
                   </tr>
                 </tbody>
@@ -409,6 +427,24 @@ const Cart = () => {
                   : prodDiscount(prodData?.data.product, qnt)}{" "}
                 on this order
               </p>
+              <div>
+                <Select
+                  className="w-52"
+                  options={dlvryTypes?.data.map((it: any) => ({
+                    value: it.id,
+                    label: (
+                      <div className="flex justify-between">
+                        <p>{it.name}</p>
+                        <p>
+                          {it.deliveryCharge === "0"
+                            ? "Free"
+                            : it.deliveryCharge}
+                        </p>
+                      </div>
+                    ),
+                  }))}
+                />
+              </div>
             </section>
             <section className="sticky bottom-0 shadow-sm py-2 px-5 flex justify-end w-full md:col-span-2">
               <Button
@@ -530,7 +566,7 @@ const Cart = () => {
                     )
                   }
                 >
-                  Conform order
+                  Confirm order
                 </Button>
               </div>
             </section>

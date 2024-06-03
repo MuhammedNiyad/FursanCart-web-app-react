@@ -200,15 +200,15 @@ export const getAllOrders = () => {
 };
 
 // cancel order
-export const cancelOrder = (id: any) => {
-  return APIClientPrivate.delete(`/product/orders/delete/${id}`, {
+export const cancelOrder = ({id,userId, reason}:any) => {
+  return APIClientPrivate.patch(`/product/orders/cancel/${id}`,{userId:userId,reason:reason},{
     headers: {
       Authorization: `Bearer ${getUserToken()}`,
     },
   });
 };
 export const useCancelOrder = () => {
-  return useMutation((id: any) => cancelOrder(id));
+return useMutation(({id,userId,reason}:any) => cancelOrder({id,userId,reason}));
 };
 
 
@@ -221,4 +221,16 @@ export const getBrands = () => {
 // get all banner
 export const getAllBanner = () => {
   return APIClientPrivate.get('/banner/all');
-}
+};
+
+
+// get all delivery types
+export const getAllDeliveryTypes = () => {
+  return APIClientPrivate.get('/admin/delivery-type/all',
+    {
+      headers: {
+        Authorization: `Bearer ${getUserToken()}`,
+      }
+    }
+  )
+};

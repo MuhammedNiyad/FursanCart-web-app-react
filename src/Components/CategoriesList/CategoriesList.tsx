@@ -74,7 +74,7 @@ export const CategoriesList = () => {
                 </Button>
               </div>
               <Divider />
-              <section className="grid justify-center grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+              <section className="grid justify-center grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 px-3">
                 {products
                   ?.filter((prod) =>
                     prod.category.name === cat.name ? prod : ""
@@ -95,8 +95,8 @@ export const CategoriesList = () => {
                           height={100}
                           alt={it.description}
                         />
-                        <h3>{it.name}</h3>
-                        <p className="text-sm font-bold text-blue-800 text-wrap ">
+                        <h3 className="px-2">{it.name}</h3>
+                        <p className="text-sm font-bold text-blue-800 text-wrap px-2 ">
                           {it.description.substring(0, 30).concat(" . . .")}
                         </p>
                       </Link>
@@ -116,7 +116,7 @@ export const CategoriesList = () => {
                           disabled
                           defaultValue={it.rating}
                         />
-                        <div className="flex items-center justify-around w-full gap-1 text-lg font-bold ">
+                        <div className="flex items-center justify-around w-full gap-1 text-lg font-bold pb-3 ">
                           <b>SAR {it.price}</b>
                           <span onClick={() => addToCart(it.variants[0]?.id)}>
                             <CartIcon />

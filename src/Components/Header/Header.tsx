@@ -186,7 +186,6 @@ export const Header = ({ setSearchData }: any) => {
                             size={25}
                             onClick={() => signOut()}
                           />
-                          out
                         </button>
                       ) : (
                         <a
@@ -234,10 +233,10 @@ export const Header = ({ setSearchData }: any) => {
                   />
                 </form>
 
-                <span className="flex w-[12rem] items-center gap-1 mx-1">
+                {/* <span className="flex w-[12rem] items-center gap-1 mx-1">
                   <p className="text-base text-nowrap">All Categories</p>
                   <IoIosArrowDown />
-                </span>
+                </span> */}
                 <span className=" h-full bg-amber-400 text-black w-24 rounded-r-full flex justify-center items-center text-3xl">
                   <RiSearchLine onClick={handleSearch} />
                 </span>
@@ -268,7 +267,6 @@ export const Header = ({ setSearchData }: any) => {
                     <button className="flex text-base">
                       {""}
                       <HiOutlineLogout size={25} onClick={() => signOut()} />
-                      out
                     </button>
                   ) : (
                     <a
@@ -374,10 +372,10 @@ export const Header = ({ setSearchData }: any) => {
                     />
                   </form>
 
-                  <span className="flex w-[11rem] items-end gap-1 mx-1">
+                  {/* <span className="flex w-[11rem] items-end gap-1 mx-1">
                     <p className="text-base text-nowrap">All Categories</p>
                     <IoIosArrowDown />
-                  </span>
+                  </span> */}
                   <span className="h-full bg-black/80 text-white w-24 rounded-r-full flex justify-center items-center text-3xl">
                     <RiSearchLine />
                   </span>
@@ -407,7 +405,6 @@ export const Header = ({ setSearchData }: any) => {
                       <button className="flex text-base">
                         {""}
                         <HiOutlineLogout size={25} onClick={() => signOut()} />
-                        
                       </button>
                     ) : (
                       <a

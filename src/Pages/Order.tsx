@@ -1,4 +1,5 @@
-import { Button, message } from "antd";
+import { Button, Modal, message } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useQuery } from "react-query";
@@ -7,6 +8,7 @@ import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
 import { getUserId } from "../helpers/loggedUser";
 import { getAllOrders, getProducts, useCancelOrder } from "../utils/apis";
+import { IoIosStar } from "react-icons/io";
 
 const Order = () => {
   const {
@@ -19,11 +21,13 @@ const Order = () => {
     getProducts
   );
   const { mutate: cancelorder } = useCancelOrder();
+  const [reasonOpen, setReasonOpen] = useState(false);
+  const [cancelProdId, setCancelProdId] = useState("");
+  const [reasonField, setReasonField] = useState();
 
   const userId = getUserId();
   // const [cancelConfOpen, setCancelConfOpen] = useState(false)
   const [filteredDatas, setFilteredDatas] = useState<any[]>([]);
-  // const [reasonField, setReasonField] = useState();
 
   useEffect(() => {
     if (prodts?.data && orders?.data) {
@@ -42,10 +46,11 @@ const Order = () => {
                 filterd?.push({
                   id: order?.id,
                   prodName: product?.name,
+                  prodId: orderProd?.id,
+                  prodPrice: orderProd?.totPrice,
                   images: product?.images[0]?.url,
-                  status:
-                    orderProd?.orderStatuss[orderProd?.orderStatuss.length - 1]
-                      ?.status,
+                  orderStatus:
+                    orderProd?.orderStatuss[orderProd?.orderStatuss.length - 1],
                   orderedDate: order?.createdAt,
                 });
               }
@@ -57,23 +62,48 @@ const Order = () => {
     setFilteredDatas(filterd);
   };
 
-  const cancelOrder = (id: any) => {
-    cancelorder(id, {
-      onSuccess() {
-        message.success("order cancelled");
-        prodtRefetch();
-        orderRefetch();
-      },
-      onError() {
-        message.error("could not cancel order");
-      },
-    });
+  const handleOrderCancel = (id: any) => {
+    setCancelProdId(id);
+    setReasonOpen(true);
+  };
+
+  const cancelOrder = () => {
+    console.log(cancelProdId);
+    console.log(reasonField);
+
+    // return
+    cancelorder(
+      { id: cancelProdId, userId: getUserId(), reason: reasonField },
+      {
+        onSuccess() {
+          message.success("order cancelled");
+          setReasonOpen(false);
+          prodtRefetch();
+          orderRefetch();
+        },
+        onError() {
+          message.error("could not cancel order");
+        },
+      }
+    );
   };
 
   const deliveryDataCalc = (delvDate: any) => {
     const date = new Date(delvDate);
     date.setDate(date.getDate() + 7);
     return date.toDateString();
+  };
+
+  const changeDateFormat = (curDate: any) => {
+    const date = new Date(curDate);
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = String(date.getFullYear()).padStart(2, "0");
+
+    const formattedDate = `${day},${month},${year}`;
+
+    return formattedDate;
   };
 
   return (
@@ -89,31 +119,107 @@ const Order = () => {
       </div>
       <div className="my-10">
         {!isLoading ? (
-          <div className="px-10 sm:px-16 md:px-28 lg:px-40">
+          <div className=" max-w-[1000px] mx-auto px-5">
             {filteredDatas?.length > 0 ? (
               <div>
-                {filteredDatas?.map((item) => (
-                  <div className="flex items-center justify-between my-3 p-5 bg-slate-100">
-                    <img src={item.images} alt="img" className="w-20 h-20" />
-                    <h2 className="font-semibold  ">{item.prodName}</h2>
-                    <h4>{""}</h4>
-                    <p className="text-xs">
-                      Delivery expected in{" "}
-                      <span className="text-sm">
-                        {deliveryDataCalc(item.orderedDate)}
-                      </span>
-                    </p>
+                {filteredDatas?.map((item, ind) => (
+                  <div
+                    key={ind}
+                    className="flex flex-col gap-2 sm:gap-0 sm:flex-row justify-between my-3 p-5 bg-slate-100"
+                  >
+                    <div className="flex gap-5 max-w-[300px]">
+                      <img src={item.images} alt="img" className="w-20 h-20" />
+                      <h2 className="font-semibold  ">{item.prodName}</h2>
+                    </div>
                     <div>
-                      <p>status: {item.status}</p>
-                      <div className="flex justify-end items-end">
+                      <h4>SAR {item.prodPrice}</h4>
+                      <p
+                        className={`text-xs pt-3 ${
+                          item.orderStatus.status === "Cancelled" ||
+                          item.orderStatus.status === "Delivered"
+                            ? "hidden"
+                            : "block"
+                        }`}
+                      >
+                        Delivery expected in{" "}
+                        <span className="text-sm">
+                          {deliveryDataCalc(item.orderedDate)}
+                        </span>
+                      </p>
+                    </div>
+                    {/* {item.orderStatus.status !== "Cancelled" ? (
+                      <p className="text-xs">
+                        Delivery expected in{" "}
+                        <span className="text-sm">
+                          {deliveryDataCalc(item.orderedDate)}
+                        </span>
+                      </p>
+                    ) : (
+                      <p className="text-xs">
+                        Ordered item{" "}
+                        <span className="text-sm text-red-500">Canaelled</span>
+                      </p>
+                    )} */}
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`${
+                            item.orderStatus.status === "Cancelled"
+                              ? "bg-red-500"
+                              : "bg-green-500"
+                          } w-3 h-3 rounded-full`}
+                        >
+                          {" "}
+                        </span>
+                        <h4 className="font-semibold">
+                          {item.orderStatus.status}
+                        </h4>
+                        <p className="text-sm">
+                          {changeDateFormat(item.orderStatus.createdAt)}
+                        </p>
+                      </div>
+                      <p className="text-sm">{item.orderStatus.statusNote}</p>
+                      <div
+                        className={`flex justify-start pt-2 items-end ${
+                          item.orderStatus.status === "Cancelled" ||
+                          item.orderStatus.status === "Delivered"
+                            ? "hidden"
+                            : "block"
+                        }`}
+                      >
                         <Button
-                          disabled
                           className="bg-red-500 text-white"
-                          onClick={() => cancelOrder(item.id)}
+                          onClick={() => handleOrderCancel(item.prodId)}
                         >
                           Cancel
                         </Button>
                       </div>
+                      <div
+                        className={`flex justify-start pt-2 items-end ${
+                          item.orderStatus.status === "Delivered"
+                            ? "block"
+                            : "hidden"
+                        }`}
+                      >
+                        <Button
+                          className="bg-yellow-500 text-white"
+                          // onClick={() => handleOrderCancel(item.prodId)}
+                        >
+                          Return
+                        </Button>
+                      </div>
+                      <p
+                        className={`flex justify-start pt-2 items-center font-semibold text-blue-500 hover:underline cursor-pointer ${
+                          item.orderStatus.status === "Delivered"
+                            ? "block"
+                            : "hidden"
+                        }`}
+                      >
+                        <span>
+                          <IoIosStar />
+                        </span>
+                        {" "}{" "} Rate & Review
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -131,17 +237,23 @@ const Order = () => {
         )}
       </div>
       <Footer />
-      {/* <Modal open={cancelConfOpen}
-      onCancel={()=>setCancelConfOpen(false)}
-      onOk={cancelOrder}
-      title={'Conform order cancel'}>
+      <Modal
+        open={reasonOpen}
+        onCancel={() => setReasonOpen(false)}
+        onOk={cancelOrder}
+        title={"Conform order cancel"}
+        okText="Confirm"
+      >
         <div className="flex gap-4 p-5">
-        <label className="text-nowrap">Reason for</label>
-        <Input onChange={(e:any)=>{
-          setReasonField(e.target.value)
-        }}/>
+          <label className="text-nowrap font-semibold">Reason for</label>
+          <TextArea
+            rows={4}
+            onChange={(e: any) => {
+              setReasonField(e.target.value);
+            }}
+          />
         </div>
-      </Modal> */}
+      </Modal>
     </div>
   );
 };

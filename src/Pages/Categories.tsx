@@ -1,51 +1,56 @@
-import { Button, Drawer, Pagination, Rate, Space } from "antd";
+import { Button, Drawer, Pagination, Rate, Space, message } from "antd";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { BiSlider } from "react-icons/bi";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useQuery } from "react-query";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BackToTop } from "../Components/Common-Comp/BackToTop";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
 import { CartIcon } from "../Components/icons/CartIcon";
-import { getProductByTags, getProducts } from "../utils/apis";
+import { getProductByTags, getProducts, useAddToCart } from "../utils/apis";
+import { getUser, getUserId } from "../helpers/loggedUser";
 
 const Categories = () => {
   const [open, setOpen] = useState(false);
   // const [placement, setPlacement] = useState<DrawerProps["placement"]>("left");
   const [product, setProduct] = useState([]);
-  
-  
-  
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const cat = queryParams.get("cat");
-  const isCat = !!cat
-  const tag = queryParams.get("tag")
-  const isTag = !!tag
-  
-  
-  // console.log(cat);
-  
-  const {data:datas} = useQuery('getAllProductsForCategory', getProducts, {enabled: isCat})
-  useEffect(()=>{
-    if(datas?.data){
-      setProduct(datas?.data.filter((it:any)=> it?.category?.name === cat))
-    }
-  },[datas?.data])
+  const isCat = !!cat;
+  const tag = queryParams.get("tag");
+  const isTag = !!tag;
+  const navigate = useNavigate();
+  const userData = getUser();
 
+  // console.log(cat);
+
+  const { data: datas } = useQuery("getAllProductsForCategory", getProducts, {
+    enabled: isCat,
+  });
+
+  useEffect(() => {
+    if (datas?.data) {
+      setProduct(datas?.data.filter((it: any) => it?.category?.name === cat));
+    }
+  }, [datas?.data]);
 
   // console.log(product);
 
-  const {data:tagProd} =useQuery('getTagProduct', ()=>getProductByTags(tag), {enabled:isTag})
-  
+  const { data: tagProd } = useQuery(
+    "getTagProduct",
+    () => getProductByTags(tag),
+    { enabled: isTag }
+  );
+
   useEffect(() => {
     if (tagProd?.data) {
-      setProduct(tagProd?.data)
+      setProduct(tagProd?.data);
     }
-  
-},[tagProd?.data])
+  }, [tagProd?.data]);
   // console.log("cat data: ", data);
 
   const showDrawer = () => {
@@ -57,6 +62,29 @@ const Categories = () => {
   };
 
   // console.log("slug: ",router.asPath);
+
+  const {mutate:toCartFromCat} = useAddToCart()
+
+    const addToCart = (data: any) => {
+      if (!userData) {
+        navigate("/authorize");
+      }
+
+      const compainData = {
+        varientId: data,
+        quantity: 1,
+        userId: getUserId(),
+      };
+
+      toCartFromCat(compainData, {
+        onSuccess() {
+          message.success("Item added to cart");
+        },
+        onError() {
+          message.error("could not add item to cart");
+        },
+      });
+    };
 
   return (
     <div>
@@ -91,7 +119,7 @@ const Categories = () => {
                 src={it.images[0]?.url}
                 width={140}
                 height={100}
-                alt={'img'}
+                alt={"img"}
               />
               <p className="text-sm text-blue-800 font-bold ">
                 {it.name.substring(0, 20).concat("...")}
@@ -109,9 +137,10 @@ const Categories = () => {
                 defaultValue={it.rating}
               />
               <div className=" font-bold text-lg flex justify-around items-center gap-1  w-full">
-                <b>$ {it.price}</b>
-
-                <CartIcon />
+                <b>SAR {it.price}</b>
+                <span onClick={() => addToCart(it.variants[0]?.id)}>
+                  <CartIcon />
+                </span>
               </div>
             </div>
           </div>
