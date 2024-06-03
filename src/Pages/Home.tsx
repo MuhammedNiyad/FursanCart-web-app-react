@@ -15,7 +15,7 @@ import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
 import SearchResult from "../Components/SearchResult/SearchResult";
 import styles from "../styles/Home.module.css";
-import { getAllBanner, getBrands, getCategories } from "../utils/apis";
+import { getAllBanner, getBrands } from "../utils/apis";
 
 const Home = () => {
   const [searchData, setSearchData] = useState();
@@ -23,7 +23,7 @@ const Home = () => {
   const [offerBanner, setOfferBanner] = useState([]);
 
   const { data: brands } = useQuery("getbrands", getBrands);
-  const { data: categoryData } = useQuery("getAllCategoryData", getCategories);
+  // const { data: categoryData } = useQuery("getAllCategoryData", getCategories);
   const { data: banner } = useQuery('getbannersfor', getAllBanner);
   
 
