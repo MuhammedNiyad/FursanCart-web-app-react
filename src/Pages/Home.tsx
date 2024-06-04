@@ -167,6 +167,7 @@ const Home = () => {
               spaceBetween={5}
               navigation={true}
               modules={[Navigation, Autoplay]}
+              loop={true}
               breakpoints={{
                 480: {
                   slidesPerView: 3,
@@ -185,7 +186,6 @@ const Home = () => {
                   spaceBetween: 10,
                 },
               }}
-              centeredSlides={true}
               autoplay={{
                 delay: 3000,
                 disableOnInteraction: false,

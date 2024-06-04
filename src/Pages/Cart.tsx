@@ -41,6 +41,8 @@ const Cart = () => {
   const [placeOrder, setPlaceOrder] = useState(false);
   const [successOrder, setSuccessOrder] = useState(false);
   const [cartData, setCartData] = useState<any>();
+  const [deliveryCharge, setDeliveryCharge] = useState('');
+  const [deliveryTypeId, setDeliveryTypeId] = useState('');
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -68,6 +70,10 @@ const Cart = () => {
     "getalldeliverytypes",
     getAllDeliveryTypes
   );
+
+  const freeOptionId = dlvryTypes?.data.find(
+    (it:any) => it.deliveryCharge === "0"
+  )?.id;
 
   const { mutate: deleteformcart } = useDeleteFromCart();
   const { mutate: createorder } = useCreateOrder();
@@ -129,13 +135,6 @@ const Cart = () => {
     window.location.reload();
   };
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setSuccessOrder(false);
-  //     navigate('/')
-  //   }, 2000);
-  // }, [successOrder === true]);
-
   const prodDiscount = (product: any, quanty: any) => {
     console.log(product);
 
@@ -165,13 +164,12 @@ const Cart = () => {
   };
 
   const createOrder = (productData: any, dataInCart: any, delvryId: any) => {
-    console.log({ productData }, { dataInCart });
-
+    // console.log(deliveryTypeId);
+    // return
     if (!delvryId) {
       message.error("please add your delivery address");
       return;
     }
-
     const { product } = productData;
     const quantity = productData?.qnt;
     if (product) {
@@ -181,6 +179,7 @@ const Cart = () => {
         dlvryId: delvryId,
         paymentType: "CashOnDelivery",
         paymentProvider: "onCash",
+        deliveryTypeId:deliveryTypeId,
         items: [
           {
             productId: product?.variants[0]?.id,
@@ -188,11 +187,10 @@ const Cart = () => {
           },
         ],
       };
-
       createorder(orderData, {
         onSuccess() {
           setSuccessOrder(true);
-          orderFinishAndNavigate();
+          // orderFinishAndNavigate();
         },
         onError() {
           message.error("could not conform your order");
@@ -205,11 +203,11 @@ const Cart = () => {
         dlvryId: delvryId,
         paymentType: "CashOnDelivery",
         paymentProvider: "onCash",
+        deliveryTypeId: deliveryTypeId,
         items: dataInCart?.CartProducts.map((product: any) => ({
           cartItemId: product.id,
         })),
       };
-
       createorder(orderData, {
         onSuccess() {
           setSuccessOrder(true);
@@ -221,6 +219,16 @@ const Cart = () => {
       });
     }
   };
+
+  const handleSelectDeliveryType = (id:any) => {
+      const selected = dlvryTypes?.data.find(
+        (it: any) => it.id === id
+    );
+    
+    console.log(selected);
+    setDeliveryTypeId(selected.id)
+    setDeliveryCharge(selected.deliveryCharge)
+  }
 
   return (
     <div className="bg-slate-50/20">
@@ -403,19 +411,38 @@ const Cart = () => {
                         : prodDiscount(prodData?.data.product, qnt)}
                     </td>
                   </tr>
-                  <tr>
+                  <tr className="w-[100%]">
                     <td>Delivery Charges</td>
-                    <td className="text-right text-green-600 font-semibold">
+                    {/* <td className="text-right text-green-600 font-semibold"> 
                       FREE Delivery
+                    </td> */}
+                    <td className="flex justify-end">
+                      <Select
+                        className="w-[250px] rounded-none border-none h-10 mb-1"
+                        autoFocus={false}
+                        defaultValue={freeOptionId}
+                        onChange={handleSelectDeliveryType}
+                        options={dlvryTypes?.data.map((it: any) => ({
+                          value: it.id,
+                          label: (
+                            <div className="flex justify-between">
+                              <p>{it.name}</p>
+                              <p className="font-semibold">
+                                SAR {it.deliveryCharge}
+                              </p>
+                            </div>
+                          ),
+                        }))}
+                      />
                     </td>
                   </tr>
                   <tr className="border-t border-dashed">
                     <td>Total Amount</td>
                     <td className="text-right font-bold">
                       SAR{" "}
-                      {cartData?.totalPrice ||
-                        +prodData?.data?.product.price -
-                          +prodDiscount(prodData?.data.product, qnt)}
+                      {+cartData?.totalPrice + +deliveryCharge ||
+                        (+prodData?.data?.product.price -
+                          +prodDiscount(prodData?.data.product, qnt) + +deliveryCharge )}
                     </td>
                   </tr>
                 </tbody>
@@ -427,24 +454,7 @@ const Cart = () => {
                   : prodDiscount(prodData?.data.product, qnt)}{" "}
                 on this order
               </p>
-              <div>
-                <Select
-                  className="w-52"
-                  options={dlvryTypes?.data.map((it: any) => ({
-                    value: it.id,
-                    label: (
-                      <div className="flex justify-between">
-                        <p>{it.name}</p>
-                        <p>
-                          {it.deliveryCharge === "0"
-                            ? "Free"
-                            : it.deliveryCharge}
-                        </p>
-                      </div>
-                    ),
-                  }))}
-                />
-              </div>
+              <div></div>
             </section>
             <section className="sticky bottom-0 shadow-sm py-2 px-5 flex justify-end w-full md:col-span-2">
               <Button

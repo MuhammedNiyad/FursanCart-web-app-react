@@ -52,7 +52,7 @@ export const Banner = () => {
   }, [banner?.data]);
 
   return (
-    <div className="w- h-full">
+    <div className="w-full h-full">
       <Swiper
         spaceBetween={30}
         centeredSlides={true}
@@ -60,19 +60,17 @@ export const Banner = () => {
           delay: 3000,
           disableOnInteraction: false,
         }}
+        loop={true}
         pagination={{
           clickable: true,
           // dynamicBullets: true,
         }}
         // navigation={true}
         modules={[Autoplay, Pagination, Navigation]}
-        className="h-full w-full text-center  "
+        className=""
       >
         {sliderBanner.map((it, i) => (
-          <SwiperSlide
-            key={i}
-            className="-z-10"
-          >
+          <SwiperSlide key={i} className="-z-10">
             {/* <div className="text-left">
               <h1 className="text-3xl xl:text-6xl  xl:w-[300px]  ">
                 {it.bannerTitle}
@@ -87,7 +85,11 @@ export const Banner = () => {
               </p>
             </div> */}
             <div className=" w-full h-full flex justify-center items-center">
-              <img src={it.banner[0]?.url} alt={"banner"} className="" />
+              <img
+                src={it.banner[0]?.url}
+                alt={"banner"}
+                className=" md:w-[95%] lg:h-[400px] xl:w-[76%]  xl:h-[500px]"
+              />
             </div>
           </SwiperSlide>
         ))}
