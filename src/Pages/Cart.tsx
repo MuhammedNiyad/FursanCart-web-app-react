@@ -412,7 +412,7 @@ const Cart = () => {
                     </td>
                   </tr>
                   <tr className="w-[100%]">
-                    <td>Delivery Charges</td>
+                    <td>Delivery Type</td>
                     {/* <td className="text-right text-green-600 font-semibold"> 
                       FREE Delivery
                     </td> */}

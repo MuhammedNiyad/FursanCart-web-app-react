@@ -2,7 +2,6 @@ import { Button, Popconfirm, Popover, message } from "antd";
 import { useEffect, useState } from "react";
 import { BsSuitHeart } from "react-icons/bs";
 import { HiOutlineLogout, HiOutlineShoppingBag } from "react-icons/hi";
-import { IoIosArrowDown } from "react-icons/io";
 import { RiSearchLine } from "react-icons/ri";
 import { SlSocialDropbox } from "react-icons/sl";
 import { TbUser } from "react-icons/tb";
