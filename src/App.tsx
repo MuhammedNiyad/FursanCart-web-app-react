@@ -7,6 +7,7 @@ import NotFound from "./Pages/NotFound";
 import Order from "./Pages/Order";
 import Product from "./Pages/Product";
 import { LoginProtector, RouterProtector } from "./RouteProtect";
+import ProfilePge from "./Pages/ProfilePge";
 
 const router = createBrowserRouter([
   {
@@ -48,6 +49,14 @@ const router = createBrowserRouter([
     element: (
       <RouterProtector>
         <Order />
+      </RouterProtector>
+    ),
+  },
+  {
+    path: "/user/profile",
+    element: (
+      <RouterProtector>
+        <ProfilePge/>
       </RouterProtector>
     ),
   },

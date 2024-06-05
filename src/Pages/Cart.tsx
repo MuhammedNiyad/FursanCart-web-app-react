@@ -300,7 +300,11 @@ const Cart = () => {
                     <div>
                       <p>{it.productVarient.product.name}</p>
                       <div className="text-amber-400 flex gap-1 place-self-start my-3">
-                        <Rate allowHalf defaultValue={2.5} />
+                        <Rate
+                          disabled
+                          allowHalf
+                          value={it.productVarient.product.rating}
+                        />
                       </div>
                     </div>
                   </section>
@@ -441,8 +445,9 @@ const Cart = () => {
                     <td className="text-right font-bold">
                       SAR{" "}
                       {+cartData?.totalPrice + +deliveryCharge ||
-                        (+prodData?.data?.product.price -
-                          +prodDiscount(prodData?.data.product, qnt) + +deliveryCharge )}
+                        +prodData?.data?.product.price -
+                          +prodDiscount(prodData?.data.product, qnt) +
+                          +deliveryCharge}
                     </td>
                   </tr>
                 </tbody>

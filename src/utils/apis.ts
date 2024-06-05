@@ -234,3 +234,12 @@ export const getAllDeliveryTypes = () => {
     }
   )
 };
+
+
+// review & rating 
+export const createReview = (data: any) => {
+  return APIClientPrivate.post('/product/review', data);
+};
+export const useCreateReview = () => {
+  return useMutation((data: any) => createReview(data));
+};

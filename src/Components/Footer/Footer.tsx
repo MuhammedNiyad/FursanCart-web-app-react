@@ -66,7 +66,7 @@ export const Footer = () => {
             <div className="">
               <p className="gap-2 my-4 grid place-items-start md:flex md:justify-center md:flex-col">
                 <b className="my-3">Quick Links</b>
-                <a href="#">My Account</a>
+                <a href="/user/profile">My Account</a>
                 <a href="/user/orders">Order Tracking</a>
                 <a href="#">Wish List</a>
                 <a href="#">Customer Service</a>

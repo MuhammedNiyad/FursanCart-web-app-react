@@ -1,4 +1,4 @@
-import { Button, Modal, message } from "antd";
+import { Button, Form, Modal, Rate, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
@@ -7,8 +7,14 @@ import LoadingComp from "../Components/Common-Comp/LoadingComp";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
 import { getUserId } from "../helpers/loggedUser";
-import { getAllOrders, getProducts, useCancelOrder } from "../utils/apis";
+import {
+  getAllOrders,
+  getProducts,
+  useCancelOrder,
+  useCreateReview,
+} from "../utils/apis";
 import { IoIosStar } from "react-icons/io";
+import { useForm } from "antd/es/form/Form";
 
 const Order = () => {
   const {
@@ -24,6 +30,10 @@ const Order = () => {
   const [reasonOpen, setReasonOpen] = useState(false);
   const [cancelProdId, setCancelProdId] = useState("");
   const [reasonField, setReasonField] = useState();
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedIdForReview, setSelectedIdForReview] = useState("");
+
+  const [form] = useForm();
 
   const userId = getUserId();
   // const [cancelConfOpen, setCancelConfOpen] = useState(false)
@@ -46,7 +56,8 @@ const Order = () => {
                 filterd?.push({
                   id: order?.id,
                   prodName: product?.name,
-                  prodId: orderProd?.id,
+                  orderedProdId: orderProd?.id,
+                  productId: varient?.productId,
                   prodPrice: orderProd?.totPrice,
                   images: product?.images[0]?.url,
                   orderStatus:
@@ -104,6 +115,29 @@ const Order = () => {
     const formattedDate = `${day},${month},${year}`;
 
     return formattedDate;
+  };
+
+  const { mutate: createReviewAndRate } = useCreateReview();
+
+  const handleReviewSubmit = (value: any) => {
+    // console.log(value);
+    setReviewModalOpen(false)
+
+    const data = {
+      rating: value.rating,
+      review: value.review,
+      prodId: selectedIdForReview,
+      userId: userId,
+    };
+
+    createReviewAndRate(data, {
+      onSuccess() {
+        message.success("Thank you for your valuable review")
+      },
+      onError() {
+        message.error("Failed to create review")
+      }
+    })
   };
 
   return (
@@ -189,7 +223,7 @@ const Order = () => {
                       >
                         <Button
                           className="bg-red-500 text-white"
-                          onClick={() => handleOrderCancel(item.prodId)}
+                          onClick={() => handleOrderCancel(item.orderedProdId)}
                         >
                           Cancel
                         </Button>
@@ -209,6 +243,10 @@ const Order = () => {
                         </Button>
                       </div>
                       <p
+                        onClick={() => {
+                          setReviewModalOpen(true);
+                          setSelectedIdForReview(item.productId);
+                        }}
                         className={`flex justify-start pt-2 items-center font-semibold text-blue-500 hover:underline cursor-pointer ${
                           item.orderStatus.status === "Delivered"
                             ? "block"
@@ -217,8 +255,8 @@ const Order = () => {
                       >
                         <span>
                           <IoIosStar />
-                        </span>
-                        {" "}{" "} Rate & Review
+                        </span>{" "}
+                        Rate & Review
                       </p>
                     </div>
                   </div>
@@ -237,6 +275,7 @@ const Order = () => {
         )}
       </div>
       <Footer />
+      {/* order cancel conform modal */}
       <Modal
         open={reasonOpen}
         onCancel={() => setReasonOpen(false)}
@@ -252,6 +291,26 @@ const Order = () => {
               setReasonField(e.target.value);
             }}
           />
+        </div>
+      </Modal>
+
+      {/* product rating modal */}
+      <Modal
+        open={reviewModalOpen}
+        onCancel={() => setReviewModalOpen(false)}
+        onOk={() => handleReviewSubmit(form.getFieldsValue())}
+        title={"Give review & rating"}
+        okText="submit"
+      >
+        <div className="p-3">
+          <Form form={form}>
+            <Form.Item label="Rate" name={"rating"}>
+              <Rate allowHalf />
+            </Form.Item>
+            <Form.Item label="Review" name={"reviewText"}>
+              <TextArea rows={4} />
+            </Form.Item>
+          </Form>
         </div>
       </Modal>
     </div>
