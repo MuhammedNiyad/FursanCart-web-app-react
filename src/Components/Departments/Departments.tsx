@@ -177,7 +177,7 @@ export const Departments: React.FC<{
     categoryData?.data.map((categ: any) => {
       return {
         name: categ.name,
-        image:categ?.image[0].url,
+        image:categ?.image[0]?.url,
         links: categ.subCategories.map((subCateg: any) => {
           return {
             link: "#",

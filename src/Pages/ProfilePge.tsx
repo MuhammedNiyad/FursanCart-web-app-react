@@ -1,13 +1,26 @@
-import { Helmet } from "react-helmet";
-import { Header } from "../Components/Header/Header";
-import { Footer } from "../Components/Footer/Footer";
-import { BsBoxSeamFill } from "react-icons/bs";
-import { MdKeyboardArrowRight } from "react-icons/md";
-import { FaUser } from "react-icons/fa";
+import { Button, Input } from "antd";
 import { useState } from "react";
+import { Helmet } from "react-helmet";
+import { BsBoxSeamFill } from "react-icons/bs";
+import { FaUser } from "react-icons/fa";
+import { MdKeyboardArrowRight } from "react-icons/md";
+import { useQuery } from "react-query";
+import { Footer } from "../Components/Footer/Footer";
+import { Header } from "../Components/Header/Header";
+import { getUserId } from "../helpers/loggedUser";
+import { getUserById } from "../utils/apis";
 
 const ProfilePge = () => {
-  const [selectedAccSett, setSelectedAccSett] = useState("");
+  const [selectedAccSett, setSelectedAccSett] = useState("profileInfo");
+  const [editUserName, setEditUserName] = useState(false);
+  const [editEmail, setEditEmail] = useState(false);
+  const [editPhone, setEditPone] = useState(false);
+  const userId = getUserId() || "";
+  const isUserId = !!userId;
+
+  const { data } = useQuery("getuserbyid", () => getUserById(userId), {
+    enabled: isUserId,
+  });
 
   return (
     <div className="w-full h-full">
@@ -27,7 +40,7 @@ const ProfilePge = () => {
             />
             <div>
               <p>Hello,</p>
-              <h2 className="font-semibold">Niyad</h2>
+              <h2 className="font-semibold">{data?.data?.username}</h2>
             </div>
           </div>
           <div className="border">
@@ -80,7 +93,123 @@ const ProfilePge = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white w-2/3 h-full"></div>
+        <div className="bg-white w-2/3 h-full p-10">
+          <div
+            className={`${
+              selectedAccSett === "profileInfo" ? "block" : "hidden"
+            }`}
+          >
+            <div className="mb-5">
+              <div className="flex items-center gap-5 mb-3">
+                <h3 className="font-semibold">Personal Information</h3>
+                <span
+                  className="text-xs cursor-pointer hover:text-blue-500"
+                  onClick={() => setEditUserName((prev) => !prev)}
+                >
+                  Edit
+                </span>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Input
+                  value={data?.data?.username}
+                  placeholder="Enter user name"
+                  disabled={!editUserName}
+                  className="p-3 text-lg max-w-[300px]"
+                />
+                <Button
+                  className={`bg-amber-400 text-white ${
+                    !editUserName ? "hidden" : "block"
+                  } `}
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
+            <div className="mb-5">
+              <div className="flex items-center gap-5 mb-3">
+                <h3 className="font-semibold">Email Address</h3>
+                <span
+                  className="text-xs cursor-pointer hover:text-blue-500"
+                  onClick={() => setEditEmail((prev) => !prev)}
+                >
+                  Edit
+                </span>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Input
+                  value={data?.data?.email}
+                  placeholder="Enter email address"
+                  disabled={!editEmail}
+                  className="p-3 text-lg max-w-[300px]"
+                />
+                <Button
+                  className={`bg-amber-400 text-white ${
+                    !editEmail ? "hidden" : "block"
+                  } `}
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
+            <div className="mb-5">
+              <div className="flex items-center gap-5 mb-3">
+                <h3 className="font-semibold">Mobail Number</h3>
+                <span
+                  className="text-xs cursor-pointer hover:text-blue-500"
+                  onClick={() => setEditPone((prev) => !prev)}
+                >
+                  Edit
+                </span>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Input
+                  value={data?.data?.phone}
+                  placeholder="Enter phone number"
+                  disabled={!editPhone}
+                  className="p-3 text-lg max-w-[300px]"
+                />
+                <Button
+                  className={`bg-amber-400 text-white ${
+                    !editPhone ? "hidden" : "block"
+                  } `}
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
+          {/* address area */}
+          <div className={`${
+              selectedAccSett === "manageAddress" ? "block" : "hidden"
+            }`}>
+            <div className="mb-5">
+              <div className="flex items-center gap-5 mb-3">
+                <h3 className="font-semibold">Manage Address</h3>
+                <span
+                  className="text-xs cursor-pointer hover:text-blue-500"
+                  onClick={() => setEditUserName((prev) => !prev)}
+                >
+                  Edit
+                </span>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Input
+                  defaultValue={data?.data?.username}
+                  placeholder="Enter user name"
+                  disabled={!editUserName}
+                  className="p-3 text-lg max-w-[300px]"
+                />
+                <Button
+                  className={`bg-amber-400 text-white ${
+                    !editUserName ? "hidden" : "block"
+                  } `}
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <Footer />
     </div>

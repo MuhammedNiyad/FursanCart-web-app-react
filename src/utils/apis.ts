@@ -72,6 +72,11 @@ export const registerApi = async (props: any) => {
   }
 };
 
+// get user by id
+export const getUserById = (id:string)=>{
+  return APIClientPrivate.get(`/user/${id}`)
+}
+
 // Product related apis start
 
 export const getProducts = () => {
