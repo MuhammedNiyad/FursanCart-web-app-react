@@ -1,70 +1,52 @@
-import { useQuery } from "react-query";
-import { searchProduct } from "../../utils/apis";
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
-import { Rate } from "antd";
+import { searchProduct } from "../../utils/apis";
 import LoadingComp from "../Common-Comp/LoadingComp";
 
-const SearchResult = ({ searchData }: any) => {
+const SearchResult = ({ searchData,setSearchData }: any) => {
   // console.log(searchData);
-	const [datas, setDatas] = useState<any[]>([]);
-	// console.log(searchData);
+  const [datas, setDatas] = useState<any[]>([]);
+  // console.log(searchData);
 
-	const isSearch = !!searchData
-	
+  const isSearch = !!searchData;
 
-  const { data: ProdData, isLoading } = useQuery("searchproduct", () =>
-    searchProduct(searchData),{enabled:isSearch}
+  const { data: ProdData, isLoading } = useQuery(
+    "searchproduct",
+    () => searchProduct(searchData),
+    { enabled: isSearch }
   );
 
   useEffect(() => {
     if (ProdData?.data) {
       setDatas(ProdData?.data);
+      setSearchData('');
     }
   }, [ProdData?.data]);
 
-    // console.log(ProdData?.data);
+  // console.log(ProdData?.data);
 
   return (
     <div>
+      {ProdData?.data ? (
+        <h3 className="text-2xl font-semibold capitalize m-5">Search Result</h3>
+      ) : (
+        ""
+      )}
       {!isLoading ? (
         <section className="grid justify-center grid-cols-2  md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-y-2">
           {datas?.map((it, i) => (
             <div
               key={i}
-              className="bg-white odd:mr-1  hover:scale-110 hover:shadow-md ease-in-out duration-300  grid place-items-center gap-1 max-w-[300px] "
+              className="cursor-pointer bg-white odd:mr-1 border hover:scale-100 hover:shadow-md ease-in-out duration-300 p-3 flex flex-col items-center gap-1 justify-center max-w-[310px]"
             >
-              <Link
-                to={`/items/${it.id}/?prod=${it.title}`}
-                className="w-full space-y-3"
-              >
-                <img
-                  className="object-fill w-full max-h-[180px]"
-                  src={it?.images[0]?.url}
-                  width={140}
-                  height={100}
-                  alt={"img"}
-                />
-                <h3>{it.name}</h3>
-                <p className="text-sm font-bold text-blue-800 text-wrap ">
-                  {it.description.substring(0, 30).concat(" . . .")}
+              <Link to={`/items/${it.id}/?prod=${it.name}`}>
+                <img src={it.url} width={140} height={100} alt={"img"} />
+                <p className="text-sm text-blue-800 font-bold ">
+                  {it.name.substring(0, 20).concat("...")}
                 </p>
+                {/* <p>{it.id}</p> */}
               </Link>
-
-              <div className="self-end ">
-                <Rate
-                  style={{
-                    fontSize: "0.8rem",
-                  }}
-                  disabled
-                  allowHalf
-                  defaultValue={it.rating}
-                />
-                <div className="flex items-center justify-around w-full gap-1 text-lg font-bold ">
-                  <b>$ {it.price}</b>
-                  {/* <CartIcon /> */}
-                </div>
-              </div>
             </div>
           ))}
         </section>

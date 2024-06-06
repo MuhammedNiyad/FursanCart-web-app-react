@@ -43,6 +43,7 @@ const Cart = () => {
   const [cartData, setCartData] = useState<any>();
   const [deliveryCharge, setDeliveryCharge] = useState('');
   const [deliveryTypeId, setDeliveryTypeId] = useState('');
+  const [freeOptionId, setFreeDeliveryOption]= useState('')
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -71,9 +72,11 @@ const Cart = () => {
     getAllDeliveryTypes
   );
 
-  const freeOptionId = dlvryTypes?.data.find(
-    (it:any) => it.deliveryCharge === "0"
-  )?.id;
+  useMemo(() => {
+    setFreeDeliveryOption(dlvryTypes?.data.find(
+    (it:any) => it.deliveryCharge == "0"
+  )?.id)
+  },[dlvryTypes?.data])
 
   const { mutate: deleteformcart } = useDeleteFromCart();
   const { mutate: createorder } = useCreateOrder();
@@ -136,7 +139,7 @@ const Cart = () => {
   };
 
   const prodDiscount = (product: any, quanty: any) => {
-    console.log(product);
+    // console.log(product);
 
     const originPrice = product?.price * quanty;
     const discAmount = product?.discountedAmount * quanty;
@@ -179,7 +182,7 @@ const Cart = () => {
         dlvryId: delvryId,
         paymentType: "CashOnDelivery",
         paymentProvider: "onCash",
-        deliveryTypeId:deliveryTypeId,
+        deliveryTypeId:deliveryTypeId || freeOptionId,
         items: [
           {
             productId: product?.variants[0]?.id,
@@ -203,7 +206,7 @@ const Cart = () => {
         dlvryId: delvryId,
         paymentType: "CashOnDelivery",
         paymentProvider: "onCash",
-        deliveryTypeId: deliveryTypeId,
+        deliveryTypeId: deliveryTypeId || freeOptionId,
         items: dataInCart?.CartProducts.map((product: any) => ({
           cartItemId: product.id,
         })),
@@ -225,9 +228,9 @@ const Cart = () => {
         (it: any) => it.id === id
     );
     
-    console.log(selected);
-    setDeliveryTypeId(selected.id)
-    setDeliveryCharge(selected.deliveryCharge)
+    // console.log(selected);
+    setDeliveryTypeId(selected.id||freeOptionId)
+    setDeliveryCharge(selected.deliveryCharge || 0)
   }
 
   return (
@@ -269,12 +272,12 @@ const Cart = () => {
                       <p className="py-2">
                         quantity <span className="font-semibold ">{qnt}</span>
                       </p>
-                      <div className="flex gap-1 flex-wrap">
-                        <p className="text-slate-400 line-through">
-                          {prodData?.data.product.price}
+                      <div className="flex gap-2 flex-wrap">
+                        <p className="text-slate-400 line-through text-sm">
+                          SAR {prodData?.data.product.price}
                         </p>
                         <h4 className="font-semibold">
-                          {prodData?.data?.product.discountedAmount}
+                          SAR {prodData?.data?.product.discountedAmount}
                         </h4>
                         <p className="text-xs text-green-500 align-text-bottom">
                           {prodData?.data.product.discount_percent}% off with
@@ -424,6 +427,7 @@ const Cart = () => {
                       <Select
                         className="w-[250px] rounded-none border-none h-10 mb-1"
                         autoFocus={false}
+                        placeholder='select delivery type'
                         defaultValue={freeOptionId}
                         onChange={handleSelectDeliveryType}
                         options={dlvryTypes?.data.map((it: any) => ({

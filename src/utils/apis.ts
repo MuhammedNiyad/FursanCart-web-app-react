@@ -77,6 +77,14 @@ export const getUserById = (id:string)=>{
   return APIClientPrivate.get(`/user/${id}`)
 }
 
+// update user
+export const updateUser = ({ id, data }: any) => {
+  return APIClientPrivate.patch(`/user/update/${id}`, data);
+};
+export const useUpdateUser = () => {
+  return useMutation(({ id, data }: any) => updateUser({ id, data }))
+};
+
 // Product related apis start
 
 export const getProducts = () => {
@@ -99,8 +107,14 @@ export const getProductByTags = (tag:any) => {
   return APIClientPrivate.get(`/product/all?tag=${tag}&status=active`)
 }
 
+export const getProductByBrand = (brandId: any) => {
+  return APIClientPrivate.get(`/product/all?brandId=${brandId}&status=active`)
+};
+
 // searchProduct
-export const searchProduct = (search:any) => {
+export const searchProduct = (search: any) => {
+  console.log(search);
+  
   return APIClientPrivate.get(`/product/search?s=${search}`)
 }
 
@@ -247,4 +261,28 @@ export const createReview = (data: any) => {
 };
 export const useCreateReview = () => {
   return useMutation((data: any) => createReview(data));
+};
+
+
+// Wish List
+export const addToWishList = (data: any) => {
+  console.log(data);
+  
+  return APIClientPrivate.post('/product/wishlist/add', data)
+};
+export const useAddToWishList = () => {
+  return useMutation(({data}: any) => addToWishList(data));
+};
+
+// Get user wishList
+export const getUserWishList = (id:any) => {
+  return APIClientPrivate.get(`/product/wishlist/get?userId=${id}`);
+}
+
+// delete item from wishList
+export const deleteFromWishList = (id: any) => {
+  return APIClientPrivate.delete(`/product/wishlist/delete/${id}`);
+};
+export const useDeleteFromWishList = () => {
+  return useMutation((id: any) => deleteFromWishList(id));
 };

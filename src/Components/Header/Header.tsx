@@ -223,7 +223,10 @@ export const Header = ({ setSearchData }: any) => {
               </div>
               {/* search bar */}
               <div className="border-2 border-amber-400 w-[620px] h-[48px] bg-white rounded-full flex justify-between items-center ">
-                <form className="text-slate-500 text-lg h-full w-[90%]">
+                <form
+                  onSubmit={(e) => e.preventDefault()}
+                  className="text-slate-500 text-lg h-full w-[90%]"
+                >
                   <input
                     type="text"
                     onChange={(e) => setSearchInput(e.target.value)}
@@ -236,14 +239,20 @@ export const Header = ({ setSearchData }: any) => {
                   <p className="text-base text-nowrap">All Categories</p>
                   <IoIosArrowDown />
                 </span> */}
-                <span className=" h-full bg-amber-400 text-black w-24 rounded-r-full flex justify-center items-center text-3xl">
-                  <RiSearchLine onClick={handleSearch} />
+                <span
+                  className=" h-full bg-amber-400 text-black w-24 rounded-r-full flex justify-center items-center text-3xl"
+                  onClick={handleSearch}
+                >
+                  <RiSearchLine />
                 </span>
               </div>
               <div className="flex justify-around gap-3 text-2xl">
-                <span>
-                  <BsSuitHeart />
-                </span>
+                <a href="/user/wishlist">
+                  {""}
+                  <span>
+                    <BsSuitHeart />
+                  </span>
+                </a>
                 <div className="relative">
                   <Popover content={cartBody} title="Cart" trigger="click">
                     <a href="/cart">
@@ -284,20 +293,38 @@ export const Header = ({ setSearchData }: any) => {
             </section>
             <section className="px-2 flex justify-between items-center pr-3">
               <div className="px-2 flex gap-4 items-center text-sm">
-                <Departments title={"All Departments"} icon={"menu"} />
+                <Departments title={"All Categories"} icon={"menu"} />
                 <div>
-                  <Link to={'/items/?tag=bestOffer'} className="font-bold hover:text-orange-500 flex items-center justify-between gap-2">
+                  <Link
+                    to={"/items/?tag=bestOffer"}
+                    className="font-bold hover:text-orange-500 flex items-center justify-between gap-2"
+                  >
                     Best Offer
                   </Link>
                 </div>
                 <div>
-                  <Link to={'/items/?tag=trending'} className="font-bold hover:text-orange-500 ">Trending </Link>
+                  <Link
+                    to={"/items/?tag=trending"}
+                    className="font-bold hover:text-orange-500 "
+                  >
+                    Trending{" "}
+                  </Link>
                 </div>
                 <div>
-                  <Link to={"/items/?tag=featured"} className="font-bold hover:text-orange-500">Featured</Link>
+                  <Link
+                    to={"/items/?tag=featured"}
+                    className="font-bold hover:text-orange-500"
+                  >
+                    Featured
+                  </Link>
                 </div>
                 <div>
-                  <Link to={"/items/?tag=topRated"} className="font-bold hover:text-orange-500">Top Rated</Link>
+                  <Link
+                    to={"/items/?tag=topRated"}
+                    className="font-bold hover:text-orange-500"
+                  >
+                    Top Rated
+                  </Link>
                 </div>
               </div>
               <p>Free Shiping on Order SAR 50+</p>
@@ -381,9 +408,12 @@ export const Header = ({ setSearchData }: any) => {
                 </div>
 
                 <div className="flex justify-around gap-3 text-2xl">
-                  <span>
-                    <BsSuitHeart />
-                  </span>
+                  <a href="/user/wishlist">
+                    {""}
+                    <span>
+                      <BsSuitHeart />
+                    </span>
+                  </a>
                   <div>
                     <a href="/cart">
                       <span className={styles.carticon}>

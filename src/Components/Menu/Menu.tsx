@@ -7,6 +7,10 @@ import { SidebarFooter } from "../icons/SidebarFooter";
 
 const menuItems = [
   {
+    title: "My Accound",
+    link: "/user/profile",
+  },
+  {
     title: "Home",
     link: "/",
   },

@@ -231,7 +231,7 @@ const Order = () => {
                       <div
                         className={`flex justify-start pt-2 items-end ${
                           item.orderStatus.status === "Delivered"
-                            ? "block"
+                            ? "hidden"
                             : "hidden"
                         }`}
                       >

@@ -68,7 +68,7 @@ export const Footer = () => {
                 <b className="my-3">Quick Links</b>
                 <a href="/user/profile">My Account</a>
                 <a href="/user/orders">Order Tracking</a>
-                <a href="#">Wish List</a>
+                <a href="/user/wishlist">Wish List</a>
                 <a href="#">Customer Service</a>
                 <a href="#">Return / Exchange</a>
                 <a href="#">FAQs</a>

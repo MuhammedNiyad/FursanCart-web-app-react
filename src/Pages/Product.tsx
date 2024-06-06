@@ -1,8 +1,8 @@
 import { Divider, Rate, message } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { BiCartDownload } from "react-icons/bi";
-import { FaPlus } from "react-icons/fa";
+import { FaHeart, FaPlus, FaRegHeart } from "react-icons/fa";
 import { FiMinus } from "react-icons/fi";
 import { PiLightningLight } from "react-icons/pi";
 import { useQuery } from "react-query";
@@ -11,7 +11,12 @@ import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
 import { getUser, getUserId } from "../helpers/loggedUser";
 import { ProductType } from "../lib/types";
-import { getOneProduct, useAddToCart } from "../utils/apis";
+import {
+  getOneProduct,
+  getUserWishList,
+  useAddToCart,
+  useAddToWishList,
+} from "../utils/apis";
 
 const Product = () => {
   const { id } = useParams();
@@ -19,26 +24,48 @@ const Product = () => {
   // const dispatch = useAppDispatch();
   const [quantity, setQuantity] = useState<number>(1);
   // const navigate = useNavigate();
-  const [product, setProduct] = useState<ProductType>()
+  const [product, setProduct] = useState<ProductType>();
   // const [relatedProd, setRelatedProd] = useState();
   const navigate = useNavigate();
   const userData = getUser();
+  const isUser = !!userData;
+  const [isWishListed, setIsWishListed] = useState(false);
 
-
-  const { data:prodData } = useQuery("getOneProduct", () => getOneProduct(id));
+  const { data: prodData } = useQuery("getOneProduct", () => getOneProduct(id));
+  const { data: wishList } = useQuery(
+    "getUserWishList",
+    () => getUserWishList(getUserId()),
+    { enabled: isUser }
+  );
   const { mutate: Addtocart } = useAddToCart();
   // console.log("single Prod: ",product);
-  
+
   useEffect(() => {
     setProduct(prodData?.data.product);
     // setRelatedProd(prodData?.data.relatedProducts);
-  },[prodData])
-  
+  }, [prodData]);
+
+  useMemo(() => {
+    if (wishList?.data && product?.variants[0]?.id) {
+      const productVariantId = product?.variants[0]?.id;
+
+      console.log(productVariantId);
+
+      const alreadyWished = wishList?.data?.items.some(
+        (item: any) => item.variantId === productVariantId
+      );
+      console.log(alreadyWished);
+
+      if (alreadyWished) {
+        setIsWishListed(true);
+      }
+      // console.log(alreadyWished);
+    }
+  }, [wishList?.data]);
 
   const addToCart = (data: any) => {
-
     if (!userData) {
-      navigate('/authorize')
+      navigate("/authorize");
     }
 
     const compainData = {
@@ -52,12 +79,31 @@ const Product = () => {
         message.success("Item added to cart");
       },
       onError() {
-        message.error("could not add item to cart")
-      }
+        message.error("could not add item to cart");
+      },
     });
   };
 
+  const { mutate: addToWishList } = useAddToWishList();
 
+  const handleAddToWishList = (id: string | undefined) => {
+    if (!userData) {
+      navigate("/authorize");
+    } else {
+      addToWishList(
+        { data: { varientId: id, userId: getUserId() } },
+        {
+          onSuccess() {
+            setIsWishListed(true);
+            message.success("Item added to wishlist");
+          },
+          onError() {
+            message.error("could not add to wishlist");
+          },
+        }
+      );
+    }
+  };
 
   return (
     <div>
@@ -70,12 +116,23 @@ const Product = () => {
       <div className="mt-10 px-5 w-full flex flex-col sm:flex-row gap-5 ">
         {/* image */}
         <div className="flex flex-col items-center gap-5 w-full h-full sm:w-1/2">
-          <div className="w-full lg:w-[80%] h-[80%] flex justify-center items-center ">
+          <div className="w-full lg:w-[80%] h-[80%] flex justify-center items-center relative">
             <img
               src={selectedImg ? selectedImg : product?.images[0].url}
               alt="product-img"
               className=""
             />
+            <span className="p-3 bg-white shadow-md rounded-full absolute right-0 top-0 scale-95 hover:scale-105 duration-200">
+              {!isWishListed ? (
+                <FaRegHeart
+                  size={20}
+                  className="text-amber-500"
+                  onClick={() => handleAddToWishList(product?.variants[0]?.id)}
+                />
+              ) : (
+                <FaHeart size={20} className="text-amber-500" />
+              )}
+            </span>
           </div>
           <div
             className={`${
@@ -180,6 +237,9 @@ const Product = () => {
       <div></div>
 
       {/* product info */}
+      <div></div>
+
+      {/* product rating and review */}
       <div></div>
 
       {/* related product */}

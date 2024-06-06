@@ -9,7 +9,7 @@ import { BackToTop } from "../Components/Common-Comp/BackToTop";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
 import { CartIcon } from "../Components/icons/CartIcon";
-import { getProductByTags, getProducts, useAddToCart } from "../utils/apis";
+import { getProductByBrand, getProductByTags, getProducts, useAddToCart } from "../utils/apis";
 import { getUser, getUserId } from "../helpers/loggedUser";
 
 const Categories = () => {
@@ -25,12 +25,18 @@ const Categories = () => {
   const isTag = !!tag;
   const navigate = useNavigate();
   const userData = getUser();
+  const brandId = queryParams.get("Brand");
+  const brandName = queryParams.get("name");
+  const isBrand = !!brandId;
 
-  // console.log(cat);
+  // console.log(brandId , brandName);  
 
   const { data: datas } = useQuery("getAllProductsForCategory", getProducts, {
     enabled: isCat,
   });
+
+  const { data: datasByBrand } = useQuery("getproductByBrand", () => getProductByBrand(brandId), { enabled: isBrand });
+
 
   useEffect(() => {
     if (datas?.data) {
@@ -51,6 +57,13 @@ const Categories = () => {
       setProduct(tagProd?.data);
     }
   }, [tagProd?.data]);
+
+  useEffect(() => {
+    if (datasByBrand?.data) {
+      setProduct(datasByBrand?.data)
+    }
+    
+  },[datasByBrand?.data])
   // console.log("cat data: ", data);
 
   const showDrawer = () => {
@@ -63,28 +76,28 @@ const Categories = () => {
 
   // console.log("slug: ",router.asPath);
 
-  const {mutate:toCartFromCat} = useAddToCart()
+  const { mutate: toCartFromCat } = useAddToCart();
 
-    const addToCart = (data: any) => {
-      if (!userData) {
-        navigate("/authorize");
-      }
+  const addToCart = (data: any) => {
+    if (!userData) {
+      navigate("/authorize");
+    }
 
-      const compainData = {
-        varientId: data,
-        quantity: 1,
-        userId: getUserId(),
-      };
-
-      toCartFromCat(compainData, {
-        onSuccess() {
-          message.success("Item added to cart");
-        },
-        onError() {
-          message.error("could not add item to cart");
-        },
-      });
+    const compainData = {
+      varientId: data,
+      quantity: 1,
+      userId: getUserId(),
     };
+
+    toCartFromCat(compainData, {
+      onSuccess() {
+        message.success("Item added to cart");
+      },
+      onError() {
+        message.error("could not add item to cart");
+      },
+    });
+  };
 
   return (
     <div>
@@ -94,7 +107,7 @@ const Categories = () => {
         <link rel="icon" href="/fursanFavIcon.svg" />
       </Helmet>
       <Header />
-      <h1 className="text-2xl font-semibold capitalize m-5"> {cat || tag}</h1>
+      <h1 className="text-2xl font-semibold capitalize m-5"> {cat || tag || brandName}</h1>
       <section>
         <div className="flex justify-between px-4 bg-slate-50 py-3 mx-3 rounded-lg">
           <div
@@ -108,7 +121,7 @@ const Categories = () => {
           </div>
         </div>
       </section>
-      <main className="grid grid-cols-2 gap-1 p-2 md:grid-flow-col md:auto-cols-fr">
+      <main className="grid grid-cols-2 gap-1 p-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {product.map((it: any, i: number) => (
           <div
             key={i}

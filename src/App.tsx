@@ -8,6 +8,7 @@ import Order from "./Pages/Order";
 import Product from "./Pages/Product";
 import { LoginProtector, RouterProtector } from "./RouteProtect";
 import ProfilePge from "./Pages/ProfilePge";
+import WishListPage from "./Pages/WishListPage";
 
 const router = createBrowserRouter([
   {
@@ -20,21 +21,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: (
-        <Home />
-    ),
+    element: <Home />,
   },
   {
     path: "/items",
-    element: (
-        <Categories />
-    ),
+    element: <Categories />,
   },
   {
     path: "/items/:id",
-    element: (
-        <Product />
-    ),
+    element: <Product />,
   },
   {
     path: "/cart",
@@ -56,7 +51,15 @@ const router = createBrowserRouter([
     path: "/user/profile",
     element: (
       <RouterProtector>
-        <ProfilePge/>
+        <ProfilePge />
+      </RouterProtector>
+    ),
+  },
+  {
+    path: "/user/wishlist",
+    element: (
+      <RouterProtector>
+        <WishListPage />
       </RouterProtector>
     ),
   },
@@ -67,7 +70,6 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-
   return <RouterProvider router={router} />;
 };
 

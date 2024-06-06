@@ -42,7 +42,7 @@ export const SearchBar = () => {
         (style:any, item:any) =>
           item && (
             <animated.div
-              className=" absolute w-[95%] h-16 m-auto left-0 right-0 top-16 bg-white shadow-md px-2 py-3 "
+              className=" absolute w-[95%] h-16 m-auto left-0 right-0 top-16 bg-white shadow-md px-2 py-3 z-50 "
               style={style}
             >
               <form className="border text-slate-500 text-lg h-full w-full  rounded-full flex justify-between  ">

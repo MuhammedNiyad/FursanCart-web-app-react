@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { useQuery } from "react-query";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -18,9 +18,10 @@ import styles from "../styles/Home.module.css";
 import { getAllBanner, getBrands } from "../utils/apis";
 
 const Home = () => {
-  const [searchData, setSearchData] = useState();
+  const [searchData, setSearchData] = useState('');
   const [brandData, setBrandData] = useState([]);
   const [offerBanner, setOfferBanner] = useState([]);
+  const navigate = useNavigate()
 
   const { data: brands } = useQuery("getbrands", getBrands);
   // const { data: categoryData } = useQuery("getAllCategoryData", getCategories);
@@ -150,7 +151,7 @@ const Home = () => {
           </section>
         </div>
         <section>
-          <SearchResult searchData={searchData} />
+          <SearchResult searchData={searchData} setSearchData={setSearchData} />
         </section>
         {/* <section className="sales-cat-tab">
            <SalesCatTabs />
@@ -205,6 +206,7 @@ const Home = () => {
                     width={150}
                     height={150}
                     alt={it.name}
+                    onClick={() => navigate(`/items/?Brand=${it.id}&name=${it.name}`)}
                   />
                 </SwiperSlide>
               ))}
