@@ -37,7 +37,7 @@ const Product = () => {
   const isUser = !!userData;
   const [isWishListed, setIsWishListed] = useState(false);
 
-  const { data: prodData } = useQuery("getOneProduct", () => getOneProduct(id));
+  const { data: prodData, refetch } = useQuery("getOneProduct", () => getOneProduct(id));
   const { data: wishList } = useQuery(
     "getUserWishList",
     () => getUserWishList(getUserId()),
@@ -401,7 +401,7 @@ const Product = () => {
                 key={i}
                 className="cursor-pointer bg-white odd:mr-1 border hover:scale-100 hover:shadow-md ease-in-out duration-300 p-3 flex flex-col items-center gap-1 justify-center max-w-[310px]"
               >
-                <Link to={`/items/${it.id}/?prod=${it.name}`}>
+                <Link to={`/items/${it.id}/?prod=${it.name}`} onClick={()=>refetch()}>
                   <img
                     src={it.images[0]?.url}
                     width={140}
