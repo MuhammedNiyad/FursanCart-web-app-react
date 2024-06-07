@@ -113,10 +113,12 @@ export const getProductByBrand = (brandId: any) => {
 
 // searchProduct
 export const searchProduct = (search: any) => {
-  console.log(search);
-  
   return APIClientPrivate.get(`/product/search?s=${search}`)
 }
+
+export const getProductReview = (id:any) => {
+  return APIClientPrivate.get(`/product/review/eachprod/${id}`);
+};
 
 // Product related apis end
 

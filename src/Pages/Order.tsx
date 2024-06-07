@@ -125,7 +125,7 @@ const Order = () => {
 
     const data = {
       rating: value.rating,
-      review: value.review,
+      reviewText: value.reviewText,
       prodId: selectedIdForReview,
       userId: userId,
     };

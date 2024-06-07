@@ -1,18 +1,22 @@
+import { LoadingOutlined } from "@ant-design/icons";
 import { Divider, Rate, message } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
+import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 import { BiCartDownload } from "react-icons/bi";
 import { FaHeart, FaPlus, FaRegHeart } from "react-icons/fa";
 import { FiMinus } from "react-icons/fi";
 import { PiLightningLight } from "react-icons/pi";
 import { useQuery } from "react-query";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
+import { CartIcon } from "../Components/icons/CartIcon";
 import { getUser, getUserId } from "../helpers/loggedUser";
 import { ProductType } from "../lib/types";
 import {
   getOneProduct,
+  getProductReview,
   getUserWishList,
   useAddToCart,
   useAddToWishList,
@@ -25,7 +29,9 @@ const Product = () => {
   const [quantity, setQuantity] = useState<number>(1);
   // const navigate = useNavigate();
   const [product, setProduct] = useState<ProductType>();
-  // const [relatedProd, setRelatedProd] = useState();
+  const [relatedProd, setRelatedProd] = useState([]);
+  const [reviews, setReviews] = useState([]);
+
   const navigate = useNavigate();
   const userData = getUser();
   const isUser = !!userData;
@@ -37,12 +43,23 @@ const Product = () => {
     () => getUserWishList(getUserId()),
     { enabled: isUser }
   );
+
+  const { isLoading } = useQuery(
+    "getproductreview",
+    () => getProductReview(id),
+    {
+      onSuccess(data) {
+        setReviews(data?.data?.reverse());
+      },
+    }
+  );
+
   const { mutate: Addtocart } = useAddToCart();
   // console.log("single Prod: ",product);
 
   useEffect(() => {
     setProduct(prodData?.data.product);
-    // setRelatedProd(prodData?.data.relatedProducts);
+    setRelatedProd(prodData?.data.relatedProducts);
   }, [prodData]);
 
   useMemo(() => {
@@ -105,6 +122,18 @@ const Product = () => {
     }
   };
 
+    const changeDateFormat = (curDate: any) => {
+      const date = new Date(curDate);
+
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = String(date.getFullYear()).padStart(2, "0");
+
+      const formattedDate = `${day}/${month}/${year}`;
+
+      return formattedDate;
+    };
+
   return (
     <div>
       <Helmet>
@@ -163,7 +192,7 @@ const Product = () => {
                 }}
                 allowHalf
                 disabled
-                value={product?.rating ? product?.rating : 3}
+                value={product?.rating ?? product?.rating}
               />
               <span>{`(${product?.rating})`}</span>
             </div>
@@ -208,6 +237,7 @@ const Product = () => {
             {/* buy now and add cart button */}
             <div className="flex w-full gap-2 items-center justify-between">
               <button
+                type="button"
                 className="w-[50%] h-[35px] md:h-12 flex bg-gray-100 items-center justify-center rounded-2xl md:rounded-3xl gap-1 scale-95 hover:scale-100 duration-200"
                 onClick={() => addToCart(product?.variants[0].id)}
               >
@@ -218,6 +248,7 @@ const Product = () => {
                 add to cart
               </button>
               <button
+                type="button"
                 className="w-[50%] h-[35px] md:h-12 flex items-center bg-amber-400 justify-center text-white rounded-2xl md:rounded-3xl gap-1 scale-95 hover:scale-100 duration-200 "
                 onClick={() => navigate(`/cart/?prod=${id}&qnt=${quantity}`)}
               >
@@ -228,7 +259,7 @@ const Product = () => {
                 buy now
               </button>
             </div>
-            <div className="h-52"></div>
+            <div className="sm:h-44"></div>
           </div>
         </div>
       </div>
@@ -237,13 +268,173 @@ const Product = () => {
       <div></div>
 
       {/* product info */}
-      <div></div>
+      <div className="w-full">
+        <div className="mx-auto max-w-[1250px] h-full bg-white flex flex-col-reverse sm:flex-row">
+          {/* show rating and review */}
+          <div className="w-full h-full p-5">
+            <h3 className="text-lg font-semibold">Reviews & Ratings</h3>
+            {!isLoading ? (
+              reviews && reviews.length > 0 ? (
+                <div className={`py-2 ${reviews.length>3 ? 'h-[500px]' : 'h-auto'} sm:h-[500px] overflow-x-scroll`}>
+                  {reviews.map((items: any, ind) => (
+                    <div key={ind} className="border-b py-2">
+                      <div className="flex gap-2">
+                        <img
+                          src="/public/pofile.jpg"
+                          alt="user"
+                          className="w-7 rounded-full"
+                        />
+                        <h4>{items?.UserReview?.user?.username}</h4>
+                      </div>
+                      <div className="flex gap-2 items-center my-2">
+                        <Rate value={items.rating} className="text-xs" />
+                        <span className="text-sm font-semibold">
+                          {items.rating === 1
+                            ? "Very Bad"
+                            : items.rating === 2
+                            ? "Bad"
+                            : items.rating === 3
+                            ? "Good"
+                            : items.rating === 4
+                            ? "Very Good"
+                            : items.rating === 5
+                            ? "Excellent"
+                            : ""}
+                        </span>
+                      </div>
+                      <div>
+                        <p>{items.reviewText}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-xs pt-2">
+                          posted on ({changeDateFormat(items.createdAt)})
+                        </p>
+                        <div className="flex gap-1">
+                          <span className="p-2 bg-slate-100 rounded-full scale-95 hover:scale-100">
+                            <AiOutlineLike />
+                          </span>
+                          <span className="p-2 bg-slate-100 rounded-full scale-95 hover:scale-100">
+                            <AiOutlineDislike />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="h-[500px] flex items-center justify-center">
+                  <span>No reviews</span>
+                </div>
+              )
+            ) : (
+              <div className="h-[500px] flex items-center justify-center">
+                <span>
+                  <LoadingOutlined className="text-3xl" />
+                </span>
+              </div>
+            )}
+          </div>
+          <hr className="bg-black sm:h-[500px] border-l-2 " />
+          {/* show product specifications and highlights */}
+          <div className="w-full h-full">
+            <div className="w-full h-full p-5">
+              <h3 className="text-lg font-semibold">
+                Highlights & Specifications
+              </h3>
+              <div className="sm:h-[500px] overflow-x-scroll">
+                <div className="py-2">
+                  <h5 className="font-medium text-neutral-400 ">Color</h5>
+                  <p className="font-normal text-sm">
+                    {product?.variants[0]?.value}
+                  </p>
+                </div>
+                <div className="py-2">
+                  <h5 className="font-medium text-neutral-400 ">Weight</h5>
+                  <p className="font-normal text-sm">{product?.weight}</p>
+                </div>
+                <div className="py-2">
+                  <h5 className="font-medium text-neutral-400 ">Highlights</h5>
+                  <ul className="font-normal text-sm">
+                    <li>
+                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                      Consequuntur architecto esse voluptates blanditiis
+                    </li>
+                    <li>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Cum, deserunt? Assumenda tempora ducimus dolor libero.
+                    </li>
+                  </ul>
+                </div>
+                <div className="py-2">
+                  <h5 className="font-medium text-neutral-400 ">
+                    Specifications
+                  </h5>
+                  <ul className="font-normal text-sm">
+                    <li>
+                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                      Consequuntur architecto esse voluptates blanditiis
+                    </li>
+                    <li>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Cum, deserunt? Assumenda tempora ducimus dolor libero.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr className="max-w-[1200px] mx-auto my-10" />
 
       {/* product rating and review */}
       <div></div>
 
       {/* related product */}
-      <div></div>
+      <div className="p-5">
+        <div className="mx-auto max-w-[1300px]">
+          <h1 className="text-2xl font-semibold py-3">Related Products</h1>
+          <main className="grid grid-cols-2 gap-1 p-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
+            {relatedProd?.map((it: any, i: number) => (
+              <div
+                key={i}
+                className="cursor-pointer bg-white odd:mr-1 border hover:scale-100 hover:shadow-md ease-in-out duration-300 p-3 flex flex-col items-center gap-1 justify-center max-w-[310px]"
+              >
+                <Link to={`/items/${it.id}/?prod=${it.name}`}>
+                  <img
+                    src={it.images[0]?.url}
+                    width={140}
+                    height={100}
+                    alt={"img"}
+                  />
+                  <p className="text-sm text-blue-800 font-bold ">
+                    {it.name.substring(0, 20).concat("...")}
+                  </p>
+                  {/* <p>{it.id}</p> */}
+                </Link>
+
+                <div className="">
+                  <Rate
+                    style={{
+                      fontSize: "0.8rem",
+                    }}
+                    allowHalf
+                    disabled
+                    defaultValue={it.rating}
+                  />
+                  <div className=" font-bold text-lg flex justify-around items-center gap-1  w-full">
+                    <b>SAR {it.price}</b>
+                    <span onClick={() => addToCart(it.variants[0]?.id)}>
+                      <CartIcon />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </main>
+        </div>
+      </div>
 
       {/* footer */}
       <Footer />

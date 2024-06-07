@@ -5,7 +5,7 @@ export const Footer = () => {
   return (
     <div className="bg-white mt-5">
       <footer className="h-[400px] bg-slate-100/20 ">
-        <div className="bg-amber-400 px-5  p-3 md:flex md:justify-between md:items-center text-center leading-9">
+        <div className="bg-amber-400 px-10 lg:px-36 2xl:px-72  p-3 md:flex md:justify-between md:items-center text-center leading-9">
           <p className="">
             <span className="text-lg flex items-center gap-5">
               <SiMinutemailer className="text-2xl" /> Sign up to Newsletter
