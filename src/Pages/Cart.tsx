@@ -22,6 +22,7 @@ import LoadingComp from "../Components/Common-Comp/LoadingComp";
 import SuccessOrder from "../Components/Common-Comp/SuccessOrder";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
+import { getUserId } from "../helpers/loggedUser";
 import {
   getAllDeliveryTypes,
   getCartData,
@@ -32,7 +33,7 @@ import {
   useDecreaseQnty,
   useDeleteFromCart,
 } from "../utils/apis";
-import { getUserId } from "../helpers/loggedUser";
+import APIClientPrivate from "../utils/axios";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -41,9 +42,11 @@ const Cart = () => {
   const [placeOrder, setPlaceOrder] = useState(false);
   const [successOrder, setSuccessOrder] = useState(false);
   const [cartData, setCartData] = useState<any>();
-  const [deliveryCharge, setDeliveryCharge] = useState('');
-  const [deliveryTypeId, setDeliveryTypeId] = useState('');
-  const [freeOptionId, setFreeDeliveryOption]= useState('')
+  const [deliveryCharge, setDeliveryCharge] = useState("");
+  const [deliveryTypeId, setDeliveryTypeId] = useState("");
+  const [freeOptionId, setFreeDeliveryOption] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponCode, setCouponCode] = useState('');
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -73,10 +76,10 @@ const Cart = () => {
   );
 
   useMemo(() => {
-    setFreeDeliveryOption(dlvryTypes?.data.find(
-    (it:any) => it.deliveryCharge == "0"
-  )?.id)
-  },[dlvryTypes?.data])
+    setFreeDeliveryOption(
+      dlvryTypes?.data.find((it: any) => it.deliveryCharge == "0")?.id
+    );
+  }, [dlvryTypes?.data]);
 
   const { mutate: deleteformcart } = useDeleteFromCart();
   const { mutate: createorder } = useCreateOrder();
@@ -108,7 +111,6 @@ const Cart = () => {
   };
 
   const quantityIncrease = (id: number) => {
-    // dispatch(qntityPlus(id));
     const data = {
       userId: getUserId(),
       varientId: id,
@@ -139,8 +141,6 @@ const Cart = () => {
   };
 
   const prodDiscount = (product: any, quanty: any) => {
-    // console.log(product);
-
     const originPrice = product?.price * quanty;
     const discAmount = product?.discountedAmount * quanty;
     const total = originPrice - discAmount;
@@ -167,8 +167,6 @@ const Cart = () => {
   };
 
   const createOrder = (productData: any, dataInCart: any, delvryId: any) => {
-    // console.log(deliveryTypeId);
-    // return
     if (!delvryId) {
       message.error("please add your delivery address");
       return;
@@ -182,7 +180,8 @@ const Cart = () => {
         dlvryId: delvryId,
         paymentType: "CashOnDelivery",
         paymentProvider: "onCash",
-        deliveryTypeId:deliveryTypeId || freeOptionId,
+        code: couponCode,
+        deliveryTypeId: deliveryTypeId || freeOptionId,
         items: [
           {
             productId: product?.variants[0]?.id,
@@ -206,6 +205,7 @@ const Cart = () => {
         dlvryId: delvryId,
         paymentType: "CashOnDelivery",
         paymentProvider: "onCash",
+        code: couponCode,
         deliveryTypeId: deliveryTypeId || freeOptionId,
         items: dataInCart?.CartProducts.map((product: any) => ({
           cartItemId: product.id,
@@ -223,15 +223,54 @@ const Cart = () => {
     }
   };
 
-  const handleSelectDeliveryType = (id:any) => {
-      const selected = dlvryTypes?.data.find(
-        (it: any) => it.id === id
-    );
-    
+  const handleSelectDeliveryType = (id: any) => {
+    const selected = dlvryTypes?.data.find((it: any) => it.id === id);
+
     // console.log(selected);
-    setDeliveryTypeId(selected.id||freeOptionId)
-    setDeliveryCharge(selected.deliveryCharge || 0)
-  }
+    setDeliveryTypeId(selected.id || freeOptionId);
+    setDeliveryCharge(selected.deliveryCharge || 0);
+  };
+
+  const handleUpdateCartWithCoupon = async (value: any) => {
+    console.log(value);
+    if (value) {
+      const res = await APIClientPrivate.get(`/coupons/all?code=${value}`);
+      if (res && res?.data) {
+        // console.log(res.data);
+        const couponData = res?.data[0];
+        if (couponData) {
+          const couponForProd = couponData?.couponPerProdsOrCates[0];
+          if (
+            couponForProd?.productsId === prod &&
+            couponData?.status === "available" &&
+            couponData?.isActive === true
+          ) {
+            setCouponDiscount(+couponData?.discountAmount);
+            message.success("coupon applied");
+            setCouponCode(couponData.coupon_code);
+            console.log("applied for product");
+          } else if (
+            couponData?.isActive === true &&
+            couponData?.status === "available" &&
+            +cartData?.totalPrice >= +couponData?.minimumPurchaseAmount
+          ) {
+            setCouponDiscount(+couponData?.discountAmount);
+            message.success("coupon applied");
+            setCouponCode(couponData.coupon_code);
+            console.log('applied for all');
+          } else {
+            message.error("coupon is not valid");
+          }
+        } else {
+          message.error("Invalid Coupon");
+          setCouponDiscount(0)
+        }
+      }
+    } else {
+      setCouponDiscount(0);
+    }
+    // console.log(couponField);
+  };
 
   return (
     <div className="bg-slate-50/20">
@@ -369,31 +408,36 @@ const Cart = () => {
               <section className="bg-white">
                 <div>
                   <form
-                    // action="#"
                     className="flex flex-wrap justify-center gap-5"
+                    onSubmit={(e: any) => {
+                      e.preventDefault();
+                      handleUpdateCartWithCoupon(
+                        e.target.elements.couponCode.value
+                      );
+                    }}
                   >
-                    <div className="border rounded-full  flex justify-between items-center">
+                    <div className="border rounded-full flex justify-between items-center">
                       <input
                         type="text"
+                        name="couponCode"
                         placeholder="Coupon Code "
-                        className=" rounded-l-full pl-3 w-full outline-none"
+                        className="rounded-l-full pl-3 w-full outline-none"
                       />
-                      <div className="bg-black text-white rounded-r-full  h-full px-6 py-2">
+                      <div className="bg-black text-white rounded-r-full h-full px-6 py-2">
                         <FaTags />
                       </div>
                     </div>
-                    <Button
-                      htmlType="submit"
+                    <button
+                      type="submit" // This makes the button submit the form
                       className="rounded-full px-5 bg-slate-200 hover:bg-slate-400 hover:text-white hover:border-none active:bg-slate-400 focus:bg-slate-200"
                     >
                       Update cart
-                    </Button>
+                    </button>
                   </form>
                 </div>
               </section>
             </section>
             <Divider className="md:hidden" />
-
             <section className="w-full  pt-4 border my-5 shadow-sm px-2 ml-auto h-[19em] bg-white">
               <h3 className="font-bold">Price Details</h3>
 
@@ -427,7 +471,7 @@ const Cart = () => {
                       <Select
                         className="w-[250px] rounded-none border-none h-10 mb-1"
                         autoFocus={false}
-                        placeholder='select delivery type'
+                        placeholder="select delivery type"
                         defaultValue={freeOptionId}
                         onChange={handleSelectDeliveryType}
                         options={dlvryTypes?.data.map((it: any) => ({
@@ -444,14 +488,21 @@ const Cart = () => {
                       />
                     </td>
                   </tr>
+                  <tr className={`${couponDiscount > 0 ? "":"hidden"}`}>
+                    <td>Coupon applied</td>
+                    <td className="text-right text-green-600 font-semibold">
+                      SAR{" "}
+                      {couponDiscount}
+                    </td>
+                  </tr>
                   <tr className="border-t border-dashed">
                     <td>Total Amount</td>
                     <td className="text-right font-bold">
                       SAR{" "}
-                      {+cartData?.totalPrice + +deliveryCharge ||
+                      {+cartData?.totalPrice + +deliveryCharge - couponDiscount ||
                         +prodData?.data?.product.price -
                           +prodDiscount(prodData?.data.product, qnt) +
-                          +deliveryCharge}
+                          +deliveryCharge - couponDiscount}
                     </td>
                   </tr>
                 </tbody>
@@ -459,8 +510,8 @@ const Cart = () => {
               <p className={`text-xs text-green-600 font-semibold my-5 `}>
                 You will save SAR{" "}
                 {cartData
-                  ? cartDiscount(cartData?.CartProducts, cartData?.totalPrice)
-                  : prodDiscount(prodData?.data.product, qnt)}{" "}
+                  ? +cartDiscount(cartData?.CartProducts, cartData?.totalPrice) + couponDiscount
+                  : +prodDiscount(prodData?.data.product, qnt) + couponDiscount}{" "}
                 on this order
               </p>
               <div></div>
@@ -473,7 +524,6 @@ const Cart = () => {
                 Place Order
               </Button>
             </section>
-
             {/* payment section */}
             <section
               className={`w-full md:col-span-2 md:mt-10 ${
