@@ -149,7 +149,7 @@ const Product = () => {
             <img
               src={selectedImg ? selectedImg : product?.images[0].url}
               alt="product-img"
-              className=""
+              className="max-w-[300px]"
             />
             <span className="p-3 bg-white shadow-md rounded-full absolute right-0 top-0 scale-95 hover:scale-105 duration-200">
               {!isWishListed ? (
@@ -173,7 +173,7 @@ const Product = () => {
                 key={ind}
                 src={it.url}
                 alt="product image"
-                className="md:w-[80px] w-[50px]"
+                className="md:max-w-[50px] max-w-[50px]"
                 onClick={() => setSelectedImg(it.url)}
               />
             ))}
@@ -183,7 +183,9 @@ const Product = () => {
         <div className="flex md:items-center sm:w-1/2 ">
           <div className="space-y-5 w-full">
             <h1 className="text-2xl lg:text-4xl font-bold">{product?.name}</h1>
-            <p className="md:text-xl">{product?.description}</p>
+            {/* <div className="">{product?.description}</div> */}
+            <div dangerouslySetInnerHTML={{ __html: product?.description|| <>No  description</> }} />
+
             {/* rating */}
             <div className="flex gap-1 items-center">
               <Rate
@@ -275,7 +277,11 @@ const Product = () => {
             <h3 className="text-lg font-semibold">Reviews & Ratings</h3>
             {!isLoading ? (
               reviews && reviews.length > 0 ? (
-                <div className={`py-2 ${reviews.length>3 ? 'h-[500px]' : 'h-auto'} sm:h-[500px] overflow-x-scroll`}>
+                <div
+                  className={`py-2 ${
+                    reviews.length > 3 ? "h-[500px]" : "h-auto"
+                  } sm:h-[500px] overflow-x-scroll`}
+                >
                   {reviews.map((items: any, ind) => (
                     <div key={ind} className="border-b py-2">
                       <div className="flex gap-2">
@@ -401,7 +407,10 @@ const Product = () => {
                 key={i}
                 className="cursor-pointer bg-white odd:mr-1 border hover:scale-100 hover:shadow-md ease-in-out duration-300 p-3 flex flex-col items-center gap-1 justify-center max-w-[310px]"
               >
-                <Link to={`/items/${it.id}/?prod=${it.name}`} onClick={()=>refetch()}>
+                <Link
+                  to={`/items/${it.id}/?prod=${it.name}`}
+                  onClick={() => refetch()}
+                >
                   <img
                     src={it.images[0]?.url}
                     width={140}

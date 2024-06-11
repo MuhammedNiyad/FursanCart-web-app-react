@@ -46,7 +46,7 @@ const Cart = () => {
   const [deliveryTypeId, setDeliveryTypeId] = useState("");
   const [freeOptionId, setFreeDeliveryOption] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
-  const [couponCode, setCouponCode] = useState('');
+  const [couponCode, setCouponCode] = useState("");
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -192,7 +192,7 @@ const Cart = () => {
       createorder(orderData, {
         onSuccess() {
           setSuccessOrder(true);
-          // orderFinishAndNavigate();
+          orderFinishAndNavigate();
         },
         onError() {
           message.error("could not conform your order");
@@ -250,20 +250,22 @@ const Cart = () => {
             setCouponCode(couponData.coupon_code);
             console.log("applied for product");
           } else if (
-            couponData?.isActive === true &&
-            couponData?.status === "available" &&
-            +cartData?.totalPrice >= +couponData?.minimumPurchaseAmount
+            (couponData?.isActive === true &&
+              couponData?.status === "available" &&
+              +cartData?.totalPrice >= +couponData?.minimumPurchaseAmount) ||
+            +prodData?.data?.product.discountedAmount >=
+              +couponData?.minimumPurchaseAmount
           ) {
             setCouponDiscount(+couponData?.discountAmount);
             message.success("coupon applied");
             setCouponCode(couponData.coupon_code);
-            console.log('applied for all');
+            console.log("applied for all");
           } else {
             message.error("coupon is not valid");
           }
         } else {
           message.error("Invalid Coupon");
-          setCouponDiscount(0)
+          setCouponDiscount(0);
         }
       }
     } else {
@@ -488,21 +490,23 @@ const Cart = () => {
                       />
                     </td>
                   </tr>
-                  <tr className={`${couponDiscount > 0 ? "":"hidden"}`}>
+                  <tr className={`${couponDiscount > 0 ? "" : "hidden"}`}>
                     <td>Coupon applied</td>
                     <td className="text-right text-green-600 font-semibold">
-                      SAR{" "}
-                      {couponDiscount}
+                      SAR {couponDiscount}
                     </td>
                   </tr>
                   <tr className="border-t border-dashed">
                     <td>Total Amount</td>
                     <td className="text-right font-bold">
                       SAR{" "}
-                      {+cartData?.totalPrice + +deliveryCharge - couponDiscount ||
+                      {+cartData?.totalPrice +
+                        +deliveryCharge -
+                        couponDiscount ||
                         +prodData?.data?.product.price -
                           +prodDiscount(prodData?.data.product, qnt) +
-                          +deliveryCharge - couponDiscount}
+                          +deliveryCharge -
+                          couponDiscount}
                     </td>
                   </tr>
                 </tbody>
@@ -510,8 +514,12 @@ const Cart = () => {
               <p className={`text-xs text-green-600 font-semibold my-5 `}>
                 You will save SAR{" "}
                 {cartData
-                  ? +cartDiscount(cartData?.CartProducts, cartData?.totalPrice) + couponDiscount
-                  : +prodDiscount(prodData?.data.product, qnt) + couponDiscount}{" "}
+                  ? +cartDiscount(
+                      cartData?.CartProducts,
+                      cartData?.totalPrice
+                    ) + couponDiscount
+                  : +prodDiscount(prodData?.data.product, qnt) +
+                    couponDiscount}{" "}
                 on this order
               </p>
               <div></div>
