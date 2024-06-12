@@ -184,7 +184,11 @@ const Product = () => {
           <div className="space-y-5 w-full">
             <h1 className="text-2xl lg:text-4xl font-bold">{product?.name}</h1>
             {/* <div className="">{product?.description}</div> */}
-            <div dangerouslySetInnerHTML={{ __html: product?.description|| <>No  description</> }} />
+            {/* <div
+              dangerouslySetInnerHTML={{
+                __html: product?.description || <>No description</>,
+              }}
+            /> */}
 
             {/* rating */}
             <div className="flex gap-1 items-center">
@@ -261,7 +265,13 @@ const Product = () => {
                 buy now
               </button>
             </div>
-            <div className="sm:h-44"></div>
+            <div className="py-16">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: product?.description || <>No description</>,
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -361,14 +371,11 @@ const Product = () => {
                 <div className="py-2">
                   <h5 className="font-medium text-neutral-400 ">Highlights</h5>
                   <ul className="font-normal text-sm">
-                    <li>
-                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Consequuntur architecto esse voluptates blanditiis
-                    </li>
-                    <li>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Cum, deserunt? Assumenda tempora ducimus dolor libero.
-                    </li>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: product?.highlights || <>NA</>,
+                      }}
+                    />
                   </ul>
                 </div>
                 <div className="py-2">
@@ -377,12 +384,13 @@ const Product = () => {
                   </h5>
                   <ul className="font-normal text-sm">
                     <li>
-                      Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                      Consequuntur architecto esse voluptates blanditiis
-                    </li>
-                    <li>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Cum, deserunt? Assumenda tempora ducimus dolor libero.
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: product?.specifications || (
+                            <>NA</>
+                          ),
+                        }}
+                      />
                     </li>
                   </ul>
                 </div>

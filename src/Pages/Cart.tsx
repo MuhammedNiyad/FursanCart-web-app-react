@@ -305,7 +305,7 @@ const Cart = () => {
                     />
                     <div className="text-left">
                       <h2 className="font-semibold">
-                        {prodData?.data.product.name}
+                        {prodData?.data?.product.name}
                       </h2>
                       <p className="py-2   ">
                         {prodData?.data?.product?.description}
@@ -321,7 +321,7 @@ const Cart = () => {
                           SAR {prodData?.data?.product.discountedAmount}
                         </h4>
                         <p className="text-xs text-green-500 align-text-bottom">
-                          {prodData?.data.product.discount_percent}% off with
+                          {prodData?.data?.product.discount_percent}% off with
                           special offer
                         </p>
                       </div>
@@ -336,18 +336,18 @@ const Cart = () => {
                 >
                   <section className="flex items-center">
                     <img
-                      src={it.productVarient.product.images[0].url}
+                      src={it.productVarient?.product.images[0].url}
                       width={100}
                       height={100}
                       alt="djs"
                     />
                     <div>
-                      <p>{it.productVarient.product.name}</p>
+                      <p>{it.productVarient?.product.name}</p>
                       <div className="text-amber-400 flex gap-1 place-self-start my-3">
                         <Rate
                           disabled
                           allowHalf
-                          value={it.productVarient.product.rating}
+                          value={it.productVarient?.product.rating}
                         />
                       </div>
                     </div>
@@ -375,12 +375,12 @@ const Cart = () => {
                     <div className="my-3">
                       <p className="flex gap-2">
                         <span className="text-slate-400 line-through ">
-                          SAR {it.productVarient.product.price}
+                          SAR {it.productVarient?.product.price}
                         </span>
                         <em className="text-black font-bold">
                           SAR {it.price}{" "}
                           <span className="text-green-500 text-xs inline-block align-bottom">
-                            {it.productVarient.product.discount_percent}% off
+                            {it?.productVarient?.product?.discount_percent}% off
                           </span>
                         </em>
                       </p>
@@ -397,7 +397,7 @@ const Cart = () => {
                       className="hover:bg-slate-100 active:bg-slate-100 w-full text-center flex justify-center items-center p-3 gap-1"
                       onClick={() =>
                         goToPaymentPage(
-                          it.productVarient.product.id,
+                          it?.productVarient?.product.id,
                           it.quantity
                         )
                       }
@@ -504,7 +504,7 @@ const Cart = () => {
                         +deliveryCharge -
                         couponDiscount ||
                         +prodData?.data?.product.price -
-                          +prodDiscount(prodData?.data.product, qnt) +
+                          +prodDiscount(prodData?.data?.product, qnt) +
                           +deliveryCharge -
                           couponDiscount}
                     </td>
@@ -518,7 +518,7 @@ const Cart = () => {
                       cartData?.CartProducts,
                       cartData?.totalPrice
                     ) + couponDiscount
-                  : +prodDiscount(prodData?.data.product, qnt) +
+                  : +prodDiscount(prodData?.data?.product, qnt) +
                     couponDiscount}{" "}
                 on this order
               </p>
