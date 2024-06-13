@@ -40,7 +40,7 @@ const WishListPage = () => {
       <div className="max-w-[900px] mx-auto">
         {!isLoading ? (
           <>
-            {wishListData?.data?.items.length > 0 ? (
+            {wishListData?.data?.items?.length > 0 ? (
               <>
                 {wishListData?.data?.items?.map((it: any, id: number) => (
                   <div key={id} className="flex items-center justify-between border p-5 flex-col sm:flex-row">

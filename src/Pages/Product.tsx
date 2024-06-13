@@ -266,6 +266,7 @@ const Product = () => {
               </button>
             </div>
             <div className="py-16">
+              <h3 className="text-lg text-neutral-400">Description</h3>
               <div
                 dangerouslySetInnerHTML={{
                   __html: product?.description || <>No description</>,

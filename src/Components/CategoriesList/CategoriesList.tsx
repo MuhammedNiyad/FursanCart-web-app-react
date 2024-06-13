@@ -93,12 +93,12 @@ export const CategoriesList = () => {
                           src={it?.images[0]?.url}
                           width={140}
                           height={100}
-                          alt={it.description}
+                          alt={it.name}
                         />
                         <h3 className="px-2">{it.name}</h3>
-                        <p className="text-sm font-bold text-blue-800 text-wrap px-2 ">
+                        {/* <p className="text-sm font-bold text-blue-800 text-wrap px-2 ">
                           {it.description.substring(0, 30).concat(" . . .")}
-                        </p>
+                        </p> */}
                       </Link>
                       {/* <div className="flex gap-1 text-amber-400 place-self-start ">
                         <IoStar />
