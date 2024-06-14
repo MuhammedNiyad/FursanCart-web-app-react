@@ -44,7 +44,7 @@ const WishListPage = () => {
               <>
                 {wishListData?.data?.items?.map((it: any, id: number) => (
                   <div key={id} className="flex items-center justify-between border p-5 flex-col sm:flex-row">
-                    <div className="flex flex-col sm:flex-row items-center">
+                    <div className="flex gap-2 flex-col sm:flex-row items-center">
                       <img
                         src={it?.Variant?.product?.images[0]?.url}
                         alt="img"
@@ -54,7 +54,7 @@ const WishListPage = () => {
                         <h2 className="text-lg">
                           {it?.Variant?.product?.name}
                         </h2>
-                        <p>{it?.Variant?.product?.description}</p>
+                        {/* <p>{it?.Variant?.product?.description}</p> */}
                       </div>
                     </div>
                     <div>

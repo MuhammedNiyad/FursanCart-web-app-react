@@ -307,9 +307,9 @@ const Cart = () => {
                       <h2 className="font-semibold">
                         {prodData?.data?.product.name}
                       </h2>
-                      <p className="py-2   ">
+                      {/* <p className="py-2   ">
                         {prodData?.data?.product?.description}
-                      </p>
+                      </p> */}
                       <p className="py-2">
                         quantity <span className="font-semibold ">{qnt}</span>
                       </p>

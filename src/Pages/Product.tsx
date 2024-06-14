@@ -68,7 +68,7 @@ const Product = () => {
 
       console.log(productVariantId);
 
-      const alreadyWished = wishList?.data?.items.some(
+      const alreadyWished = wishList?.data?.items?.some(
         (item: any) => item.variantId === productVariantId
       );
       console.log(alreadyWished);
