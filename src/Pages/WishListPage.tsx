@@ -43,18 +43,23 @@ const WishListPage = () => {
             {wishListData?.data?.items?.length > 0 ? (
               <>
                 {wishListData?.data?.items?.map((it: any, id: number) => (
-                  <div key={id} className="flex items-center justify-between border p-5 flex-col sm:flex-row">
+                  <div
+                    key={id}
+                    className="flex items-center justify-between border p-5 flex-col sm:flex-row"
+                  >
                     <div className="flex gap-2 flex-col sm:flex-row items-center">
-                      <img
-                        src={it?.Variant?.product?.images[0]?.url}
-                        alt="img"
-                        className="w-20"
-                      />
+                      <div className="w-24 h-20">
+                        <img
+                          src={it?.Variant?.product?.images[0]?.url}
+                          alt="img"
+                          className="h-full flex justify-center "
+                        />
+                      </div>
                       <div>
                         <h2 className="text-lg">
                           {it?.Variant?.product?.name}
                         </h2>
-                        {/* <p>{it?.Variant?.product?.description}</p> */}
+                        <p>{it?.Variant?.product?.subText}</p>
                       </div>
                     </div>
                     <div>
@@ -70,7 +75,12 @@ const WishListPage = () => {
                         <p className="text-sm text text-green-500">18% off</p>
                       </div>
                     </div>
-                    <Button onClick={()=>handleRemove(it.id)} className="bg-red-500 text-white">Remove</Button>
+                    <Button
+                      onClick={() => handleRemove(it.id)}
+                      className="bg-red-500 text-white"
+                    >
+                      Remove
+                    </Button>
                   </div>
                 ))}
               </>

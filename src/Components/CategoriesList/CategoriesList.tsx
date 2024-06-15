@@ -17,7 +17,7 @@ export const CategoriesList = () => {
 
   const { data: catResponseData } = useQuery("categories", getCategories);
   const { data: prodResponseData } = useQuery("items", getProducts);
-  const {mutate:AddToCart} = useAddToCart()
+  const { mutate: AddToCart } = useAddToCart();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,9 +29,8 @@ export const CategoriesList = () => {
   // console.log("prodData :", products);
 
   const addToCart = (data: any) => {
-
     if (!userData) {
-      navigate('/authorize')
+      navigate("/authorize");
     }
 
     const compainData = {
@@ -88,17 +87,19 @@ export const CategoriesList = () => {
                         to={`/items/${it.id}/?prod=${it.slug}`}
                         className="w-full space-y-3"
                       >
-                        <img
-                          className="object-fill w-full max-h-[180px]"
-                          src={it?.images[0]?.url}
-                          width={140}
-                          height={100}
-                          alt={it.name}
-                        />
+                        <div>
+                          <img
+                            className="object-fill w-full max-h-[180px]"
+                            src={it?.images[0]?.url}
+                            width={100}
+                            height={100}
+                            alt={it.name}
+                          />
+                        </div>
                         <h3 className="px-2">{it.name}</h3>
-                        {/* <p className="text-sm font-bold text-blue-800 text-wrap px-2 ">
-                          {it.description.substring(0, 30).concat(" . . .")}
-                        </p> */}
+                        <p className="text-sm font-bold text-blue-800 text-wrap px-2 ">
+                          {it?.subText?.substring(0, 30).concat(" . . .")}
+                        </p>
                       </Link>
                       {/* <div className="flex gap-1 text-amber-400 place-self-start ">
                         <IoStar />

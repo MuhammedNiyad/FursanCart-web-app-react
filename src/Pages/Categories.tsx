@@ -107,7 +107,10 @@ const Categories = () => {
         <link rel="icon" href="/fursanFavIcon.svg" />
       </Helmet>
       <Header />
-      <h1 className="text-2xl font-semibold capitalize m-5"> {cat || tag || brandName}</h1>
+      <h1 className="text-2xl font-semibold capitalize m-5">
+        {" "}
+        {cat || tag || brandName}
+      </h1>
       <section>
         <div className="flex justify-between px-4 bg-slate-50 py-3 mx-3 rounded-lg">
           <div
@@ -128,16 +131,19 @@ const Categories = () => {
             className="cursor-pointer bg-white odd:mr-1 border hover:scale-100 hover:shadow-md ease-in-out duration-300 p-3 flex flex-col items-center gap-1 justify-center max-w-[310px]"
           >
             <Link to={`/items/${it.id}/?prod=${it.name}`}>
-              <img
-                src={it.images[0]?.url}
-                width={140}
-                height={100}
-                alt={"img"}
-              />
-              <p className="text-sm text-blue-800 font-bold ">
-                {it.name.substring(0, 20).concat("...")}
+              <div>
+                <img
+                  className="object-fill w-full max-h-[180px]"
+                  src={it?.images[0]?.url}
+                  width={100}
+                  height={100}
+                  alt={it.name}
+                />
+              </div>
+              <p className="text-blue-800 font-bold pt-4 pb-2">{it.name}</p>
+              <p className="text-sm">
+                {it?.subText?.substring(0, 20).concat("...")}
               </p>
-              {/* <p>{it.id}</p> */}
             </Link>
 
             <div className="">

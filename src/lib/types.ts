@@ -79,6 +79,7 @@ export type ProductType = {
   createdAt: string;
   updatedAt: string;
   name: string;
+  subText:string,
   description: string;
   price: string;
   discountedAmount: string;

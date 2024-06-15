@@ -183,13 +183,7 @@ const Product = () => {
         <div className="flex md:items-center sm:w-1/2 ">
           <div className="space-y-5 w-full">
             <h1 className="text-2xl lg:text-4xl font-bold">{product?.name}</h1>
-            {/* <div className="">{product?.description}</div> */}
-            {/* <div
-              dangerouslySetInnerHTML={{
-                __html: product?.description || <>No description</>,
-              }}
-            /> */}
-
+            <div className="">{product?.subText}</div>
             {/* rating */}
             <div className="flex gap-1 items-center">
               <Rate
@@ -387,9 +381,7 @@ const Product = () => {
                     <li>
                       <div
                         dangerouslySetInnerHTML={{
-                          __html: product?.specifications || (
-                            <>NA</>
-                          ),
+                          __html: product?.specifications || <>NA</>,
                         }}
                       />
                     </li>
@@ -420,12 +412,15 @@ const Product = () => {
                   to={`/items/${it.id}/?prod=${it.name}`}
                   onClick={() => refetch()}
                 >
-                  <img
-                    src={it.images[0]?.url}
-                    width={140}
-                    height={100}
-                    alt={"img"}
-                  />
+                  <div>
+                    <img
+                      className="object-fill w-full max-h-[180px]"
+                      src={it?.images[0]?.url}
+                      width={100}
+                      height={100}
+                      alt={it.name}
+                    />
+                  </div>
                   <p className="text-sm text-blue-800 font-bold ">
                     {it.name.substring(0, 20).concat("...")}
                   </p>

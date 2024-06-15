@@ -307,9 +307,11 @@ const Cart = () => {
                       <h2 className="font-semibold">
                         {prodData?.data?.product.name}
                       </h2>
-                      {/* <p className="py-2   ">
-                        {prodData?.data?.product?.description}
-                      </p> */}
+                      <p className="py-2   ">
+                        {prodData?.data?.product?.subText
+                          ?.substring(0, 30)
+                          .concat(" . . .")}
+                      </p>
                       <p className="py-2">
                         quantity <span className="font-semibold ">{qnt}</span>
                       </p>
@@ -334,15 +336,21 @@ const Cart = () => {
                   key={it.id}
                   className=" w-full pt-4 border my-2 shadow-sm "
                 >
-                  <section className="flex items-center">
-                    <img
-                      src={it.productVarient?.product.images[0].url}
-                      width={100}
-                      height={100}
-                      alt="djs"
-                    />
+                  <section className="flex items-center gap-3">
+                    <div className="w-28 h-24 flex justify-center">
+                      <img
+                        src={it.productVarient?.product.images[0].url}
+                        className="h-24"
+                        alt="djs"
+                      />
+                    </div>
                     <div>
                       <p>{it.productVarient?.product.name}</p>
+                      <p className="text-sm text-wrap">
+                        {it?.productVarient?.product?.subText
+                          ?.substring(0, 30)
+                          .concat(" . . .")}
+                      </p>
                       <div className="text-amber-400 flex gap-1 place-self-start my-3">
                         <Rate
                           disabled
