@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Popover, message } from "antd";
+import { Button, Dropdown, MenuProps, Popconfirm, Popover, Space, message } from "antd";
 import { useEffect, useState } from "react";
 import { BsSuitHeart } from "react-icons/bs";
 import { HiOutlineLogout, HiOutlineShoppingBag } from "react-icons/hi";
@@ -8,12 +8,13 @@ import { TbUser } from "react-icons/tb";
 import { useQuery } from "react-query";
 import { Link, useLocation } from "react-router-dom";
 import { getUser } from "../../helpers/loggedUser";
+import { useAppDispatch, useAppSelector } from "../../redux/hook";
+import { changeCurrency } from "../../redux/slices/currencySlice";
 import styles from "../../styles/Home.module.css";
 import { getCartData } from "../../utils/apis";
 import { Departments } from "../Departments/Departments";
 import { Menu } from "../Menu/Menu";
 import { SearchBar } from "../SearchBar/SearchBar";
-
 const cartBody = (
   <div>
     <div className="flex justify-between items-center gap-5">
@@ -58,6 +59,8 @@ export const Header = ({ setSearchData }: any) => {
   const [user, setUser] = useState({});
   const [cartLength, setCartLength] = useState(0);
   const [searchInput, setSearchInput] = useState("");
+  const currencyValue = useAppSelector((state) => state.currency).currencyState;
+  const dispatch = useAppDispatch();
 
   const isUserData = !!user;
 
@@ -98,6 +101,39 @@ export const Header = ({ setSearchData }: any) => {
     console.log(searchInput);
     setSearchData(searchInput);
   };
+
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: <p onClick={() => handleCurrencyChange("AED")}>AED</p>,
+    },
+    {
+      key: "2",
+      label: <p onClick={() => handleCurrencyChange("SAR")}>SAR</p>,
+    },
+    {
+      key: "3",
+      label: <p onClick={() => handleCurrencyChange("QAR")}>QAR</p>,
+    },
+    {
+      key: "4",
+      label: <p onClick={() => handleCurrencyChange("INR")}>INR</p>,
+    },
+    {
+      key: "5",
+      label: <p onClick={() => handleCurrencyChange("EUR")}>EUR</p>,
+    },
+    {
+      key: "6",
+      label: <p onClick={() => handleCurrencyChange("USD")}>USD</p>,
+    },
+  ];
+
+  const handleCurrencyChange = (value:string) => {
+    // console.log(value);
+    dispatch(changeCurrency(value))
+  }
+  
 
   return (
     <div className="flex justify-center relative bg-white">
@@ -246,7 +282,16 @@ export const Header = ({ setSearchData }: any) => {
                   <RiSearchLine />
                 </span>
               </div>
-              <div className="flex justify-around gap-3 text-2xl">
+              <div className="flex items-center justify-around gap-3 text-2xl">
+                <a>
+                  {""}
+
+                  <Dropdown menu={{ items }}>
+                    <a onClick={(e)=>e.preventDefault()}>
+                      <Space className="">{currencyValue}</Space>
+                    </a>
+                  </Dropdown>
+                </a>
                 <a href="/user/wishlist">
                   {""}
                   <span>
@@ -407,7 +452,16 @@ export const Header = ({ setSearchData }: any) => {
                   </span>
                 </div>
 
-                <div className="flex justify-around gap-3 text-2xl">
+                <div className="flex items-center justify-around gap-3 text-2xl">
+                  <a>
+                    {""}
+
+                    <Dropdown menu={{ items }}>
+                        <a onClick={(e)=>e.preventDefault()}>
+                          <Space >{currencyValue}</Space>
+                      </a>
+                    </Dropdown>
+                  </a>
                   <a href="/user/wishlist">
                     {""}
                     <span>

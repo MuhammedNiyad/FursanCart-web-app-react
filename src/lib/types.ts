@@ -32,7 +32,7 @@ type ProductVariant = {
   sku: string;
   productId: string;
   stockQuantity: number;
-  WishListItem?: any; // Assuming no specific structure is provided for WishListItem
+  WishListItem: any; // Assuming no specific structure is provided for WishListItem
   images: Image[];
   Wishlist: boolean;
 };

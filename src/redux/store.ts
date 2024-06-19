@@ -1,17 +1,28 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import cartSlice from "./slices/cartSlice";
+// import cartSlice from "./slices/cartSlice";
+import currencySlice from "./slices/currencySlice";
 
 const persistConfig = {
   key: 'root',
   storage,
 }
 
-const persistedReducer = persistReducer(persistConfig,cartSlice)
+
+
+const rootReducer = combineReducers({
+  // cart: cartSlice,
+  currency: currencySlice,
+});
+const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
-  reducer:persistedReducer,
+  reducer: persistedReducer,
+  // reducer: {
+  //   currencySts:currencySlice
+  // }
+  
 });
 
 export const persistor = persistStore(store)

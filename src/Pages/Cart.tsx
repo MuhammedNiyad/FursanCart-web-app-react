@@ -34,6 +34,7 @@ import {
   useDeleteFromCart,
 } from "../utils/apis";
 import APIClientPrivate from "../utils/axios";
+import Currency from "../Components/Common-Comp/Currency";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -317,10 +318,14 @@ const Cart = () => {
                       </p>
                       <div className="flex gap-2 flex-wrap">
                         <p className="text-slate-400 line-through text-sm">
-                          SAR {prodData?.data.product.price}
+                          {/* SAR {prodData?.data.product.price} */}
+                          <Currency amount={prodData?.data.product.price} />
                         </p>
                         <h4 className="font-semibold">
-                          SAR {prodData?.data?.product.discountedAmount}
+                          {/* SAR {prodData?.data?.product.discountedAmount} */}
+                          <Currency
+                            amount={prodData?.data.product.discountedAmount}
+                          />
                         </h4>
                         <p className="text-xs text-green-500 align-text-bottom">
                           {prodData?.data?.product.discount_percent}% off with
@@ -383,10 +388,13 @@ const Cart = () => {
                     <div className="my-3">
                       <p className="flex gap-2">
                         <span className="text-slate-400 line-through ">
-                          SAR {it.productVarient?.product.price}
+                          {/* SAR {it.productVarient?.product.price} */}
+                          <Currency amount={it.productVarient?.product.price} />
                         </span>
                         <em className="text-black font-bold">
-                          SAR {it.price}{" "}
+                          {/* SAR {it.price}{" "} */}
+                          <Currency amount={it.price} />
+                          {" "}
                           <span className="text-green-500 text-xs inline-block align-bottom">
                             {it?.productVarient?.product?.discount_percent}% off
                           </span>
@@ -456,20 +464,35 @@ const Cart = () => {
                   <tr>
                     <td>Your total Price would be </td>
                     <td className="text-right">
-                      SAR{" "}
-                      {cartData?.totalPrice || prodData?.data?.product.price}
+                      {/* SAR{" "}
+                      {cartData?.totalPrice || prodData?.data?.product.price} */}
+                      <Currency
+                        amount={
+                          cartData?.totalPrice || prodData?.data?.product.price
+                        }
+                      />
                     </td>
                   </tr>
                   <tr className="">
                     <td>Discount</td>
                     <td className="text-right text-green-600 font-semibold">
-                      SAR{" "}
+                      {/* SAR{" "}
                       {cartData
                         ? cartDiscount(
                             cartData?.CartProducts,
                             cartData?.totalPrice
                           )
-                        : prodDiscount(prodData?.data.product, qnt)}
+                        : prodDiscount(prodData?.data.product, qnt)} */}
+                      <Currency
+                        amount={
+                          cartData
+                            ? cartDiscount(
+                                cartData?.CartProducts,
+                                cartData?.totalPrice
+                              )
+                            : prodDiscount(prodData?.data.product, qnt)
+                        }
+                      />
                     </td>
                   </tr>
                   <tr className="w-[100%]">
@@ -490,7 +513,8 @@ const Cart = () => {
                             <div className="flex justify-between">
                               <p>{it.name}</p>
                               <p className="font-semibold">
-                                SAR {it.deliveryCharge}
+                                {/* SAR {it.deliveryCharge} */}
+                                <Currency amount={it.deliveryCharge} />
                               </p>
                             </div>
                           ),
@@ -501,33 +525,57 @@ const Cart = () => {
                   <tr className={`${couponDiscount > 0 ? "" : "hidden"}`}>
                     <td>Coupon applied</td>
                     <td className="text-right text-green-600 font-semibold">
-                      SAR {couponDiscount}
+                      {/* SAR {couponDiscount} */}
+                      <Currency amount={couponDiscount} />
                     </td>
                   </tr>
                   <tr className="border-t border-dashed">
                     <td>Total Amount</td>
                     <td className="text-right font-bold">
-                      SAR{" "}
+                      {/* SAR{" "}
                       {+cartData?.totalPrice +
                         +deliveryCharge -
                         couponDiscount ||
                         +prodData?.data?.product.price -
                           +prodDiscount(prodData?.data?.product, qnt) +
                           +deliveryCharge -
-                          couponDiscount}
+                        couponDiscount} */}
+                      <Currency
+                        amount={
+                          +cartData?.totalPrice +
+                            +deliveryCharge -
+                            couponDiscount ||
+                          +prodData?.data?.product.price -
+                            +prodDiscount(prodData?.data?.product, qnt) +
+                            +deliveryCharge -
+                            couponDiscount
+                        }
+                      />
                     </td>
                   </tr>
                 </tbody>
               </table>
               <p className={`text-xs text-green-600 font-semibold my-5 `}>
-                You will save SAR{" "}
+                You will save {" "}
+                {/* SAR{" "}
                 {cartData
                   ? +cartDiscount(
                       cartData?.CartProducts,
                       cartData?.totalPrice
                     ) + couponDiscount
                   : +prodDiscount(prodData?.data?.product, qnt) +
-                    couponDiscount}{" "}
+                  couponDiscount} */}
+                <Currency
+                  amount={
+                    cartData
+                      ? +cartDiscount(
+                          cartData?.CartProducts,
+                          cartData?.totalPrice
+                        ) + couponDiscount
+                      : +prodDiscount(prodData?.data?.product, qnt) +
+                        couponDiscount
+                  }
+                />{" "}
                 on this order
               </p>
               <div></div>

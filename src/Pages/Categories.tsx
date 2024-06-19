@@ -11,6 +11,7 @@ import { Header } from "../Components/Header/Header";
 import { CartIcon } from "../Components/icons/CartIcon";
 import { getProductByBrand, getProductByTags, getProducts, useAddToCart } from "../utils/apis";
 import { getUser, getUserId } from "../helpers/loggedUser";
+import Currency from "../Components/Common-Comp/Currency";
 
 const Categories = () => {
   const [open, setOpen] = useState(false);
@@ -156,7 +157,7 @@ const Categories = () => {
                 defaultValue={it.rating}
               />
               <div className=" font-bold text-lg flex justify-around items-center gap-1  w-full">
-                <b>SAR {it.price}</b>
+                <Currency amount={it?.price} />
                 <span onClick={() => addToCart(it.variants[0]?.id)}>
                   <CartIcon />
                 </span>

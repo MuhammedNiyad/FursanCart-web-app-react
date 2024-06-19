@@ -6,25 +6,29 @@ import { useQuery } from "react-query";
 import { getUserWishList, useDeleteFromWishList } from "../utils/apis";
 import { getUserId } from "../helpers/loggedUser";
 import LoadingComp from "../Components/Common-Comp/LoadingComp";
+import { Link } from "react-router-dom";
+import Currency from "../Components/Common-Comp/Currency";
 
 const WishListPage = () => {
-  const { data: wishListData, isLoading, refetch } = useQuery("getwishlist", () =>
-    getUserWishList(getUserId())
-  );
+  const {
+    data: wishListData,
+    isLoading,
+    refetch,
+  } = useQuery("getwishlist", () => getUserWishList(getUserId()));
 
   const { mutate: deleteFromWishList } = useDeleteFromWishList();
 
-  const handleRemove = (id:string) => {
+  const handleRemove = (id: string) => {
     deleteFromWishList(id, {
       onSuccess() {
-        message.success('item removed from wishlist')
+        message.success("item removed from wishlist");
         refetch();
       },
       onError() {
-        message.error('Failed to remove item from wishlist')
-      }
-    })
-  }
+        message.error("Failed to remove item from wishlist");
+      },
+    });
+  };
 
   return (
     <div>
@@ -47,7 +51,10 @@ const WishListPage = () => {
                     key={id}
                     className="flex items-center justify-between border p-5 flex-col sm:flex-row"
                   >
-                    <div className="flex gap-2 flex-col sm:flex-row items-center">
+                    <Link
+                      to={`/items/${it?.Variant?.product?.id}/?prod=${it?.Variant?.product?.name}`}
+                      className="flex gap-2 flex-col sm:flex-row items-center"
+                    >
                       <div className="w-24 h-20">
                         <img
                           src={it?.Variant?.product?.images[0]?.url}
@@ -59,20 +66,32 @@ const WishListPage = () => {
                         <h2 className="text-lg">
                           {it?.Variant?.product?.name}
                         </h2>
-                        <p>{it?.Variant?.product?.subText}</p>
+                        <p>
+                          {it?.Variant?.product?.subText
+                            ?.substring(0, 35)
+                            .concat("...")}
+                        </p>
                       </div>
-                    </div>
+                    </Link>
                     <div>
                       <div className="flex items-center gap-1">
-                        <Rate defaultValue={4} />
-                        <span>(4)</span>
+                        <Rate value={it?.Variant?.product?.rating} />
+                        <span>({it?.Variant?.product?.rating})</span>
                       </div>
                       <div className="flex gap-2 items-end ">
-                        <h3 className="font-semibold">SAR 1,999</h3>
+                        <h3 className="font-semibold">
+                          {/* SAR {it?.Variant?.product?.discountedAmount} */}
+                          <Currency
+                            amount={it?.Variant?.product?.discountedAmount}
+                          />
+                        </h3>
                         <h5 className="text-gray-400 line-through text-sm">
-                          SAR 2499
+                          {/* SAR {it?.Variant?.product?.price} */}
+                          <Currency amount={it?.Variant?.product?.price} />
                         </h5>
-                        <p className="text-sm text text-green-500">18% off</p>
+                        <p className="text-sm text text-green-500">
+                          {it?.Variant?.product?.discount_percent}% off
+                        </p>
                       </div>
                     </div>
                     <Button

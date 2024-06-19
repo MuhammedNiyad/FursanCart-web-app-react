@@ -174,11 +174,11 @@ export const Departments: React.FC<{
   // ];
 
   const depss =
-    categoryData?.data.map((categ: any) => {
+    categoryData?.data?.map((categ: any) => {
       return {
         name: categ.name,
         image:categ?.image[0]?.url,
-        links: categ.subCategories.map((subCateg: any) => {
+        links: categ?.subCategories?.map((subCateg: any) => {
           return {
             link: "#",
             subCategory: subCateg.name,

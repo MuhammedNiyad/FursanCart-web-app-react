@@ -6,6 +6,7 @@ import { getUser, getUserId } from "../../helpers/loggedUser";
 import { CategoryItems, ProductType } from "../../lib/types";
 import { getCategories, getProducts, useAddToCart } from "../../utils/apis";
 import { CartIcon } from "../icons/CartIcon";
+import Currency from "../Common-Comp/Currency";
 
 // const getCategories = async () =>
 //   await APIClient.get("https://dummyjson.com/products/categories");
@@ -118,7 +119,8 @@ export const CategoriesList = () => {
                           defaultValue={it.rating}
                         />
                         <div className="flex items-center justify-around w-full gap-1 text-lg font-bold pb-3 ">
-                          <b>SAR {it.price}</b>
+                          {/* <b>SAR {it.price}</b> */}
+                          <Currency amount={it.price} />
                           <span onClick={() => addToCart(it.variants[0]?.id)}>
                             <CartIcon />
                           </span>

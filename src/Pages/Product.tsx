@@ -9,6 +9,7 @@ import { FiMinus } from "react-icons/fi";
 import { PiLightningLight } from "react-icons/pi";
 import { useQuery } from "react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import Currency from "../Components/Common-Comp/Currency";
 import { Footer } from "../Components/Footer/Footer";
 import { Header } from "../Components/Header/Header";
 import { CartIcon } from "../Components/icons/CartIcon";
@@ -37,7 +38,9 @@ const Product = () => {
   const isUser = !!userData;
   const [isWishListed, setIsWishListed] = useState(false);
 
-  const { data: prodData, refetch } = useQuery("getOneProduct", () => getOneProduct(id));
+  const { data: prodData, refetch } = useQuery("getOneProduct", () =>
+    getOneProduct(id)
+  );
   const { data: wishList } = useQuery(
     "getUserWishList",
     () => getUserWishList(getUserId()),
@@ -71,14 +74,14 @@ const Product = () => {
       const alreadyWished = wishList?.data?.items?.some(
         (item: any) => item.variantId === productVariantId
       );
-      console.log(alreadyWished);
+      // console.log(alreadyWished);
 
       if (alreadyWished) {
         setIsWishListed(true);
       }
       // console.log(alreadyWished);
     }
-  }, [wishList?.data]);
+  }, [wishList?.data, product?.variants]);
 
   const addToCart = (data: any) => {
     if (!userData) {
@@ -122,17 +125,17 @@ const Product = () => {
     }
   };
 
-    const changeDateFormat = (curDate: any) => {
-      const date = new Date(curDate);
+  const changeDateFormat = (curDate: any) => {
+    const date = new Date(curDate);
 
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = String(date.getFullYear()).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = String(date.getFullYear()).padStart(2, "0");
 
-      const formattedDate = `${day}/${month}/${year}`;
+    const formattedDate = `${day}/${month}/${year}`;
 
-      return formattedDate;
-    };
+    return formattedDate;
+  };
 
   return (
     <div>
@@ -200,7 +203,8 @@ const Product = () => {
             {/* price */}
             <div className="px-5">
               <h3 className="text-xl md:text-2xl lg:text-4xl font-medium flex gap-2 items-center md:items-start">
-                SAR {product?.price}
+                {/* SAR {product?.price} */}
+                <Currency amount={product?.price} />
                 <span className="bg-gray-100 p-1 text-xs">
                   {product?.discount_percent}% off
                 </span>
@@ -365,13 +369,13 @@ const Product = () => {
                 </div>
                 <div className="py-2">
                   <h5 className="font-medium text-neutral-400 ">Highlights</h5>
-                  <ul className="font-normal text-sm">
+                  <div className="font-normal text-sm">
                     <div
                       dangerouslySetInnerHTML={{
                         __html: product?.highlights || <>NA</>,
                       }}
                     />
-                  </ul>
+                  </div>
                 </div>
                 <div className="py-2">
                   <h5 className="font-medium text-neutral-400 ">
@@ -437,7 +441,7 @@ const Product = () => {
                     defaultValue={it.rating}
                   />
                   <div className=" font-bold text-lg flex justify-around items-center gap-1  w-full">
-                    <b>SAR {it.price}</b>
+                    <Currency amount={it.price} />
                     <span onClick={() => addToCart(it.variants[0]?.id)}>
                       <CartIcon />
                     </span>
