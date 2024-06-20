@@ -9,12 +9,13 @@ import { useQuery } from "react-query";
 import { Link, useLocation } from "react-router-dom";
 import { getUser } from "../../helpers/loggedUser";
 import { useAppDispatch, useAppSelector } from "../../redux/hook";
-import { changeCurrency } from "../../redux/slices/currencySlice";
+import { IsSetInitalValue, changeCurrency } from "../../redux/slices/currencySlice";
 import styles from "../../styles/Home.module.css";
 import { getCartData } from "../../utils/apis";
 import { Departments } from "../Departments/Departments";
 import { Menu } from "../Menu/Menu";
 import { SearchBar } from "../SearchBar/SearchBar";
+import { getLocation } from "../../helpers/getCurrentCountry";
 const cartBody = (
   <div>
     <div className="flex justify-between items-center gap-5">
@@ -60,6 +61,7 @@ export const Header = ({ setSearchData }: any) => {
   const [cartLength, setCartLength] = useState(0);
   const [searchInput, setSearchInput] = useState("");
   const currencyValue = useAppSelector((state) => state.currency).currencyState;
+  const isInitialValueForCurr = useAppSelector((state) => state.currency).isInitialValue;
   const dispatch = useAppDispatch();
 
   const isUserData = !!user;
@@ -79,6 +81,24 @@ export const Header = ({ setSearchData }: any) => {
   }, []);
 
   const location = useLocation();
+
+  // dispatch(changeCurrency(getLocation()));
+  // console.log(getLocation());
+  const setInitialToRedux = async () => {
+    // console.log( isInitialValueForCurr , await getLocation());
+    
+    if (isInitialValueForCurr === false) {
+      dispatch(changeCurrency( await getLocation()));
+      dispatch(IsSetInitalValue(true));
+    }
+  }
+
+  // getLocation();
+  
+  useEffect(() => {
+   setInitialToRedux()
+  },[])
+  
 
   // const transition = useTransition(menu, {
   //   from: { x: -100, y: 0, opacity: 0, delay: 200 },
@@ -134,7 +154,6 @@ export const Header = ({ setSearchData }: any) => {
     dispatch(changeCurrency(value))
   }
   
-
   return (
     <div className="flex justify-center relative bg-white">
       <div className="w-full xl:max-w-full ">

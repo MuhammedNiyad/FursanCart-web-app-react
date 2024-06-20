@@ -90,7 +90,7 @@ export const CategoriesList = () => {
                       >
                         <div>
                           <img
-                            className="object-fill w-full max-h-[180px]"
+                            className="object-fill w-full h-full"
                             src={it?.images[0]?.url}
                             width={100}
                             height={100}
