@@ -63,6 +63,9 @@ const Product = () => {
   useEffect(() => {
     setProduct(prodData?.data.product);
     setRelatedProd(prodData?.data.relatedProducts);
+    // if (prodData?.data) {
+    //   setSelectedImg(prodData?.data?.images[0]?.url);
+    // }
   }, [prodData]);
 
   useMemo(() => {
@@ -149,11 +152,23 @@ const Product = () => {
         {/* image */}
         <div className="flex flex-col items-center gap-5 w-full h-full sm:w-1/2">
           <div className="w-full lg:w-[80%] h-[80%] flex justify-center items-center relative">
-            <img
-              src={selectedImg ? selectedImg : product?.images[0].url}
-              alt="product-img"
-              className="max-w-[300px]"
-            />
+            {!selectedImg.endsWith(".mp4") ? (
+              <img
+                src={selectedImg ? selectedImg : product?.images[0].url}
+                alt="product-img"
+                className="max-w-[300px]"
+              />
+            ) : (
+              <video
+                src={selectedImg.endsWith(".mp4") ? selectedImg : ""}
+                autoPlay
+                controls
+                loop
+                muted
+                className="media-item max-w-[300px]"
+              />
+            )}
+
             <span className="p-3 bg-white shadow-md rounded-full absolute right-0 top-0 scale-95 hover:scale-105 duration-200">
               {!isWishListed ? (
                 <FaRegHeart
@@ -172,13 +187,26 @@ const Product = () => {
             } h-[20%] flex gap-5 w-full overflow-x-scroll justify-center items-center`}
           >
             {product?.images.map((it, ind: number) => (
-              <img
-                key={ind}
-                src={it.url}
-                alt="product image"
-                className="md:max-w-[50px] max-w-[50px]"
-                onClick={() => setSelectedImg(it.url)}
-              />
+              <>
+                {!it.url.endsWith(".mp4") ? (
+                  <img
+                    key={ind}
+                    src={it.url}
+                    alt="product image"
+                    className="md:max-w-[50px] max-w-[50px]"
+                    onClick={() => setSelectedImg(it.url)}
+                  />
+                ) : (
+                  <video
+                    src={it.url.endsWith(".mp4") ? it.url : ""}
+                    // autoPlay
+                    // loop
+                    muted
+                    className="md:max-w-[50px] max-w-[50px]"
+                    onClick={() => setSelectedImg(it.url)}
+                  />
+                )}
+              </>
             ))}
           </div>
         </div>
@@ -401,7 +429,6 @@ const Product = () => {
 
       {/* product rating and review */}
       <div></div>
-
       {/* related product */}
       <div className="p-5">
         <div className="mx-auto max-w-[1300px]">
