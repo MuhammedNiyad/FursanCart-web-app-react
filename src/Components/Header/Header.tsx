@@ -139,14 +139,14 @@ export const Header = ({ setSearchData }: any) => {
       key: "4",
       label: <p onClick={() => handleCurrencyChange("INR")}>INR</p>,
     },
-    {
-      key: "5",
-      label: <p onClick={() => handleCurrencyChange("EUR")}>EUR</p>,
-    },
-    {
-      key: "6",
-      label: <p onClick={() => handleCurrencyChange("USD")}>USD</p>,
-    },
+    // {
+    //   key: "5",
+    //   label: <p onClick={() => handleCurrencyChange("EUR")}>EUR</p>,
+    // },
+    // {
+    //   key: "6",
+    //   label: <p onClick={() => handleCurrencyChange("USD")}>USD</p>,
+    // },
   ];
 
   const handleCurrencyChange = (value:string) => {

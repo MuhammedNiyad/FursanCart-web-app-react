@@ -288,3 +288,9 @@ export const deleteFromWishList = (id: any) => {
 export const useDeleteFromWishList = () => {
   return useMutation((id: any) => deleteFromWishList(id));
 };
+
+
+// this api for get currency data
+export const getCurrencies = () => {
+  return APIClientPrivate.get('/currencyManage');
+};
