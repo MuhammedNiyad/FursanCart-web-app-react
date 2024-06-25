@@ -11,7 +11,7 @@ import { getUser } from "../../helpers/loggedUser";
 import { useAppDispatch, useAppSelector } from "../../redux/hook";
 import { IsSetInitalValue, changeCurrency } from "../../redux/slices/currencySlice";
 import styles from "../../styles/Home.module.css";
-import { getCartData } from "../../utils/apis";
+import { getCartData, getCurrencies } from "../../utils/apis";
 import { Departments } from "../Departments/Departments";
 import { Menu } from "../Menu/Menu";
 import { SearchBar } from "../SearchBar/SearchBar";
@@ -63,12 +63,20 @@ export const Header = ({ setSearchData }: any) => {
   const currencyValue = useAppSelector((state) => state.currency).currencyState;
   const isInitialValueForCurr = useAppSelector((state) => state.currency).isInitialValue;
   const dispatch = useAppDispatch();
+  const [currency,setCurrency] = useState<any[]>([])
 
   const isUserData = !!user;
 
   const { data: cartData } = useQuery("getcartdataforlengthshow", getCartData, {
     enabled: isUserData,
   });
+
+  useQuery('getcurrencyforList', getCurrencies, {
+    onSuccess(data) {
+      setCurrency(data?.data)
+    }
+  })
+  
 
   useEffect(() => {
     if (cartData?.data) {
@@ -122,32 +130,10 @@ export const Header = ({ setSearchData }: any) => {
     setSearchData(searchInput);
   };
 
-  const items: MenuProps["items"] = [
-    {
-      key: "1",
-      label: <p onClick={() => handleCurrencyChange("AED")}>AED</p>,
-    },
-    {
-      key: "2",
-      label: <p onClick={() => handleCurrencyChange("SAR")}>SAR</p>,
-    },
-    {
-      key: "3",
-      label: <p onClick={() => handleCurrencyChange("QAR")}>QAR</p>,
-    },
-    {
-      key: "4",
-      label: <p onClick={() => handleCurrencyChange("INR")}>INR</p>,
-    },
-    // {
-    //   key: "5",
-    //   label: <p onClick={() => handleCurrencyChange("EUR")}>EUR</p>,
-    // },
-    // {
-    //   key: "6",
-    //   label: <p onClick={() => handleCurrencyChange("USD")}>USD</p>,
-    // },
-  ];
+  const items: MenuProps["items"] = currency.map((it,ind) => ({
+    key: ind.toString(),
+    label: <p onClick={() => handleCurrencyChange(it.currencyCode)}>{it.currencyCode}</p>,
+  }));
 
   const handleCurrencyChange = (value:string) => {
     // console.log(value);

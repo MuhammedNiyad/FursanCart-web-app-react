@@ -53,6 +53,7 @@ const getCountry = async (latitude: number, longitude: number) => {
 };
 
 const getCurrencyCode = (country: string): string | null => {
+	
 	const currencyMap: { [key: string]: string } = {
 		'United Arab Emirates': 'AED',
 		'Saudi Arabia': 'SAR',
